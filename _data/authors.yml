@@ -50,7 +50,7 @@
    github:
    stackexchange:
    linkedin: siva-praveen-b9656725
-   bio: "Siva Praveen is a member of technology team at eLitmus.He is team player and is passionate about computers,technology,Web development (Loves Ruby and any framework that is built on Ruby) and Badminton."
+   bio: "Siva Praveen is a member of technology team at eLitmus. He is team player and is passionate about computers,technology,Web development (Loves Ruby and any framework that is built on Ruby) and Badminton."
 -  id: akash
    name: Akash Srivastava
    avatar: akash.jpg
@@ -67,3 +67,13 @@
    bio: "Full time Startup guy / occasional Musician & Writer / Interests: Barbells, Bharat, Dharma, Econ, Product, Marketing, Music & Startups. Views personal."
    twitter: carygottheblues
    linkedin: 
+-  id: crahul
+   name: Rahul C
+   avatar: crahul.jpg
+   email: crahul@elitmus.in
+   twitter: bitsapien_log
+   github: bitsapien
+   stackexchange:
+   linkedin: cspacerahul
+   bio: "Rahul is part of the Technology team at eLitmus. He is still figuring out what he must write here."
+
