@@ -5,13 +5,14 @@ tldr:
 modified: 2017-10-23 18:05:37 +0530
 category: career
 tags: []
-author: 
+author: arijit
 image:
   feature: 
   credit: 
   creditlink: 
 comments: 
 share: 
+excerpt_separator: <!--more-->
 ---
 
 _Many commentators, most of them far wiser than me, have coined brilliant terms to refer to the generation gap that exists in the Indian demographic today. Since the workplace is but a small subset of the overall demographic, this generation gap is equally alive and kicking there as well._
