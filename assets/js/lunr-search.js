@@ -46,7 +46,7 @@ $(document).ready(function() {
   var result = [];
   var jsonData = {};
   var originalJsonData = {};
-  $.getJSON("http://localhost:4000/blog/search.json", function(json) {
+  $.getJSON("/blog/search.json", function(json) {
     // this will show the info it in firebug console
     idx = lunr(function() {
       this.field('category',{ boost: 100})
