@@ -1,0 +1,595 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Migration from Paperclip to ActiveStorage &#8211; eLitmus Blog</title>
+<meta name="description" content="We learn new things everyday, and we document our learnings here...">
+
+<meta name="keywords" content="Rails, Paperclip, ActiveStorage">
+
+<!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary">    
+<meta name="twitter:title" content="Migration from Paperclip to ActiveStorage">
+<meta name="twitter:description" content="<p><em>How we migrated hundreds of thousands of attachments from Paperclip to ActiveStorage without downtime.</em></p>
+
+">
+<meta name="twitter:site" content="@elitmus">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        
+            <meta name="twitter:creator" content="@ManishS77291587">
+        
+    
+
+
+
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://localhost:4000/blog/images/blog_logo_taglinedorange.png"/>
+<meta property="og:type" content="article">
+<meta property="og:title" content="Migration from Paperclip to ActiveStorage">
+<meta property="og:description" content="<p><em>How we migrated hundreds of thousands of attachments from Paperclip to ActiveStorage without downtime.</em></p>
+
+">
+<meta property="og:url" content="http://localhost:4000/blog/technology/migration-from-paperclip-to-activestorage/">
+
+<meta property="og:site_name" content="eLitmus Blog">
+
+
+
+
+
+
+
+<link rel="canonical" href="https://www.elitmus.com/blog/technology/migration-from-paperclip-to-activestorage/">
+<link href="http://localhost:4000/blog/feed.xml" type="application/atom+xml" rel="alternate" title="eLitmus Blog Feed">
+
+
+	<link rel="author" href="https://plus.google.com/+eLitmus?rel=author">
+
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Icons -->
+<!-- apple touch icons -->
+<link rel="apple-touch-icon" sizes="57x57" href="http://localhost:4000/blog/images/apple-touch-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="114x114" href="http://localhost:4000/blog/images/apple-touch-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="72x72" href="http://localhost:4000/blog/images/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="144x144" href="http://localhost:4000/blog/images/apple-touch-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="60x60" href="http://localhost:4000/blog/images/apple-touch-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="120x120" href="http://localhost:4000/blog/images/apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="76x76" href="http://localhost:4000/blog/images/apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="152x152" href="http://localhost:4000/blog/images/apple-touch-icon-152x152.png">
+<!-- Favicons default 16x16 -->
+<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="http://localhost:4000/blog/favicon.ico">
+
+<!-- Favicons others -->
+<link rel="icon" type="image/png" href="http://localhost:4000/blog/images/favicon-196x196.png" sizes="196x196">
+<link rel="icon" type="image/png" href="http://localhost:4000/blog/images/favicon-160x160.png" sizes="160x160">
+<link rel="icon" type="image/png" href="http://localhost:4000/blog/images/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="http://localhost:4000/blog/images/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="http://localhost:4000/blog/images/favicon-32x32.png" sizes="32x32">
+
+<!-- Icons for Windows 8 Tiles -->
+<meta name="msapplication-TileColor" content="#ffffff"/>
+<meta name="msapplication-TileImage" content="http://localhost:4000/blog/images/mstile-144x144.png">
+
+<!-- For all browsers -->
+
+
+<!-- Webfonts -->
+<link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:600,300,300italic|The+Girl+Next+Door" rel="stylesheet" type="text/css">
+<link href='//fonts.googleapis.com/css?family=Source+Code+Pro:300' rel='stylesheet' type='text/css'>
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- bootstrap 4 -->
+<link rel="stylesheet" type="text/css" href="http://localhost:4000/blog/assets/css/bootstrap.min.css">
+
+<!-- below css file is used for navbar in individual blogposts -->
+<link rel="stylesheet" type="text/css" href="http://localhost:4000/blog/assets/css/main.min.css">
+
+<!-- <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"> -->
+
+<!-- Optional theme -->
+<link rel="stylesheet" type="text/css" href="http://localhost:4000/blog/assets/css/bootstrap-theme.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Font Awesome -->
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="http://localhost:4000/blog/assets/css/font-elitmuslogo.css" />
+
+<link rel="stylesheet" href="http://localhost:4000/blog/assets/css/customize.css">
+<link rel="stylesheet" href="http://localhost:4000/blog/assets/css/forkit.css">
+</head>
+
+<body id="post">
+
+  <header class="headroom">
+
+  <nav class="navbar navbar-expand-md navbar-dark bg-black fixed-top" role="navigation">
+
+      <a class="navbar-brand" href="/blog/">
+        <img src="https://cdn0.elitmus.net/assets/elitmus-only-logo-6efc8a74032179afdb89829a093e05bd05d627dd4354bbd1ff7f4eb5db8a0af8.svg" class="img-logo">
+        <span><div class="blog-label">blog</div></span>
+      </a>
+
+      <!-- the toggle button -->
+      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="navbar-toggler-icon"></span>
+        <span class="sr-only">Toggle navigation</span><!-- only for screen readers -->
+      </button>
+
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav mr-auto">
+
+          <!-- first item = dropdown search -->
+          <li class="nav-item">
+            <div class="dropdown search-box-margin">
+
+            
+              <div class="form-inline">
+                 
+
+                <input data-toggle="dropdown" placeholder="Search..." id="search-box" class="form-control form-control-sm search-input dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+
+
+                <div class="dropdown-menu" id="search-dropdown">
+                  <a role='presentation' class='dropdown-item search-results'> Type more.... </a>
+                </div>
+
+              </div>
+
+
+
+            <!-- the below line will pass "search word" to search.html -->
+
+            <!--
+            <form class="form-inline" action="http://localhost:4000/blog/search" method="get">
+               
+
+
+              <label for="search_box">Search</label>
+              <input data-toggle="dropdown" type="text" name="query" placeholder="Search..." id="search-box" class="form-control form-control-sm search-input dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+
+              <div class="dropdown-menu" id="search-dropdown">
+                  <a role='presentation' class='dropdown-item search-results'> Type more.... </a>
+              </div>
+
+              <input type="submit" value="search">
+
+            </form>
+            -->
+
+            <!-- end of form -->
+
+
+            </div>
+          </li>
+        </ul>
+
+        
+
+        <!-- every link on the right side -->
+        <ul class="nav navbar-nav navbar-right nav-icon-size-reduce">
+          
+          <li class="nav-item">
+             
+              <a href="http://localhost:4000/blog/" class="nav-link">
+                <i class="fa fa-home"></i> Home
+              </a>
+            
+          </li>
+          
+          <li class="nav-item">
+             
+              <a href="http://localhost:4000/blog/posts/" class="nav-link">
+                <i class="fa fa-file-text-o"></i> Posts
+              </a>
+            
+          </li>
+          
+          <li class="nav-item">
+             
+              <a href="//www.elitmus.com/" class="nav-link">
+                <i class="el el-elitmuslogo"></i> eLitmus
+              </a>
+            
+          </li>
+          
+
+          <!-- feed is the last link -->
+          <li class="nav-item">
+            <a href="http://localhost:4000/blog/feed.xml" class="nav-link" title="Atom/RSS feed">
+              <i class="fa fa-rss"></i> Feed
+            </a>
+          </li>
+        </ul>
+
+
+
+      </div> <!-- /.navbar-collapse -->
+
+  </nav><!--[if lt IE 9]><div class="upgrade"><strong><a href="https://whatbrowser.org/">Your browser is quite old!</strong> Why not upgrade to a different browser to better enjoy this site?</a></div><![endif]-->
+</header>
+<!-- 
+
+  <div class="search-wrapper">
+    <div class="search-form">
+      <input type="text" class="search-field" placeholder="Search...">
+      <i class="icon-remove-sign icon-2x"></i>
+      <ul class="search-results post-list"></ul> -->
+<!-- /.search-results -->
+<!-- </div> -->
+<!-- /.search-form -->
+<!-- </div> -->
+<!-- ./search-wrapper -->
+<!--  -->
+
+  
+
+  <div class="container-fluid">
+
+  <div class="row">
+
+
+    <div class="col-md-2"></div>
+      <div class="col-md-8">
+        
+
+        <div id="main" role="main" class="marginal">
+          <article class="entry">
+
+            
+
+            <div>
+              <header>
+                <span class="entry-tags">
+                  
+                    <a href="http://localhost:4000/blog/tags/#Rails" title="Pages tagged Rails">Rails</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="http://localhost:4000/blog/tags/#Paperclip" title="Pages tagged Paperclip">Paperclip</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="http://localhost:4000/blog/tags/#ActiveStorage" title="Pages tagged ActiveStorage">ActiveStorage</a>
+                    
+                  
+
+                  <div class=' social-sharing pull-right'>        
+     
+</div>
+
+                </span>
+              
+                
+                  <h1 class="no-padding">Migration from Paperclip to ActiveStorage</h1>
+                
+              </header>
+            </div>
+           
+            <div>
+              <div>
+                <span class='badge badge-warning'> <a href="/blog/categories/technology/index.html" > technology </a></span>
+              </div>
+
+              
+
+              <div class="post-content-justify">
+                <p><em>How we migrated hundreds of thousands of attachments from Paperclip to ActiveStorage without downtime.</em></p>
+
+<p>At <a href="https://www.elitmus.com">eLitmus</a>, recently we migrated thousands of attachment records from <a href="https://github.com/thoughtbot/paperclip">Paperclip</a> to Rails-owned <a href="https://guides.rubyonrails.org/active_storage_overview.html">ActiveStorage</a>. Paperclip and Active Storage solve similar problems - uploading files to cloud storage like Amazon S3, Google Cloud Storage, or Microsoft Azure Storage. In our case, we are uploading files to Amazon s3. And then attach those files to Active Records objects. So migrating from one to another is straightforward data-rewriting.</p>
+
+<h3 id="why-do-we-migrate-from-paperclip-to-active-storage"><strong>Why do we migrate from paperclip to active storage?</strong></h3>
+
+<p>ActiveStorage was introduced in Rails version 5.2. At the time of migration, we were at Rails version 6.0. So, we were already running behind in keeping things up to date. Active storage is a highly recommended tool for uploading files. For a long, before ActiveStorage, this functionality was provided by outside gems, including Paperclip. With the release of Active storage, Paperclip was already deprecated for some time, and we wanted to move forward with Active Storage knowing it’s not as mature as Paperclip, but it’s owned by the rails’ community behind it. So we were happy with that.</p>
+
+<h3 id="how-do-we-migrate-from-paperclip-to-active-storage"><strong>How do we migrate from paperclip to active storage?</strong></h3>
+
+<p>After reading articles on the web and the migration guide provided by the Paperclip process seemed pretty straightforward. We had around 2 Million records belonging to 16 different Active Records. In our case, we need migration that is fast and with no downtime. We had records in millions we cannot afford to wait for days to run migrations. We decided to do it in small steps. One step at a time, migrating all attachments of one Active Record. So a total of 32 Merge Requests were merged in production during this time. For each Active Record, two Merge Requests deployed because we didn’t want to have any unavailable attachments during the whole process, we split it into two steps or Merge Requests.</p>
+
+<p>So both steps revolve around the Paperclip and ActiveStorage. Let us refresh our understanding of how paperclip and active storage works. Paperclip works by attaching file data to the model. At the same time, it changes the schema of the model by introducing four columns in the Active Record table. It manages rails validations based on size and presence of file data if required.</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span>  <span class="n">create_table</span> <span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="ss">force</span><span class="p">:</span> <span class="ss">:cascade</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="s2">&quot;image_file_name&quot;</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="s2">&quot;image_content_type&quot;</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">integer</span> <span class="s2">&quot;image_file_size&quot;</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">datetime</span> <span class="s2">&quot;image_updated_at&quot;</span>
+  <span class="k">end</span></code></pre></figure>
+
+<p>Here’s how it would go for a <code>User</code> with an <code>image</code>, that is this in Paperclip:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span>  <span class="k">class</span> <span class="nc">User</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+    <span class="n">has_attached_file</span> <span class="ss">:image</span>
+
+    <span class="n">validates_attachment</span> <span class="ss">:avatar</span><span class="p">,</span> <span class="ss">presence</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span>
+      <span class="ss">content_type</span><span class="p">:</span> <span class="s2">&quot;image/jpeg&quot;</span><span class="p">,</span>
+      <span class="ss">size</span><span class="p">:</span> <span class="p">{</span> <span class="k">in</span><span class="p">:</span> <span class="mi">0</span><span class="o">..</span><span class="mi">10</span><span class="o">.</span><span class="n">kilobytes</span> <span class="p">}</span>
+  <span class="k">end</span></code></pre></figure>
+
+<p>On another side, we start by installing ActiveStorage. Normally, Rails 6.1 already comes with it, so all we need is run:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span>  <span class="n">rails</span> <span class="ss">active_storage</span><span class="p">:</span><span class="n">install</span></code></pre></figure>
+
+<p>ActiveStorage creates three database tables ActiveStorageBlobs table storing attachment metadata, the ActiveStorageAttachments table, which is a polymorphic table between the blobs table and rails model and the ActiveStorageVariantRecords table tracks the presence of variant in the database. ActiveStorage doesn’t come with validations. we found some outside gems, including <a href="https://github.com/igorkasyanchuk/active_storage_validations">active_storage_validations</a> which works for us.</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span>  <span class="n">create_table</span> <span class="ss">:active_storage_blobs</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">string</span>   <span class="ss">:key</span><span class="p">,</span>      <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">string</span>   <span class="ss">:filename</span><span class="p">,</span>     <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">string</span>   <span class="ss">:content_type</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">text</span>     <span class="ss">:metadata</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">string</span>   <span class="ss">:service_name</span><span class="p">,</span> <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">bigint</span>   <span class="ss">:byte_size</span><span class="p">,</span>    <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">string</span>   <span class="ss">:checksum</span><span class="p">,</span>     <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">datetime</span> <span class="ss">:created_at</span><span class="p">,</span>   <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+
+    <span class="n">t</span><span class="o">.</span><span class="n">index</span> <span class="o">[</span> <span class="ss">:key</span> <span class="o">]</span><span class="p">,</span> <span class="ss">unique</span><span class="p">:</span> <span class="kp">true</span>
+  <span class="k">end</span>
+
+  <span class="n">create_table</span> <span class="ss">:active_storage_attachments</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">string</span>     <span class="ss">:name</span><span class="p">,</span>     <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">references</span> <span class="ss">:record</span><span class="p">,</span>   <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span><span class="p">,</span> <span class="ss">polymorphic</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">index</span><span class="p">:</span> <span class="kp">false</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">references</span> <span class="ss">:blob</span><span class="p">,</span>     <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+
+    <span class="n">t</span><span class="o">.</span><span class="n">datetime</span> <span class="ss">:created_at</span><span class="p">,</span> <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+
+    <span class="n">t</span><span class="o">.</span><span class="n">index</span> <span class="o">[</span> <span class="ss">:record_type</span><span class="p">,</span> <span class="ss">:record_id</span><span class="p">,</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:blob_id</span> <span class="o">]</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;index_active_storage_attachments_uniqueness&quot;</span><span class="p">,</span> <span class="ss">unique</span><span class="p">:</span> <span class="kp">true</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">foreign_key</span> <span class="ss">:active_storage_blobs</span><span class="p">,</span> <span class="ss">column</span><span class="p">:</span> <span class="ss">:blob_id</span>
+  <span class="k">end</span>
+
+  <span class="n">create_table</span> <span class="ss">:active_storage_variant_records</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">belongs_to</span> <span class="ss">:blob</span><span class="p">,</span> <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span><span class="p">,</span> <span class="ss">index</span><span class="p">:</span> <span class="kp">false</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="ss">:variation_digest</span><span class="p">,</span> <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+
+    <span class="n">t</span><span class="o">.</span><span class="n">index</span> <span class="o">%</span><span class="n">i</span><span class="o">[</span> <span class="n">blob_id</span> <span class="n">variation_digest</span> <span class="o">]</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;index_active_storage_variant_records_uniqueness&quot;</span><span class="p">,</span> <span class="ss">unique</span><span class="p">:</span> <span class="kp">true</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">foreign_key</span> <span class="ss">:active_storage_blobs</span><span class="p">,</span> <span class="ss">column</span><span class="p">:</span> <span class="ss">:blob_id</span>
+  <span class="k">end</span></code></pre></figure>
+
+<p>Here’s how it would go for a <code>User</code> with an <code>image</code>, that is this in ActiveStorage:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span>  <span class="k">class</span> <span class="nc">User</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
+    <span class="n">has_one_attached</span> <span class="ss">:image</span>
+
+    <span class="n">validates</span> <span class="ss">:image</span><span class="p">,</span> <span class="ss">attached</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> 
+      <span class="ss">content_type</span><span class="p">:</span> <span class="s1">&#39;image/png&#39;</span><span class="p">,</span>
+      <span class="ss">size</span><span class="p">:</span> <span class="p">{</span> <span class="k">in</span><span class="p">:</span> <span class="mi">0</span><span class="o">..</span><span class="mi">10</span><span class="o">.</span><span class="n">kilobytes</span> <span class="p">}</span>
+  <span class="k">end</span></code></pre></figure>
+
+<p>Let’s deep dive into the two steps we adopted, <strong>Migrated Paperclip</strong> data and <strong>Adopted ActiveStorage</strong></p>
+
+<h4 id="migrated-paperclip-data"><strong>Migrated Paperclip Data</strong></h4>
+
+<p>In this step, we did the most crucial part of the process, running a rake job to migrate paperclip data to active storage tables. We kept everything from the Paperclip as it is and, we also added support for Active Storage. We were using both functionalities at the same time. During the time, attachments for the model were migrated from Paperclip to ActiveStorage if a user decides to upload any attachments, the user still uses the paperclip implementation, but in the background after the successful commit of all transaction related to Paperclip. We were duplicating the same attachment to active storage by using Active Record Callback after_commit.</p>
+
+<h4 id="what-does-our-rake-task-flow-look-like"><strong>What does our rake task flow look like?</strong></h4>
+
+<p>In this step, we created a rake task that copies all the data produced by Paperclip to the new ActiveStorage format.</p>
+
+<ul>
+  <li>Firstly, we pushed every column_name matching the Regex containing the file_name into the array. For example, we have a UserSignature model having a column image_file_name.</li>
+  <li>Secondly, for each instance of the model, created an ActiveStorage record only if ActiveStorage doesn’t contain a record for that instance. The reason for this is that for some reason, we cancel our rake task or it gets crashes, we had a choice to restart it from the place where it left off.</li>
+  <li>So for each instance, we were first constructing the direct URL of the attachment. Direct URL is the Amazon s3 URL to download the attachment from Amazon s3. We then pass on this direct URL to ActiveStorage::Blob create_and_upload! Method, which first downloads it and re-upload it to the s3 bucket. We then created the associated polymorphic ActiveStorage record.</li>
+</ul>
+
+<h4 id="what-challenges-did-we-face-running-rake-tasks"><strong>What challenges did we face running rake tasks?</strong></h4>
+
+<p>At eLitmus, models with CDN bucket configurations have less than 20 thousand records. For models with a limited number of records above approach works well for us. It looks quite straightforward for us. As soon we started migrating the Default bucket, with each model with records greater than 50,000, problems came arising. We started with records in increasing order of their count. For the Default bucket, we started our journey with 56,000 records by following the approach mentioned above. It took around more than 4 hours to migrate 56,000 in a staging environment. We can’t afford to wait for hours to migrate 56,000 attachments. So we had to come up with a different approach and, this is where things become interesting.</p>
+
+<p>After all the specs, we found that in the above approach, we have an open URI to download the attachment from Amazon s3 and re-upload it to the s3 bucket in the transaction that prolonged the database connection time. We came up with a different approach by designing our rake task; in such a way that instead of hitting s3 of every record, we decided to just come up with a database migration that copies all of the data generated from the paperclip to the new Active Storage required format. Paperclip adds attachment columns directly to the model’s tables such as image_file_name, image_content_type, image_updated_at, image_file_size. ActiveStorage stores this information in two dedicated tables ActiveStorageBlobs table and ActiveStorageAttachments table.</p>
+
+<p>We loop through the records of the model and then through each attachment definition within the model. If the model record doesn’t have an uploaded attachment, skip to the next record. Otherwise, we converted the Paperclip data to ActiveStorage records. We set the values for the new ActiveStorage records based on the data from Paperclip’s field for the ActiveStorageBlobs table.</p>
+
+<p>For the records with limited numbers, less than 1,00,000 approach works well for us. It took only 8 minutes to migrate 96,000 records. Our next target was to migrate around 4,50,000 migrate. We started migrating with the same approach we used for 96,00,000. But things do not go as straightforward. While migrating 4,50,000 maximum number of records in our Paperclip data had missing file size. As ActiveStorageBlobs table byte_size is the required field, We had to hit s3 API to fetch file size. It took around 4 hours in staging to migrate. On optimizing the rake task, we came up with another approach instead of reading data from a Paperclip column and then writing them to ActiveStorageBlobs at, same time. We decided to first read all the data from the Paperclip and then write it back to ActiveStorage. Firstly we read all the data from paperclip model columns and made them compatible with ActiveStorage Required format in CSV. Then we write data from CSV to ActiveStorage tables. It took 2 hours for us to migrate 4,50,000 records in production.
+With the same approach next, we migrated around 14,00,000 records and, it took 45 minutes in staging and 18 hours in production.</p>
+
+<h4 id="adopted-active-storage"><strong>Adopted Active Storage</strong></h4>
+
+<p>After the job finished, we removed everything related to the paperclip and replaced its usage with active storage.  We updated config files, added Amazon s3 storage definitions to storage.yml, and removed paperclip configuration for attachments related to the model. Updated model, views, and controllers related to Active Record. The red, green, and refactor approach helped us to improve confidence that our code was working as expected.</p>
+
+<h4 id="what-challenges-did-we-face-during-migration"><strong>What challenges did we face during migration?</strong></h4>
+
+<ul>
+  <li>Paperclip provides us several validators to validate our attachments. Out of the box, ActiveStorage doesn’t come with validations. We need to write custom validations in ActiveStorage, to add simple validations for attachments to validate presence, content type, attachment size. After some research, we found some outside gems, including <a href="https://github.com/igorkasyanchuk/active_storage_validations">active_storage_validations</a>, provide us validators as Paperclip. As ActiveStorage is evolving day by day, validations are on the to-do list of the rails community. As soon as it is released, we will be ready to get the outside gem replaced.</li>
+  <li>At eLitmus, we were using two Amazon s3 buckets - default bucket and CDN bucket, to store our attachments. Paperclip provides us functionality to store attachments on different buckets by giving an option bucket name while uploading attachment data. We started migrating from Paperclip to ActiveStorage with our application rails version 6.0. In Rails 6.0, there was no such tool to categorize the bucket name while uploading an attachment. Almost half of the models in our application are using CDN bucket, and the rest are using default bucket. The Rails community is behind the ActiveStorage in the rails version 6.1 service column was introduced in the ActiveStorageBlobs table for categorizing the bucket name while uploading an attachment. So we migrated the first CDN bucket attachment with rails version 6.0. Then we upgraded our rails version to 6.1 and migrated the other half records to the default bucket.</li>
+</ul>
+
+<h3 id="conclusion"><strong>Conclusion</strong></h3>
+
+<p>ActiveStorage has now been in production for over a week, and it’s been seamless. It provided us everything we needed though they are certainly more things that need to be evolved validations for attachments, supporting directory structure for active storage blob key. Looking Forward to seeing active storage evolve. And this will conclude our journey regarding migration from paperclip to ActiveStorage.</p>
+
+              </div>
+              <div class="entry-tags">
+                <div class=' social-sharing pull-right'>        
+     
+</div>
+              </div>
+              <div class="clearfix"><br/></div>
+
+                <div class="panel panel-default">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+      <div class="panel-body">
+        <div class="container-fluid">
+
+          <div class="row">
+            <div class="col-sm-12 col-md-4">
+              <center>
+                <img src="http://localhost:4000/blog/images/manish.jpg" alt="Manish Sharma photo" class="author-photo img-circle img-responsive"/>
+                
+                <span class="author vcard">
+                  <span class="fn">Manish Sharma</span>
+                </span>
+
+                <div class="nav-icon-size-reduce social-icons">
+                  
+                    <a href="https://twitter.com/ManishS77291587"  title="Manish Sharma on Twitter"  target="_blank"><i class="fa fa-twitter "></i></a>
+                  
+                  
+                  
+                  
+
+                  
+                    <a href="https://linkedin.com/in/heymanish" title="Manish Sharma on LinkedIn" target="_blank"><i class="fa fa-linkedin "></i></a>
+                  
+
+                  
+
+                  
+
+                  
+
+                  
+                    <a href="https://github.com/maniSHarma7575" title="Manish Sharma on Github" target="_blank"><i class="fa fa-github "></i></a>
+                  
+
+                     
+                </div><!-- /.social-icons -->
+              </center>
+            </div>
+
+            <div class="col-sm-12 col-md-8">
+              
+                <span class="author-bio">Manish Sharma is a member of Technology at eLitmus. He is passionate about building stuffs. Loves to spend time with nature and swimming.</span>
+              
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+  
+
+</div>
+                <div id='discourse-comments'></div>
+
+<script type="text/javascript">
+  DiscourseEmbed = { discourseUrl: 'https://adda.elitmus.com/',
+                     discourseEmbedUrl: 'https://www.elitmus.com/blog/technology/migration-from-paperclip-to-activestorage/'
+                   };
+
+  (function() {
+    var d = document.createElement('script'); 
+    d.type = 'text/javascript'; 
+    d.async = true;
+    d.src = DiscourseEmbed.discourseUrl + 'javascripts/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(d);
+  })();
+</script>
+
+
+                
+              </div><!-- /.entry-content -->
+            </div><!-- /.entry-wrapper -->
+
+          </article>
+
+          <nav class="navbar nav-justified" role="navigation">
+            <ul class="nav pager">
+              
+                <li class="previous showElem mr-auto"><a href="http://localhost:4000/blog/technology/migrating-from-state-machine-to-aasm-in-rails/" title="Migrating from state_machine to aasm in Rails">&larr;<span class="showPrevNex"> Previous </span> </a></li>
+              
+              
+            </ul>
+          </nav>
+        
+        </div><!-- /#main -->
+
+      <!--/col-md-2 -->
+      <div class="col-md-2">
+
+      </div>
+
+    </div><!-- /row -->
+    </div>
+    <div class="footer-color">
+      <footer role="contentinfo">
+        <center>
+            <span class='footer-text'>
+    &copy;  2005-<script> document.write(new Date().getFullYear()) </script>, eLitmus.com. | <a href="/terms_of_use/">Terms of Use</a> &middot; <a href="/privacy_policy/">Privacy Policy</a>
+
+  </span>
+        </center>
+      </footer>
+    </div><!-- /.footer-wrapper -->
+    
+
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-707704-1', 'elitmus.com');
+	  ga('send', 'pageview');
+	</script>
+
+
+
+<!-- Load Modernizr -->
+<script src="http://localhost:4000/blog/assets/js/vendor/modernizr-2.6.2.custom.min.js"></script>
+
+<!-- adding jquery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- end of jquery -->
+
+<script src="http://localhost:4000/blog/assets/js/scripts.min.js"></script>
+<script src="http://localhost:4000/blog/assets/js/lunr.min.js"></script>
+<script src="http://localhost:4000/blog/assets/js/lunr-search.js"></script>
+<script src="http://localhost:4000/blog/assets/js/plugins/headroom.min.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+<script src="http://localhost:4000/blog/assets/js/vendor/forkit.js"></script>
+  
+
+  </body>
+</html>
