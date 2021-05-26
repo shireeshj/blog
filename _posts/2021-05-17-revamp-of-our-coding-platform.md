@@ -142,4 +142,4 @@ It took us about 2 months to complete this project, from coming up with the conc
 
 The process that we followed is what I still use whenever I have to come up with a solution to any problem. That is probably the biggest learning that I took from this project along with learning REACT and developing Single Page Applications that I use quite a lot now.
 
-> You can find this article on the author's blog [piyushswain.github.io](piyushswain.github.io/blog) as well.
+> You can find this article on the author's blog [piyushswain.github.io](https://piyushswain.github.io/blog) as well.
