@@ -1,0 +1,680 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Creating an npm package from my REACT Component &#8211; eLitmus Blog</title>
+<meta name="description" content="We learn new things everyday, and we document our learnings here...">
+
+<meta name="keywords" content="REACT, npm">
+
+<!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary">    
+<meta name="twitter:title" content="Creating an npm package from my REACT Component">
+<meta name="twitter:description" content="<p>So, you have created a useful, customisable, modular component in REACT. Now, you want to share it with everyone by making a package so that anyone can install it ? That is exactly what I had done and now I also wanted to create a npm package and publish it and this is how I did it.</p>
+
+">
+<meta name="twitter:site" content="@elitmus">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        
+            <meta name="twitter:creator" content="@PiyushSwain3">
+        
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+
+
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="/blog/images/blog_logo_taglinedorange.png"/>
+<meta property="og:type" content="article">
+<meta property="og:title" content="Creating an npm package from my REACT Component">
+<meta property="og:description" content="<p>So, you have created a useful, customisable, modular component in REACT. Now, you want to share it with everyone by making a package so that anyone can install it ? That is exactly what I had done and now I also wanted to create a npm package and publish it and this is how I did it.</p>
+
+">
+<meta property="og:url" content="/blog/technology/creating-an-npm-package-from-my-react-component/">
+
+<meta property="og:site_name" content="eLitmus Blog">
+
+
+
+
+
+
+
+<link rel="canonical" href="https://www.elitmus.com/blog/technology/creating-an-npm-package-from-my-react-component/">
+<link href="/blog/feed.xml" type="application/atom+xml" rel="alternate" title="eLitmus Blog Feed">
+
+
+	<link rel="author" href="https://plus.google.com/+eLitmus?rel=author">
+
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Icons -->
+<!-- apple touch icons -->
+<link rel="apple-touch-icon" sizes="57x57" href="/blog/images/apple-touch-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="114x114" href="/blog/images/apple-touch-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/blog/images/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/blog/images/apple-touch-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="60x60" href="/blog/images/apple-touch-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/blog/images/apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/blog/images/apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/blog/images/apple-touch-icon-152x152.png">
+<!-- Favicons default 16x16 -->
+<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="/blog/favicon.ico">
+
+<!-- Favicons others -->
+<link rel="icon" type="image/png" href="/blog/images/favicon-196x196.png" sizes="196x196">
+<link rel="icon" type="image/png" href="/blog/images/favicon-160x160.png" sizes="160x160">
+<link rel="icon" type="image/png" href="/blog/images/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/blog/images/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/blog/images/favicon-32x32.png" sizes="32x32">
+
+<!-- Icons for Windows 8 Tiles -->
+<meta name="msapplication-TileColor" content="#ffffff"/>
+<meta name="msapplication-TileImage" content="/blog/images/mstile-144x144.png">
+
+<!-- For all browsers -->
+
+
+<!-- Webfonts -->
+<link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:600,300,300italic|The+Girl+Next+Door" rel="stylesheet" type="text/css">
+<link href='//fonts.googleapis.com/css?family=Source+Code+Pro:300' rel='stylesheet' type='text/css'>
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- bootstrap 4 -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/bootstrap.min.css">
+
+<!-- below css file is used for navbar in individual blogposts -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/main.min.css">
+
+<!-- <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"> -->
+
+<!-- Optional theme -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/bootstrap-theme.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Font Awesome -->
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/font-elitmuslogo.css" />
+
+<link rel="stylesheet" href="/blog/assets/css/customize.css">
+<link rel="stylesheet" href="/blog/assets/css/forkit.css">
+</head>
+
+<body id="post">
+
+  <header class="headroom">
+
+  <nav class="navbar navbar-expand-md navbar-dark bg-black fixed-top" role="navigation">
+
+      <a class="navbar-brand" href="/blog/">
+        <img src="https://cdn0.elitmus.net/assets/elitmus-only-logo-6efc8a74032179afdb89829a093e05bd05d627dd4354bbd1ff7f4eb5db8a0af8.svg" class="img-logo">
+        <span><div class="blog-label">blog</div></span>
+      </a>
+
+      <!-- the toggle button -->
+      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="navbar-toggler-icon"></span>
+        <span class="sr-only">Toggle navigation</span><!-- only for screen readers -->
+      </button>
+
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav mr-auto">
+
+          <!-- first item = dropdown search -->
+          <li class="nav-item">
+            <div class="dropdown search-box-margin">
+
+            
+              <div class="form-inline">
+                 
+
+                <input data-toggle="dropdown" placeholder="Search..." id="search-box" class="form-control form-control-sm search-input dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+
+
+                <div class="dropdown-menu" id="search-dropdown">
+                  <a role='presentation' class='dropdown-item search-results'> Type more.... </a>
+                </div>
+
+              </div>
+
+
+
+            <!-- the below line will pass "search word" to search.html -->
+
+            <!--
+            <form class="form-inline" action="/blog/search" method="get">
+               
+
+
+              <label for="search_box">Search</label>
+              <input data-toggle="dropdown" type="text" name="query" placeholder="Search..." id="search-box" class="form-control form-control-sm search-input dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+
+              <div class="dropdown-menu" id="search-dropdown">
+                  <a role='presentation' class='dropdown-item search-results'> Type more.... </a>
+              </div>
+
+              <input type="submit" value="search">
+
+            </form>
+            -->
+
+            <!-- end of form -->
+
+
+            </div>
+          </li>
+        </ul>
+
+        
+
+        <!-- every link on the right side -->
+        <ul class="nav navbar-nav navbar-right nav-icon-size-reduce">
+          
+          <li class="nav-item">
+             
+              <a href="/blog/" class="nav-link">
+                <i class="fa fa-home"></i> Home
+              </a>
+            
+          </li>
+          
+          <li class="nav-item">
+             
+              <a href="/blog/posts/" class="nav-link">
+                <i class="fa fa-file-text-o"></i> Posts
+              </a>
+            
+          </li>
+          
+          <li class="nav-item">
+             
+              <a href="//www.elitmus.com/" class="nav-link">
+                <i class="el el-elitmuslogo"></i> eLitmus
+              </a>
+            
+          </li>
+          
+
+          <!-- feed is the last link -->
+          <li class="nav-item">
+            <a href="/blog/feed.xml" class="nav-link" title="Atom/RSS feed">
+              <i class="fa fa-rss"></i> Feed
+            </a>
+          </li>
+        </ul>
+
+
+
+      </div> <!-- /.navbar-collapse -->
+
+  </nav><!--[if lt IE 9]><div class="upgrade"><strong><a href="https://whatbrowser.org/">Your browser is quite old!</strong> Why not upgrade to a different browser to better enjoy this site?</a></div><![endif]-->
+</header>
+<!-- 
+
+  <div class="search-wrapper">
+    <div class="search-form">
+      <input type="text" class="search-field" placeholder="Search...">
+      <i class="icon-remove-sign icon-2x"></i>
+      <ul class="search-results post-list"></ul> -->
+<!-- /.search-results -->
+<!-- </div> -->
+<!-- /.search-form -->
+<!-- </div> -->
+<!-- ./search-wrapper -->
+<!--  -->
+
+  
+
+  <div class="container-fluid">
+
+  <div class="row">
+
+
+    <div class="col-md-2"></div>
+      <div class="col-md-8">
+        
+
+        <div id="main" role="main" class="marginal">
+          <article class="entry">
+
+            
+
+            <div>
+              <header>
+                <span class="entry-tags">
+                  
+                    <a href="/blog/tags/#REACT" title="Pages tagged REACT">REACT</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#npm" title="Pages tagged npm">npm</a>
+                    
+                  
+
+                  <div class=' social-sharing pull-right'>        
+     
+</div>
+
+                </span>
+              
+                
+                  <h1 class="no-padding">Creating an npm package from my REACT Component</h1>
+                
+              </header>
+            </div>
+           
+            <div>
+              <div>
+                <span class='badge badge-warning'> <a href="/blog/categories/technology/index.html" > technology </a></span>
+              </div>
+
+              
+
+              <div class="post-content-justify">
+                <p>So, you have created a useful, customisable, modular component in REACT. Now, you want to share it with everyone by making a package so that anyone can install it ? That is exactly what I had done and now I also wanted to create a npm package and publish it and this is how I did it.</p>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>Since I was going to create a npm package, I needed to have Node and npm installed on my system.</p>
+
+<p>Also I needed a npm account. I didn’t have one so I had to create one before I got started. You can also create one from <a href="https://www.npmjs.com/">here</a>.</p>
+
+<h2 id="getting-started">Getting Started</h2>
+
+<p>First order of business was to select an unique name for my package. I settled on <code>react-rails-pagination</code> as the name for my package.</p>
+
+<p>To confirm that no package with the same name existed I had to use the following command.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>npm search react-rails-pagination</code></pre></figure>
+
+<p>You can use</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>npm search &lt;your-package-name&gt;</code></pre></figure>
+
+<p>And if no existing package is found with the same name, then you are good to go.</p>
+
+<p>After I selected a package name, I had to run the following command in my terminal to initialise the package.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>npx create-react-library react-rails-pagination</code></pre></figure>
+
+<p>I was prompted to answer a few questions about my package now</p>
+
+<p><img src="/blog/images/creating-an-npm-package-from-my-react-component/package-info.png" alt="npm package basic info" /></p>
+
+<p>After entering all the information, it will automatically setup the project. This process might take a little time.</p>
+
+<p>The advantage of using <code>create-react-library</code> is that it will initialise your project to be published along with an example where you can test your package. It will also initialise it as a local git repository which you can simply push to github after adding the URL for your remote repository.</p>
+
+<p>After <code>create-react-library</code> finishes, the folder structure looks like this</p>
+
+<p><img src="/blog/images/creating-an-npm-package-from-my-react-component/file-structure.png" alt="npm package file structure" /></p>
+
+<p>I had to run the following commands in two different terminal tabs to start the development environment</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="nb">cd</span> react-rails-pagination <span class="o">&amp;&amp;</span> npm start</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="nb">cd</span> react-rails-pagination/example <span class="o">&amp;&amp;</span> npm start</code></pre></figure>
+
+<p>The first command watches the <code>src/</code> and recompiles it into the <code>dist/</code> folder when you make changes.</p>
+
+<p>The second command runs the example app that links to your package.</p>
+
+<h2 id="adding-my-react-component">Adding my REACT Component</h2>
+
+<p>Now, I had a look inside the <code>src/</code> folder in my project. There was an <code>index.js</code> file which held an <code>ExampleComponent</code> that was being used in the example app.</p>
+
+<p>To add my own REACT Component, I placed my <code>Pagination.jsx</code> file that held my Pagination component inside the <code>src/</code> folder. Since, my component required a css file too, I placed my css file <code>index.css</code> inside the same folder as well. I import this <code>index.css</code> file inside my Pagination component.</p>
+
+<p>I don’t use a separate css module in my component so I deleted the generated <code>styles.modules.css</code> file inside the src directory.</p>
+
+<p>After I had done these changes, my src directory looked something like this</p>
+
+<p><img src="/blog/images/creating-an-npm-package-from-my-react-component/src-structure.png" alt="npm package src folder structure" /></p>
+
+<p>Now, I need to make sure that my component is being exported from this package, so that any project that uses my package, will get to use my component as well.</p>
+
+<p>For this I have to make some changes to the <code>index.js</code> file.</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span></span><span class="k">import</span> <span class="nx">Pagination</span> <span class="nx">from</span> <span class="s1">&#39;./Pagination&#39;</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">Pagination</span><span class="p">;</span></code></pre></figure>
+
+<p>This imports my component into the <code>index.js</code> file and sets it as the default export from the package. I do this because the source file or the entrypoint of my package is the <code>src/index.js</code> file.</p>
+
+<p>If you don’t want to use the <code>index.js</code> file or want to create a new entrypoint then open the <code>package.json</code> file in the root of the project and change the value of the <code>source</code> key in that file.</p>
+
+<p>This completes the process of adding my component to the package.</p>
+
+<h2 id="checking-if-my-package-is-working-as-expected">Checking if my package is working as expected</h2>
+
+<p>To check if my package is working or not, I have to go to the <code>example/</code> folder.</p>
+
+<p>In that folder, I have to edit the <code>App.js</code> file which imports the <code>ExampleComponent</code> that I modified earlier to use my <code>Pagination</code> component.</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span></span><span class="k">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span>
+
+<span class="k">import</span> <span class="nx">Pagination</span> <span class="nx">from</span> <span class="s1">&#39;react-rails-pagination&#39;</span>
+<span class="k">import</span> <span class="s1">&#39;react-rails-pagination/dist/index.css&#39;</span>
+
+<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">page</span> <span class="o">=</span> <span class="mf">1</span><span class="p">;</span>
+  <span class="kd">const</span> <span class="nx">totalPages</span> <span class="o">=</span> <span class="mf">5</span><span class="p">;</span>
+
+  <span class="kd">const</span> <span class="nx">handleChangePage</span> <span class="o">=</span> <span class="p">(</span><span class="nx">currentPage</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+    <span class="nx">page</span> <span class="o">=</span> <span class="nx">currentPage</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="o">&lt;</span><span class="nx">Pagination</span> <span class="nx">page</span><span class="o">=</span><span class="p">{</span><span class="nx">page</span><span class="p">}</span> <span class="nx">pages</span><span class="o">=</span><span class="p">{</span><span class="nx">totalPages</span><span class="p">}</span> <span class="nx">handleChangePage</span><span class="o">=</span><span class="p">{</span><span class="nx">handleChangePage</span><span class="p">}</span> <span class="o">/&gt;</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span></code></pre></figure>
+
+<p>These changes allow me to import my package into this example application and check if it is working or not.</p>
+
+<p>Now if I open the address that the local development server is running on in my browser, I can see that my component is loaded and functioning now.</p>
+
+<p><img src="/blog/images/creating-an-npm-package-from-my-react-component/pagination-1.png" alt="pagination component 1" />
+<img src="/blog/images/creating-an-npm-package-from-my-react-component/pagination-2.png" alt="pagination component 2" /></p>
+
+<h2 id="publishing-my-package">Publishing my package</h2>
+
+<p>I need to add a few things to get this package ready for publishing.</p>
+
+<p>First I add a <code>.npmignore</code> file to stop a few things from being included in my published package to reduce it’s size. It works the same as a <code>.gitignore</code> file but for npm in this case.</p>
+
+<p>The <code>.npmignore</code> looks like this in my project</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="c1">## the src folder</span>
+src
+.babelrc
+rollup.config.js
+<span class="c1">## node modules folder</span>
+node_modules
+<span class="c1">## git repository related files</span>
+.git
+.gitignore
+CVS
+.svn
+.hg
+.lock-wscript
+.wafpickle-N
+.DS_Store
+npm-debug.log
+.npmrc
+<span class="c1">#others</span>
+config.gypi
+package-lock.json</code></pre></figure>
+
+<p>Next I opened the <code>package.json</code> and added a few things in there as well.</p>
+
+<figure class="highlight"><pre><code class="language-json" data-lang="json"><span></span><span class="p">{</span>
+  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;react-rails-pagination&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;React Pagination Component for Rails and other MVC Frameworks&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;license&quot;</span><span class="p">:</span> <span class="s2">&quot;MIT&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;repository&quot;</span><span class="p">:</span> <span class="s2">&quot;piyushswain/react-rails-pagination&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;main&quot;</span><span class="p">:</span> <span class="s2">&quot;dist/index.js&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;dist/index.modern.js&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;src/index.js&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;engines&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;node&quot;</span><span class="p">:</span> <span class="s2">&quot;&gt;=10&quot;</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;keywords&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;react&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rails&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mvc&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;react-component&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pagination&quot;</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;author&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Piyush Swain&quot;</span><span class="p">,</span>
+    <span class="nt">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;piyush.swain3@gmail.com&quot;</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;homepage&quot;</span><span class="p">:</span> <span class="s2">&quot;https://github.com/piyushswain/react-rails-pagination&quot;</span><span class="p">,</span>
+  <span class="err">.</span>
+  <span class="err">.</span>
+  <span class="err">.</span>
+  <span class="err">.</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>I updated the <code>author</code> field to add my email.</p>
+
+<p>Next, I added the keys <code>homepage</code> and <code>keywords</code>.</p>
+
+<p><code>homepage</code> can be used to add a website link to your project. I used my github repository link for now but I will change it later when I add a demo to this project. If you have a working demo, you can add that link in it’s place.</p>
+
+<p>The <code>keywords</code> key can be used to give the npm search directory keywords to attach to your project so that people using the npm search engine can find your project more easily. It takes an array of words as an argument.</p>
+
+<p>Finally, I update the <code>README.md</code> file in the root directory to add a description and instructions for anyone using my package. You will have to update your <code>README.md</code> according to your package as well.</p>
+
+<p>I review all the changes and then first push my code to my github repository.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>git remote add origin https://github.com/piyushswain/react-rails-pagination.git <span class="c1"># Sets the new remote for the local repo</span>
+git add .
+git commit -m <span class="s1">&#39;Initial Commit&#39;</span>
+git push -u origin main  <span class="c1"># Pushes the changes to the remote repository</span></code></pre></figure>
+
+<p>Now, my package is ready to be published. I run the following commands to start the process of publishing my package to npm.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>npm login</code></pre></figure>
+
+<p>Login command asks for the username and password of your npm account. Enter those succeessfully and it will log you in to npm. If you have already logged in to npm, then you can skip this step.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>npm run build</code></pre></figure>
+
+<p>This optimizes and creates a production build for your package. I recommend running this everytime before you issue a publish command.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>npm publish</code></pre></figure>
+
+<p>Finally, running this command will upload your package to npm. You can check it in your npm profile where you can find all your uploaded packages.</p>
+
+<p>If you wish to publish again after making some changes then open your <code>package.json</code> file and update the <code>version</code> key to publish again. Remember to build your package before publishing as it will create an optimized production build for your package.</p>
+
+<p><strong>TIP:</strong> If for some reason you cannot get the <code>css</code> to work, then a small hack is to directly update the <code>dist/index.css</code> file as this is the file that is published and used by anyone importing your package</p>
+
+<blockquote>
+  <p>You can find this article on the author’s blog <a href="piyushswain.github.io/blog">piyushswain.github.io</a> as well.</p>
+</blockquote>
+
+
+              </div>
+              <div class="entry-tags">
+                <div class=' social-sharing pull-right'>        
+     
+</div>
+              </div>
+              <div class="clearfix"><br/></div>
+
+                <div class="panel panel-default">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+      <div class="panel-body">
+        <div class="container-fluid">
+
+          <div class="row">
+            <div class="col-sm-12 col-md-4">
+              <center>
+                <img src="/blog/images/piyush.png" alt="Piyush Swain photo" class="author-photo img-circle img-responsive"/>
+                
+                <span class="author vcard">
+                  <span class="fn">Piyush Swain</span>
+                </span>
+
+                <div class="nav-icon-size-reduce social-icons">
+                  
+                    <a href="https://twitter.com/PiyushSwain3"  title="Piyush Swain on Twitter"  target="_blank"><i class="fa fa-twitter "></i></a>
+                  
+                  
+                  
+                  
+
+                  
+                    <a href="https://linkedin.com/in/piyush-swain-199406185" title="Piyush Swain on LinkedIn" target="_blank"><i class="fa fa-linkedin "></i></a>
+                  
+
+                  
+
+                  
+
+                  
+
+                  
+                    <a href="https://github.com/piyushswain" title="Piyush Swain on Github" target="_blank"><i class="fa fa-github "></i></a>
+                  
+
+                     
+                </div><!-- /.social-icons -->
+              </center>
+            </div>
+
+            <div class="col-sm-12 col-md-8">
+              
+                <span class="author-bio">Piyush Swain is a member of the Technology team at eLitmus. He is passionate about developing beautiful applications and football. He is a gaming enthusiast and is always looking for new PC games to try.</span>
+              
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</div>
+                <div id='discourse-comments'></div>
+
+<script type="text/javascript">
+  DiscourseEmbed = { discourseUrl: 'https://adda.elitmus.com/',
+                     discourseEmbedUrl: 'https://www.elitmus.com/blog/technology/creating-an-npm-package-from-my-react-component/'
+                   };
+
+  (function() {
+    var d = document.createElement('script'); 
+    d.type = 'text/javascript'; 
+    d.async = true;
+    d.src = DiscourseEmbed.discourseUrl + 'javascripts/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(d);
+  })();
+</script>
+
+
+                
+              </div><!-- /.entry-content -->
+            </div><!-- /.entry-wrapper -->
+
+          </article>
+
+          <nav class="navbar nav-justified" role="navigation">
+            <ul class="nav pager">
+              
+                <li class="previous showElem mr-auto"><a href="/blog/technology/migration-from-paperclip-to-activestorage/" title="Migration from Paperclip to ActiveStorage">&larr;<span class="showPrevNex"> Previous </span> </a></li>
+              
+              
+            </ul>
+          </nav>
+        
+        </div><!-- /#main -->
+
+      <!--/col-md-2 -->
+      <div class="col-md-2">
+
+      </div>
+
+    </div><!-- /row -->
+    </div>
+    <div class="footer-color">
+      <footer role="contentinfo">
+        <center>
+            <span class='footer-text'>
+    &copy;  2005-<script> document.write(new Date().getFullYear()) </script>, eLitmus.com. | <a href="/terms_of_use/">Terms of Use</a> &middot; <a href="/privacy_policy/">Privacy Policy</a>
+
+  </span>
+        </center>
+      </footer>
+    </div><!-- /.footer-wrapper -->
+    
+
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-707704-1', 'elitmus.com');
+	  ga('send', 'pageview');
+	</script>
+
+
+
+<!-- Load Modernizr -->
+<script src="/blog/assets/js/vendor/modernizr-2.6.2.custom.min.js"></script>
+
+<!-- adding jquery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- end of jquery -->
+
+<script src="/blog/assets/js/scripts.min.js"></script>
+<script src="/blog/assets/js/lunr.min.js"></script>
+<script src="/blog/assets/js/lunr-search.js"></script>
+<script src="/blog/assets/js/plugins/headroom.min.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+<script src="/blog/assets/js/vendor/forkit.js"></script>
+  
+
+  </body>
+</html>

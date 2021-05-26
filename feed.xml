@@ -7,13 +7,238 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="/" />
-<updated>2021-05-26T13:34:50+05:30</updated>
+<updated>2021-05-26T14:30:41+05:30</updated>
 <id>/</id>
 <author>
   <name>eLitmus.com</name>
   <uri>/</uri>
   <email>site-admin@elitmus.com</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[Creating an npm package from my REACT Component]]></title>
+  <link rel="alternate" type="text/html" href="/technology/creating-an-npm-package-from-my-react-component/"/>
+  <id>/technology/creating-an-npm-package-from-my-react-component</id>
+  <updated>2021-05-25 22:14:23 +0530T00:00:00-00:00</updated>
+  <published>2021-05-25T00:00:00+05:30</published>
+  
+  <author>
+    <name>eLitmus.com</name>
+    <uri></uri>
+    <email>site-admin@elitmus.com</email>
+  </author>
+  <category scheme="/tags/#REACT" term="REACT" /><category scheme="/tags/#npm" term="npm" />
+  <content type="html">
+  
+    &lt;p&gt;So, you have created a useful, customisable, modular component in REACT. Now, you want to share it with everyone by making a package so that anyone can install it ? That is exactly what I had done and now I also wanted to create a npm package and publish it and this is how I did it.&lt;/p&gt;
+
+&lt;h2 id=&quot;prerequisites&quot;&gt;Prerequisites&lt;/h2&gt;
+
+&lt;p&gt;Since I was going to create a npm package, I needed to have Node and npm installed on my system.&lt;/p&gt;
+
+&lt;p&gt;Also I needed a npm account. I didn’t have one so I had to create one before I got started. You can also create one from &lt;a href=&quot;https://www.npmjs.com/&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;getting-started&quot;&gt;Getting Started&lt;/h2&gt;
+
+&lt;p&gt;First order of business was to select an unique name for my package. I settled on &lt;code&gt;react-rails-pagination&lt;/code&gt; as the name for my package.&lt;/p&gt;
+
+&lt;p&gt;To confirm that no package with the same name existed I had to use the following command.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;npm search react-rails-pagination&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;You can use&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;npm search &amp;lt;your-package-name&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;And if no existing package is found with the same name, then you are good to go.&lt;/p&gt;
+
+&lt;p&gt;After I selected a package name, I had to run the following command in my terminal to initialise the package.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;npx create-react-library react-rails-pagination&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;I was prompted to answer a few questions about my package now&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/images/creating-an-npm-package-from-my-react-component/package-info.png&quot; alt=&quot;npm package basic info&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;After entering all the information, it will automatically setup the project. This process might take a little time.&lt;/p&gt;
+
+&lt;p&gt;The advantage of using &lt;code&gt;create-react-library&lt;/code&gt; is that it will initialise your project to be published along with an example where you can test your package. It will also initialise it as a local git repository which you can simply push to github after adding the URL for your remote repository.&lt;/p&gt;
+
+&lt;p&gt;After &lt;code&gt;create-react-library&lt;/code&gt; finishes, the folder structure looks like this&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/images/creating-an-npm-package-from-my-react-component/file-structure.png&quot; alt=&quot;npm package file structure&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;I had to run the following commands in two different terminal tabs to start the development environment&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; react-rails-pagination &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; npm start&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; react-rails-pagination/example &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; npm start&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;The first command watches the &lt;code&gt;src/&lt;/code&gt; and recompiles it into the &lt;code&gt;dist/&lt;/code&gt; folder when you make changes.&lt;/p&gt;
+
+&lt;p&gt;The second command runs the example app that links to your package.&lt;/p&gt;
+
+&lt;h2 id=&quot;adding-my-react-component&quot;&gt;Adding my REACT Component&lt;/h2&gt;
+
+&lt;p&gt;Now, I had a look inside the &lt;code&gt;src/&lt;/code&gt; folder in my project. There was an &lt;code&gt;index.js&lt;/code&gt; file which held an &lt;code&gt;ExampleComponent&lt;/code&gt; that was being used in the example app.&lt;/p&gt;
+
+&lt;p&gt;To add my own REACT Component, I placed my &lt;code&gt;Pagination.jsx&lt;/code&gt; file that held my Pagination component inside the &lt;code&gt;src/&lt;/code&gt; folder. Since, my component required a css file too, I placed my css file &lt;code&gt;index.css&lt;/code&gt; inside the same folder as well. I import this &lt;code&gt;index.css&lt;/code&gt; file inside my Pagination component.&lt;/p&gt;
+
+&lt;p&gt;I don’t use a separate css module in my component so I deleted the generated &lt;code&gt;styles.modules.css&lt;/code&gt; file inside the src directory.&lt;/p&gt;
+
+&lt;p&gt;After I had done these changes, my src directory looked something like this&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/images/creating-an-npm-package-from-my-react-component/src-structure.png&quot; alt=&quot;npm package src folder structure&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Now, I need to make sure that my component is being exported from this package, so that any project that uses my package, will get to use my component as well.&lt;/p&gt;
+
+&lt;p&gt;For this I have to make some changes to the &lt;code&gt;index.js&lt;/code&gt; file.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Pagination&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;./Pagination&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Pagination&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This imports my component into the &lt;code&gt;index.js&lt;/code&gt; file and sets it as the default export from the package. I do this because the source file or the entrypoint of my package is the &lt;code&gt;src/index.js&lt;/code&gt; file.&lt;/p&gt;
+
+&lt;p&gt;If you don’t want to use the &lt;code&gt;index.js&lt;/code&gt; file or want to create a new entrypoint then open the &lt;code&gt;package.json&lt;/code&gt; file in the root of the project and change the value of the &lt;code&gt;source&lt;/code&gt; key in that file.&lt;/p&gt;
+
+&lt;p&gt;This completes the process of adding my component to the package.&lt;/p&gt;
+
+&lt;h2 id=&quot;checking-if-my-package-is-working-as-expected&quot;&gt;Checking if my package is working as expected&lt;/h2&gt;
+
+&lt;p&gt;To check if my package is working or not, I have to go to the &lt;code&gt;example/&lt;/code&gt; folder.&lt;/p&gt;
+
+&lt;p&gt;In that folder, I have to edit the &lt;code&gt;App.js&lt;/code&gt; file which imports the &lt;code&gt;ExampleComponent&lt;/code&gt; that I modified earlier to use my &lt;code&gt;Pagination&lt;/code&gt; component.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;React&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;react&amp;#39;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Pagination&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;react-rails-pagination&amp;#39;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;react-rails-pagination/dist/index.css&amp;#39;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;App&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;page&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;totalPages&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+  &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;handleChangePage&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;currentPage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;page&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;currentPage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Pagination&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;page&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;page&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;pages&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;totalPages&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;handleChangePage&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;handleChangePage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&amp;gt;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;App&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;These changes allow me to import my package into this example application and check if it is working or not.&lt;/p&gt;
+
+&lt;p&gt;Now if I open the address that the local development server is running on in my browser, I can see that my component is loaded and functioning now.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/images/creating-an-npm-package-from-my-react-component/pagination-1.png&quot; alt=&quot;pagination component 1&quot; /&gt;
+&lt;img src=&quot;/blog/images/creating-an-npm-package-from-my-react-component/pagination-2.png&quot; alt=&quot;pagination component 2&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;publishing-my-package&quot;&gt;Publishing my package&lt;/h2&gt;
+
+&lt;p&gt;I need to add a few things to get this package ready for publishing.&lt;/p&gt;
+
+&lt;p&gt;First I add a &lt;code&gt;.npmignore&lt;/code&gt; file to stop a few things from being included in my published package to reduce it’s size. It works the same as a &lt;code&gt;.gitignore&lt;/code&gt; file but for npm in this case.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;.npmignore&lt;/code&gt; looks like this in my project&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;## the src folder&lt;/span&gt;
+src
+.babelrc
+rollup.config.js
+&lt;span class=&quot;c1&quot;&gt;## node modules folder&lt;/span&gt;
+node_modules
+&lt;span class=&quot;c1&quot;&gt;## git repository related files&lt;/span&gt;
+.git
+.gitignore
+CVS
+.svn
+.hg
+.lock-wscript
+.wafpickle-N
+.DS_Store
+npm-debug.log
+.npmrc
+&lt;span class=&quot;c1&quot;&gt;#others&lt;/span&gt;
+config.gypi
+package-lock.json&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Next I opened the &lt;code&gt;package.json&lt;/code&gt; and added a few things in there as well.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;react-rails-pagination&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;quot;version&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;1.0.0&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;quot;description&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;React Pagination Component for Rails and other MVC Frameworks&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;quot;license&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;MIT&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;quot;repository&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;piyushswain/react-rails-pagination&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;quot;main&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;dist/index.js&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;quot;module&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;dist/index.modern.js&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;quot;source&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;src/index.js&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;quot;engines&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;quot;node&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;&amp;gt;=10&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;quot;keywords&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;react&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;rails&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;mvc&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;react-component&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;s2&quot;&gt;&amp;quot;pagination&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;quot;author&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;quot;name&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Piyush Swain&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;nt&quot;&gt;&amp;quot;email&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;piyush.swain3@gmail.com&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;},&lt;/span&gt;
+  &lt;span class=&quot;nt&quot;&gt;&amp;quot;homepage&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;https://github.com/piyushswain/react-rails-pagination&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;err&quot;&gt;.&lt;/span&gt;
+  &lt;span class=&quot;err&quot;&gt;.&lt;/span&gt;
+  &lt;span class=&quot;err&quot;&gt;.&lt;/span&gt;
+  &lt;span class=&quot;err&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;I updated the &lt;code&gt;author&lt;/code&gt; field to add my email.&lt;/p&gt;
+
+&lt;p&gt;Next, I added the keys &lt;code&gt;homepage&lt;/code&gt; and &lt;code&gt;keywords&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;homepage&lt;/code&gt; can be used to add a website link to your project. I used my github repository link for now but I will change it later when I add a demo to this project. If you have a working demo, you can add that link in it’s place.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;keywords&lt;/code&gt; key can be used to give the npm search directory keywords to attach to your project so that people using the npm search engine can find your project more easily. It takes an array of words as an argument.&lt;/p&gt;
+
+&lt;p&gt;Finally, I update the &lt;code&gt;README.md&lt;/code&gt; file in the root directory to add a description and instructions for anyone using my package. You will have to update your &lt;code&gt;README.md&lt;/code&gt; according to your package as well.&lt;/p&gt;
+
+&lt;p&gt;I review all the changes and then first push my code to my github repository.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;git remote add origin https://github.com/piyushswain/react-rails-pagination.git &lt;span class=&quot;c1&quot;&gt;# Sets the new remote for the local repo&lt;/span&gt;
+git add .
+git commit -m &lt;span class=&quot;s1&quot;&gt;&amp;#39;Initial Commit&amp;#39;&lt;/span&gt;
+git push -u origin main  &lt;span class=&quot;c1&quot;&gt;# Pushes the changes to the remote repository&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Now, my package is ready to be published. I run the following commands to start the process of publishing my package to npm.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;npm login&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Login command asks for the username and password of your npm account. Enter those succeessfully and it will log you in to npm. If you have already logged in to npm, then you can skip this step.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;npm run build&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This optimizes and creates a production build for your package. I recommend running this everytime before you issue a publish command.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;npm publish&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Finally, running this command will upload your package to npm. You can check it in your npm profile where you can find all your uploaded packages.&lt;/p&gt;
+
+&lt;p&gt;If you wish to publish again after making some changes then open your &lt;code&gt;package.json&lt;/code&gt; file and update the &lt;code&gt;version&lt;/code&gt; key to publish again. Remember to build your package before publishing as it will create an optimized production build for your package.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;TIP:&lt;/strong&gt; If for some reason you cannot get the &lt;code&gt;css&lt;/code&gt; to work, then a small hack is to directly update the &lt;code&gt;dist/index.css&lt;/code&gt; file as this is the file that is published and used by anyone importing your package&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;You can find this article on the author’s blog &lt;a href=&quot;piyushswain.github.io/blog&quot;&gt;piyushswain.github.io&lt;/a&gt; as well.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+
+  
+  &lt;p&gt;&lt;a href=&quot;/technology/creating-an-npm-package-from-my-react-component/&quot;&gt;Creating an npm package from my REACT Component&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on May 25, 2021.&lt;/p&gt;</content>
+</entry>
 
 
 <entry>
@@ -306,7 +531,7 @@ It took us about 2 months to complete this project, from coming up with the conc
 &lt;p&gt;The process that we followed is what I still use whenever I have to come up with a solution to any problem. That is probably the biggest learning that I took from this project along with learning REACT and developing Single Page Applications that I use quite a lot now.&lt;/p&gt;
 
 &lt;blockquote&gt;
-  &lt;p&gt;This article was originally published on &lt;a href=&quot;piyushswain.github.io/blog&quot;&gt;piyushswain.github.io&lt;/a&gt;.&lt;/p&gt;
+  &lt;p&gt;You can find this article on the author’s blog &lt;a href=&quot;piyushswain.github.io/blog&quot;&gt;piyushswain.github.io&lt;/a&gt; as well.&lt;/p&gt;
 &lt;/blockquote&gt;
 
   
@@ -1903,54 +2128,6 @@ CALL mysql.rds_reset_external_master;
 
   
   &lt;p&gt;&lt;a href=&quot;/technology/beware-of-creating-ssh-folder-by-hand-when-selinux-is-turned-on/&quot;&gt;Beware of creating $HOME/.ssh folder by hand, when SELinux is turned on&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on July 22, 2012.&lt;/p&gt;</content>
-</entry>
-
-
-<entry>
-  <title type="html"><![CDATA[Importance of Date field in an email's Header]]></title>
-  <link rel="alternate" type="text/html" href="/technology/importance-of-date-field-in-an-emails-header/"/>
-  <id>/technology/importance-of-date-field-in-an-emails-header</id>
-  <updated>2012-04-04 10:20:00 +0530T00:00:00-00:00</updated>
-  <published>2012-04-04T00:00:00+05:30</published>
-  
-  <author>
-    <name>eLitmus.com</name>
-    <uri></uri>
-    <email>site-admin@elitmus.com</email>
-  </author>
-  <category scheme="/tags/#email" term="email" /><category scheme="/tags/#header" term="header" /><category scheme="/tags/#spam" term="spam" />
-  <content type="html">
-  
-    &lt;p&gt;So far, we paid little attention to email delivery issues. We knew delivering to rediffmail is a pain. So we discouraged our users from using rediffmail. Apart from that we had FCrDNS and SPF configured and working fine. We had also configured &lt;a href=&quot;https://www.dkim.org/&quot;&gt;DKIM&lt;/a&gt;. And then a month ago, we also added &lt;a href=&quot;https://www.dmarc.org/&quot;&gt;DMARC&lt;/a&gt; in monitor mode.&lt;/p&gt;
-
-&lt;p&gt;We were happy! Until…&lt;/p&gt;
-
-&lt;p&gt;Recently, we started getting loads of phishing emails from what appeared to originate from our own domain name [not our servers].&lt;/p&gt;
-
-&lt;p&gt;It told us two things.&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.elitmus.com&quot;&gt;eLitmus.com&lt;/a&gt; was growing in popularity&lt;/li&gt;
-  &lt;li&gt;We cannot ignore email delivery issue any longer&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;We ran our email through &lt;a href=&quot;https://wiki.apache.org/spamassassin/SpamAssassin&quot;&gt;Spam Assassin&lt;/a&gt; checks and were surprised to see that we got a score of 6. Anything above 5 is BAD. It’s a straight spam! But we knew we were not spamming. These were transactional emails triggered by our website on certain events, such as &lt;em&gt;New registration, or Forgot Password&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;It was almost by accident, we noticed that the timezone in the Date header of the email was appearing as +0580. Indian Standard Time (IST) is 5 hours and 30 minutes ahead of UTC. So this value should have been +0530, not +0580. Apparently, that is good enough reason for Spam Assassin to treat our mails as spam.&lt;/p&gt;
-
-&lt;p&gt;Tracing backwards, we discovered a bug in our application code and fixed it. It was a single line fix.&lt;/p&gt;
-
-&lt;p&gt;With this change, &lt;a href=&quot;https://wiki.apache.org/spamassassin/SpamAssassin&quot;&gt;Spam Assassin&lt;/a&gt; was happy to give us a score of zero.&lt;/p&gt;
-
-&lt;p&gt;That is just one part of one header. There are ten others which have to be configured correctly.&lt;/p&gt;
-
-&lt;p&gt;Here is an article with good insights in to how gmail calculates sender reputation. Its a little dated, but still relevent. &lt;a href=&quot;https://www.google.com/url?sa=t&amp;amp;rct=j&amp;amp;q=what%20is%20email%20reputation%3F%20how%20to%20calculate%20email%20reputation%3F%20how%20to%20calculate%20sender%20reputation%3F&amp;amp;source=web&amp;amp;cd=2&amp;amp;ved=0CCgQFjAB&amp;amp;url=http%3A%2F%2Fwww.ceas.cc%2F2006%2F19.pdf&amp;amp;ei=Pmp9T76THsnYrQewg7TsDA&amp;amp;usg=AFQjCNEb_tYLRePQlW_RfMJZTkSiWdpy4A&amp;amp;cad=rja&quot;&gt;Sender reputation in a large webmail service (PDF)&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;By the way, here is a nice and free JSon API to check your &lt;a href=&quot;https://spamcheck.postmarkapp.com/&quot;&gt;email’s reputation&lt;/a&gt;.&lt;/p&gt;
-
-
-  
-  &lt;p&gt;&lt;a href=&quot;/technology/importance-of-date-field-in-an-emails-header/&quot;&gt;Importance of Date field in an email's Header&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on April 04, 2012.&lt;/p&gt;</content>
 </entry>
 
 </feed>
