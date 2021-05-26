@@ -231,5 +231,5 @@ If you wish to publish again after making some changes then open your `package.j
 
 **TIP:** If for some reason you cannot get the `css` to work, then a small hack is to directly update the `dist/index.css` file as this is the file that is published and used by anyone importing your package
 
-> This article was originally published on [piyushswain.github.io](piyushswain.github.io/blog).
+> You can find this article on the author's blog [piyushswain.github.io](piyushswain.github.io/blog) as well.
 
