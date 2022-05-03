@@ -7,13 +7,59 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="/" />
-<updated>2021-06-15T09:30:50+05:30</updated>
+<updated>2022-05-03T05:42:04+05:30</updated>
 <id>/</id>
 <author>
   <name>eLitmus.com</name>
   <uri>/</uri>
   <email>site-admin@elitmus.com</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[Outliers: The story of Success - Book Review]]></title>
+  <link rel="alternate" type="text/html" href="/the-other-side/outliers-the-story-of-success-book-review/"/>
+  <id>/the-other-side/outliers-the-story-of-success-book-review</id>
+  <updated>2022-05-02 17:59:16 +0530T00:00:00-00:00</updated>
+  <published>2022-05-02T00:00:00+05:30</published>
+  
+  <author>
+    <name>eLitmus.com</name>
+    <uri></uri>
+    <email>site-admin@elitmus.com</email>
+  </author>
+  <category scheme="/tags/#Book%20Review" term="Book Review" /><category scheme="/tags/#Books" term="Books" /><category scheme="/tags/#Success" term="Success" /><category scheme="/tags/#Outliers" term="Outliers" />
+  <content type="html">
+  
+    &lt;p&gt;For the last two months, I have been reading the book “&lt;strong&gt;Outliers&lt;/strong&gt;” by &lt;strong&gt;Malcolm Gladwell&lt;/strong&gt;. “&lt;strong&gt;Outliers - The story of success&lt;/strong&gt;” has two parts: &lt;strong&gt;Opportunity&lt;/strong&gt; and &lt;strong&gt;Legacy&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;“In outliers author survey the ingredients for the success. He wrote about the reason behind the success of great people like Bill Gates, Bill Joy, Joseph Flom, and the musical group Beatles. And how Chris Langan and Oppenheimer ended up with different stories. And how the culture, family, and friends play a role in determining individual success.”&lt;/p&gt;
+
+&lt;p&gt;&lt;ins&gt;&lt;strong&gt;Key Factor of Success:&lt;/strong&gt;&lt;/ins&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;1. Opportunity&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;We all have equal opportunities. Some people recognize and take advantage of them. But as per the author, In reality, these people are benefited from hidden and extraordinary opportunities. Culture benefits, the where and in which family and the time we grew up. Values received from our ancestors.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;2. Environment affect&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The values of the world we live in and the people around us, have a profound effect on who we are. The place we live and the people we spend time with are critical factors to success. The author explains the Roseto Mystery. Why do the people of Roseto have good health and rare heart attacks? How community benefits play a dominant role in Roseto Mystery.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;3. Hard work&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;It takes 10000 hours to master anything from beginner to world-class expert in any field. “10000” hours is a lot, so it’s a good advantage for me to start at a young age.&lt;/p&gt;
+
+&lt;p&gt;The author explains how Bill Joy from age of 16 started with computers. And from that day in university, when introduced to the computer, the place became his life, and he programmed whenever he gets time. He wrote the UNIX and the program for TCP/IP, which allows us to connect to the Internet. In his early days he devoted his 10,000 hours with passion and abilities.&lt;/p&gt;
+
+&lt;p&gt;How Beatles were invited to play in a club where they had to play for a lot of hours, even the whole night. By the time the Beatles reached success, they played almost 12000 times and for more than 10,000 hours.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;4. Legacy often drives our behavior&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Gladwell points out how values passed from generation to generation. He points out the cultural legacy of Asian countries where rice is the dominant crop. How the success of rice paddy depends on the amount of hard work and diligence; we put in. To have a successful paddy, wake up at dawn and work all day. Which then creates a cultural legacy of hard work.&lt;/p&gt;
+
+  
+  &lt;p&gt;&lt;a href=&quot;/the-other-side/outliers-the-story-of-success-book-review/&quot;&gt;Outliers: The story of Success - Book Review&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on May 02, 2022.&lt;/p&gt;</content>
+</entry>
 
 
 <entry>
@@ -2069,67 +2115,6 @@ CALL mysql.rds_reset_external_master;
 
   
   &lt;p&gt;&lt;a href=&quot;/technology/setting-up-amazon-rds-as-a-slave-to-a-self-managed-mysql-server/&quot;&gt;Setting Up Amazon RDS as a Slave to a self-managed MySQL server&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on May 21, 2014.&lt;/p&gt;</content>
-</entry>
-
-
-<entry>
-  <title type="html"><![CDATA[Beware of creating $HOME/.ssh folder by hand, when SELinux is turned on]]></title>
-  <link rel="alternate" type="text/html" href="/technology/beware-of-creating-ssh-folder-by-hand-when-selinux-is-turned-on/"/>
-  <id>/technology/beware-of-creating-ssh-folder-by-hand-when-selinux-is-turned-on</id>
-  <updated>2014-05-23 12:32:45 +0530T00:00:00-00:00</updated>
-  <published>2012-07-22T00:00:00+05:30</published>
-  
-  <author>
-    <name>eLitmus.com</name>
-    <uri></uri>
-    <email>site-admin@elitmus.com</email>
-  </author>
-  <category scheme="/tags/#SSH" term="SSH" /><category scheme="/tags/#SELinux" term="SELinux" />
-  <content type="html">
-  
-    &lt;p&gt;I was experimenting with &lt;code&gt;chef&lt;/code&gt; to manage our Linux boxes. As a standard practice, our application user &lt;code&gt;deployer&lt;/code&gt; is homed in &lt;code&gt;/applications/deployer&lt;/code&gt; rather than the usual &lt;code&gt;/home/deployer&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;To enable password less login, I appended my public key to &lt;code&gt;~/.ssh/authorized_keys&lt;/code&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt; ssh-copy-id -i ~/.ssh/id_rsa deployer@remote.server
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The first time I run this command, I will be prompted for a password to install my key. After this, I can run the below command to login without a password:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ssh -i ~/.ssh/id_rsa deployer@remote.server
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;However, that did not work as expected.&lt;/p&gt;
-
-&lt;p&gt;For some reason, &lt;code&gt;sshd&lt;/code&gt; was unable to read the &lt;code&gt;authorized_keys&lt;/code&gt; file. I checked all the usual things.. all looked fine. Everything seem to work just fine when &lt;code&gt;SELinux&lt;/code&gt; was running in &lt;code&gt;permissive&lt;/code&gt; mode on the remote server, but not when it was in &lt;code&gt;enforcing&lt;/code&gt; mode.&lt;/p&gt;
-
-&lt;p&gt;Discovered that if &lt;code&gt;.ssh&lt;/code&gt; folder was created by hand (or even the folder containing &lt;code&gt;.ssh&lt;/code&gt; folder), we need to do few additional things.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Step 1:&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Open this file /etc/selinux/targeted/contexts/files/file_contexts.homedirs and append the following line to the bottom&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt; /applications/deployer/[^/]*/\.ssh(/.*)?     system_u:object_r:ssh_home_t:s0
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Note: remember to adjust the path as per your needs.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Step 2:&lt;/strong&gt; run the following command&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;restorecon -R -v /applications/deployer/.ssh
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Again, remember to adjust the path as per your needs.&lt;/p&gt;
-
-&lt;p&gt;Now you are all set!&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt; ssh -i ~/.ssh/id_rsa deployer@remote.server
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;should log you in without asking for a password!&lt;/p&gt;
-
-  
-  &lt;p&gt;&lt;a href=&quot;/technology/beware-of-creating-ssh-folder-by-hand-when-selinux-is-turned-on/&quot;&gt;Beware of creating $HOME/.ssh folder by hand, when SELinux is turned on&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on July 22, 2012.&lt;/p&gt;</content>
 </entry>
 
 </feed>
