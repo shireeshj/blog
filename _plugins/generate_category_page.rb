@@ -23,10 +23,15 @@ module Jekyll
       if site.layouts.key? 'categories'
         dir = site.config['category_dir'] || 'categories'
         site.categories.keys.each do |category|
-        	category_list = []
-        	site.categories[category].each do |post|
-        		category_list << {'url' => post.url, 'title' => post.data['title'], 'date' => post.date}
-        	end
+          category_list = []
+          site.categories[category].each do |post|
+            category_list << {
+              'url' => post.url,
+              'title' => post.data['title'],
+              'date' => post.date,
+              'tags' => post.data['tags']
+            }
+          end
           site.pages << CategoryPage.new(site, site.source, File.join(dir, category), category,category_list)
         end
       end

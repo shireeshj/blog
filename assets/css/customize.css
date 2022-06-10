@@ -248,6 +248,16 @@ footer {
 	min-width: 200px;
 }
 
+.tag { 
+	padding-left: 2px;
+	padding-right: 2px;
+	padding-bottom: 1px;
+	background-color: #FFA500;
+	text-decoration: solid;
+	font-size: small;
+	font-weight: bold;
+}
+
 
 /* ---------- old code ------------ */
 /*
