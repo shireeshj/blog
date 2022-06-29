@@ -7,13 +7,199 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="/" />
-<updated>2022-06-11T19:51:10+05:30</updated>
+<updated>2022-06-29T09:22:05+05:30</updated>
 <id>/</id>
 <author>
   <name>eLitmus.com</name>
   <uri>/</uri>
   <email>site-admin@elitmus.com</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[Sidekiq process in production with Systemd and Monit]]></title>
+  <link rel="alternate" type="text/html" href="/technology/sidekiq-process-in-production-with-systemd-and-monit/"/>
+  <id>/technology/sidekiq-process-in-production-with-systemd-and-monit</id>
+  <updated>2022-06-29 08:10:37 +0530T00:00:00-00:00</updated>
+  <published>2022-06-29T00:00:00+05:30</published>
+  
+  <author>
+    <name>eLitmus.com</name>
+    <uri></uri>
+    <email>site-admin@elitmus.com</email>
+  </author>
+  <category scheme="/tags/#Sidekiq" term="Sidekiq" /><category scheme="/tags/#Monit" term="Monit" /><category scheme="/tags/#Systemd" term="Systemd" />
+  <content type="html">
+  
+    &lt;p&gt;Recently, we have upgraded our Sidekiq version from 5.2 to 6.5. Before Sidekiq 6.0 we were managing the Sidekiq process directly using Monit. With the release of Sidekiq 6, the team has removed the &lt;strong&gt;daemonization, logfile, and pidfile command line arguments and sidekiqctl binary&lt;/strong&gt;.  Managing services manually is more error-prone, let our operating system do it for us.
+We have three options to go with systemd, upstart, and foreman. We decided to go ahead with the systemd.&lt;/p&gt;
+
+&lt;h4 id=&quot;systemd&quot;&gt;&lt;strong&gt;Systemd&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;&lt;a href=&quot;https://wiki.debian.org/systemd#systemd_-_system_and_service_manager&quot;&gt;Systemd&lt;/a&gt; is a system and service manager for linux. Systemd tasks are organized as units. Most common units are services(.service), mount points(.mount), devices(.device), sockets(.socket), or timers(.timer)&lt;/p&gt;
+
+&lt;h4 id=&quot;systemctl&quot;&gt;&lt;strong&gt;Systemctl&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;The systemctl command is a utility which is responsible for examining and controlling the systemd system and service manager.&lt;/p&gt;
+
+&lt;h4 id=&quot;sidekiq&quot;&gt;&lt;strong&gt;Sidekiq&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;Simple, efficient background processing for Ruby.&lt;/p&gt;
+
+&lt;h3 id=&quot;sidekiq-running-as-systemd-service&quot;&gt;&lt;strong&gt;Sidekiq running as Systemd Service&lt;/strong&gt;&lt;/h3&gt;
+
+&lt;ol&gt;
+&lt;li&gt;
+To manage Sidekiq we need to create a service file for Sidekiq which can be used to start, stop or restart the Sidekiq process.
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;Sudo nano /lib/systemd/system/sidekiq.service&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+
+&lt;/li&gt;
+&lt;li&gt;
+Content in the Sidekiq.service. Sidekiq has provided us with the template for the service file here [Sidekiq.service](https://github.com/mperham/sidekiq/blob/main/examples/systemd/sidekiq.service). We modified it according to our use case
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Unit&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;Description&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;sidekiq
+&lt;span class=&quot;nv&quot;&gt;After&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;syslog.target network.target
+
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Service&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;Type&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;simple
+&lt;span class=&quot;c1&quot;&gt;# If your Sidekiq process locks up, systemd&amp;#39;s watchdog will restart it within seconds.&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#WatchdogSec=10&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;WorkingDirectory&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/opt/myapp/current
+
+&lt;span class=&quot;nv&quot;&gt;ExecStart&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/usr/local/bin/bundle &lt;span class=&quot;nb&quot;&gt;exec&lt;/span&gt; sidekiq -C /opt/myapp/shared/config/sidekiq.yml -e production
+&lt;span class=&quot;nv&quot;&gt;ExecStop&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/bin/kill -TSTP &lt;span class=&quot;nv&quot;&gt;$MAINPID&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;ExecStartPost&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/bin/sh -c &lt;span class=&quot;s1&quot;&gt;&amp;#39;/bin/echo $MAINPID &amp;gt; /opt/myapp/shared/pids/sidekiq.pid&amp;#39;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;ExecStopPost&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/bin/sh -c &lt;span class=&quot;s1&quot;&gt;&amp;#39;rm /opt/myapp/shared/pids/sidekiq.pid&amp;#39;&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;deploy
+&lt;span class=&quot;nv&quot;&gt;Group&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;deploy
+&lt;span class=&quot;nv&quot;&gt;UMask&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0002&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Greatly reduce Ruby memory fragmentation and heap usage&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# https://www.mikeperham.com/2018/04/25/taming-rails-memory-bloat/&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;Environment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;MALLOC_ARENA_MAX&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# if we crash, restart&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;RestartSec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;10&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;Restart&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;on-failure
+
+&lt;span class=&quot;c1&quot;&gt;# output goes to /var/log/syslog (Ubuntu) or /var/log/messages (CentOS)&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;StandardOutput&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;syslog
+&lt;span class=&quot;nv&quot;&gt;StandardError&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;syslog
+
+&lt;span class=&quot;c1&quot;&gt;# This will default to &amp;quot;bundler&amp;quot; if we don&amp;#39;t specify it&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;SyslogIdentifier&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;sidekiq
+
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Install&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;WantedBy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;multi-user.target&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+
+&lt;/li&gt;
+&lt;li&gt;
+  Our Modified Configurations:
+  &lt;ul&gt;
+    &lt;li&gt;
+      As we were using system ruby and using Sidekiq with some custom configurations. To start Sidekiq we used.
+
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;ExecStart&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/usr/local/bin/bundle &lt;span class=&quot;nb&quot;&gt;exec&lt;/span&gt; sidekiq -C /opt/myapp/shared/config/sidekiq.yml -e production&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+    &lt;/li&gt;
+
+    &lt;li&gt;
+    To stop Sidekiq we need to send a TSTP signal to process all the busy jobs before terminating Sidekiq.
+
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;ExecStop&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/bin/kill -TSTP &lt;span class=&quot;nv&quot;&gt;$MAINPID&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+    &lt;/li&gt;
+    &lt;li&gt;
+    For Managing with Monit we need the process id, After starting or stopping the service we were maintaining the process id file.
+
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;ExecStartPost&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/bin/sh -c &lt;span class=&quot;s1&quot;&gt;&amp;#39;/bin/echo $MAINPID &amp;gt; /opt/myapp/shared/pids/sidekiq.pid&amp;#39;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;ExecStopPost&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/bin/sh -c &lt;span class=&quot;s1&quot;&gt;&amp;#39;rm /opt/myapp/shared/pids/sidekiq.pid&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+    &lt;/li&gt;
+    &lt;li&gt;
+    As we want to use our app user to run this service.
+
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;User&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;deploy
+&lt;span class=&quot;nv&quot;&gt;Group&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;deploy
+&lt;span class=&quot;nv&quot;&gt;UMask&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0002&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+    &lt;/li&gt;
+
+    &lt;li&gt;
+    And we want to restart only when there is a failure.
+
+
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;# if we crash, restart&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;RestartSec&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;10&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;Restart&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;on-failure&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+    &lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+Reload the systemctl daemon for the new created service
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;Sudo systemctl daemon-reload&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+ 
+&lt;/li&gt;
+&lt;li&gt;
+ Now we can start the Sidekiq service:
+
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;sudo systemctl start&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;stop&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;restart sidekiq&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;monitor-sidekiq-process-with-monit&quot;&gt;&lt;strong&gt;Monitor Sidekiq process with Monit&lt;/strong&gt;&lt;/h3&gt;
+
+&lt;p&gt;Now we have systemd to start, stop and restart the Sidekiq process. Now we will look at how to monitor the Sidekiq process with the help of monit.&lt;/p&gt;
+
+&lt;h4 id=&quot;monit&quot;&gt;&lt;strong&gt;Monit&lt;/strong&gt;&lt;/h4&gt;
+
+&lt;p&gt;Monit is a utility for managing and monitoring processes, programs, files, directories and filesystems on a Unix system.&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;
+Modified monitrc
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;check process sidekiq with pidfile &lt;span class=&quot;s2&quot;&gt;&amp;quot;/opt/myapp/shared/pids/sidekiq.pid&amp;quot;&lt;/span&gt;
+  start &lt;span class=&quot;nv&quot;&gt;program&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;/bin/bash -l -c  &amp;#39;sudo systemctl start sidekiq&amp;#39; as uid deploy and gid deploy&amp;quot;&lt;/span&gt;
+    with timeout &lt;span class=&quot;m&quot;&gt;20&lt;/span&gt; seconds
+  stop &lt;span class=&quot;nv&quot;&gt;program&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;/bin/bash -l -c  &amp;#39;sudo systemctl stop sidekiq&amp;#39; as uid deploy and gid deploy&amp;quot;&lt;/span&gt;
+    with timeout &lt;span class=&quot;m&quot;&gt;20&lt;/span&gt; seconds
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; totalmem is greater than &lt;span class=&quot;m&quot;&gt;800&lt;/span&gt; MB &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;3&lt;/span&gt; cycles &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt; restart
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; changed pid &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;exec&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;/etc/monit/slack_notifier.sh&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; cpu is greater than &lt;span class=&quot;m&quot;&gt;65&lt;/span&gt;% &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt; cycles &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;exec&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;/etc/monit/slack_notifier.sh&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; succeeded &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;exec&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;/etc/monit/slack_notifier.sh&amp;quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;/li&gt;
+&lt;li&gt;
+We can check the if sidekiq is up and running:
+
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;sudo monit summary sidekiq&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Monit will check the Sidekiq process and it will automatically start in case of the unexpected kill of the Sidekiq process.&lt;/p&gt;
+
+&lt;p&gt;We have successfully completed the Sidekiq process monitoring with the help of Monit and Systemd.&lt;/p&gt;
+
+
+  
+  &lt;p&gt;&lt;a href=&quot;/technology/sidekiq-process-in-production-with-systemd-and-monit/&quot;&gt;Sidekiq process in production with Systemd and Monit&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on June 29, 2022.&lt;/p&gt;</content>
+</entry>
 
 
 <entry>
@@ -2032,89 +2218,6 @@ SET mail-format &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
 
   
   &lt;p&gt;&lt;a href=&quot;/technology/gotchas-while-syntactically-translating-aes-encryption-logic-from-php-to-ruby/&quot;&gt;Gotcha's while syntactically translating AES encryption logic from PHP to Ruby&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on May 25, 2014.&lt;/p&gt;</content>
-</entry>
-
-
-<entry>
-  <title type="html"><![CDATA[Setting Up Amazon RDS as a Slave to a self-managed MySQL server]]></title>
-  <link rel="alternate" type="text/html" href="/technology/setting-up-amazon-rds-as-a-slave-to-a-self-managed-mysql-server/"/>
-  <id>/technology/setting-up-amazon-rds-as-a-slave-to-a-self-managed-mysql-server</id>
-  <updated>2014-05-21 20:43:52 +0530T00:00:00-00:00</updated>
-  <published>2014-05-21T00:00:00+05:30</published>
-  
-  <author>
-    <name>eLitmus.com</name>
-    <uri></uri>
-    <email>site-admin@elitmus.com</email>
-  </author>
-  <category scheme="/tags/#mysql" term="mysql" /><category scheme="/tags/#RDS" term="RDS" /><category scheme="/tags/#AWS" term="AWS" /><category scheme="/tags/#replication" term="replication" />
-  <content type="html">
-  
-    &lt;p&gt;Last week, we migrated our MySQL database server, which was running on an EC2 instance, to RDS. We hoped the migration process would be smooth.&lt;/p&gt;
-
-&lt;p&gt;As always, migrating a large database has its challenges. Business folks expect the minimum possible downtime.&lt;/p&gt;
-
-&lt;p&gt;The plan was simple.&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;Launch an RDS instance&lt;/li&gt;
-  &lt;li&gt;Load a full dump into it&lt;/li&gt;
-  &lt;li&gt;Configure it to act as a slave of the self-managed server (current master)&lt;/li&gt;
-  &lt;li&gt;On the D-day, pull the website down and promote the RDS instance to take over as the new master&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;We soon discovered that RDS comes with curtailed root permissions. There are several commands that are disallowed. Some of these include “CHANGE MASTER TO….”&lt;/p&gt;
-
-&lt;p&gt;What do we do now?&lt;/p&gt;
-
-&lt;p&gt;One option was to carry out the migration in one go, while the website was offline. This meant the downtime would have been several hours, instead of minutes. Obviously, not an acceptable option at all.&lt;/p&gt;
-
-&lt;p&gt;Some R&amp;amp;D was all it took to discover how to proceed with the original approach.&lt;/p&gt;
-
-&lt;p&gt;RDS comes with a bunch of stored procedures, which help you configure it as a slave. There is almost a one-to-one mapping of these stored procedures with the commands that are disallowed.&lt;/p&gt;
-
-&lt;table class=&quot;table table-bordered table-condensed table-hover&quot;&gt;
-&lt;tr&gt;&lt;th&gt;MySQL Command&lt;/th&gt;&lt;th&gt;Corrosponding Stored Proc&lt;/th&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;CHANGE MASTER TO&lt;/td&gt;&lt;td&gt;mysql.rds_set_external_master&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;START SLAVE&lt;/td&gt;&lt;td&gt;mysql.rds_start_replication&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;STOP SLAVE&lt;/td&gt;&lt;td&gt;mysql.rds_stop_replication&lt;/td&gt;&lt;/tr&gt;
-&lt;tr&gt;&lt;td&gt;RESET MASTER&lt;/td&gt;&lt;td&gt;mysql.rds_reset_external_master &lt;/td&gt;&lt;/tr&gt;
-&lt;/table&gt;
-
-&lt;p&gt;So, Using these stored procedures, you can now configure your RDS instance as a slave to your self-managed MySQL server&lt;/p&gt;
-
-&lt;p&gt;After loading a full dump to RDS, Call the stored procedure &lt;code&gt;mysql.rds_set_external_master&lt;/code&gt; like this&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;CALL mysql.rds_set_external_master ('servername', port, 'user', 'password', 'binlog-file', binlog-offset, 0);
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;CALL mysql.rds_start_replication;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This will make RDS a slave of your self managed mysql server. You can run “SHOW SLAVE STATUS” to see its working.&lt;/p&gt;
-
-&lt;p&gt;When it is time to promote RDS to master. You call these stored procedures&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;CALL mysql.rds_stop_replication;
-
-CALL mysql.rds_reset_external_master;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;That’s it. Now point your applications to the RDS instance and take your site live.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;For your RDS to work as a slave, it needs permissions to connect to port 3306 of your current master. Make sure you open this port for the RDS instance.&lt;/p&gt;
-
-&lt;p&gt;You can run the following command to find out the ip address of your rds instance&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ping -c rdsname.cpesx66wwe7y.ap-southeast-1.rds.amazonaws.com
-&lt;/code&gt;&lt;/pre&gt;
-
-  
-  &lt;p&gt;&lt;a href=&quot;/technology/setting-up-amazon-rds-as-a-slave-to-a-self-managed-mysql-server/&quot;&gt;Setting Up Amazon RDS as a Slave to a self-managed MySQL server&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on May 21, 2014.&lt;/p&gt;</content>
 </entry>
 
 </feed>
