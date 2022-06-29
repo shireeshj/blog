@@ -38,7 +38,7 @@ Sudo nano /lib/systemd/system/sidekiq.service
 
 </li>
 <li>
-Content in the Sidekiq.service. Sidekiq has provided us with the template for the service file here [Sidekiq.service](https://github.com/mperham/sidekiq/blob/main/examples/systemd/sidekiq.service). We modified it according to our use case
+Content in the Sidekiq.service. Sidekiq has provided us with the template for the service file here <a href="https://github.com/mperham/sidekiq/blob/main/examples/systemd/sidekiq.service">Sidekiq.service</a>. We modified it according to our use case
 {% highlight shell %}
 [Unit]
 Description=sidekiq
@@ -168,7 +168,7 @@ check process sidekiq with pidfile "/opt/myapp/shared/pids/sidekiq.pid"
 {% endhighlight %}
 </li>
 <li>
-We can check the if sidekiq is up and running:
+We can check if sidekiq is up and running:
 
 {% highlight shell %}
 sudo monit summary sidekiq
