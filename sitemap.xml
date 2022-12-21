@@ -108,6 +108,10 @@
 
     
     <url>
+        <loc>https://www.elitmus.com/blog/technology/fixing-capybara-flaky-tests/</loc>
+    </url>
+    
+    <url>
         <loc>https://www.elitmus.com/blog/technology/sidekiq-process-in-production-with-systemd-and-monit/</loc>
     </url>
     

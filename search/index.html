@@ -45,6 +45,8 @@
 
     
 
+    
+
 
 
 
@@ -266,6 +268,15 @@
 
 <script>
   window.store = {
+    
+      "technology-fixing-capybara-flaky-tests": {
+        "title": "Fixing Capybara Flaky Tests",
+        "author": "nikhil",
+        "category": "technology",
+        "content": "When writing system tests for a user interface, it is common to encounter test cases that fail randomly. One of the common failure can occur when the JavaScript on a page takes time to render, causing issues with the test case.For example, imagine a test case that clicks a button on a page and then checks for the presence of certain content after the click.Demo Codevisit submit_pageclick_on 'Submit'assert page.has_content 'Some content after clicking on submit'In most cases, this test will run without any issues. However, occasionally the test may fail on the third line with the error “Expected false to be truthy”. This error can occur when the page is visited and the JavaScript on the page takes a few seconds to load. During this time, the submit button may be clicked, but because there is no JavaScript associated with the button yet, the button click does not do anything. As a result, the test is still on the submit page when it tries to assert that the expected content is present, causing the test to fail.SolutionOne solution to this problem is to increase the wait_time setting in capybara. However, this approach has several limitations. First, the wait_time setting is global and applies to all test cases, so if it is set to a high value, it will increase the overall execution time of the test suite. Additionally, the wait_time setting only waits for a fixed amount of time before moving on with the test, without checking whether the page has finished loading. This means that if the page takes longer to load than the wait_timeThe other solution is to use the execute_script method provided by Capybara to click the button instead of the click_on method. The execute_script method allows you to execute JavaScript code within the context of the current page. By using this method to click the button, the click action is added to the end of the browser’s call stack. This means that the click action will be executed after any existing JavaScript code on the page has finished running, ensuring that the button is fully initialized and ready to be interacted with before the test tries to click it.To use the execute_script method to click the button, you can use the following code:page.find_button('Submit').execute_script('this.click()')This way we can ensure that click method will run only after the page javascript is fully loaded.Browser Call Stack          |               |          |               |          |   JavaScript  |  &lt;-- existing code on the page(1)          |_______________|          |               |          |   JavaScript  |  &lt;-- existing code on the page(2)          |_______________|          |               |          |  click action |  &lt;-- added by execute_script method(3)          |_______________|",
+        "url": "/technology/fixing-capybara-flaky-tests/"
+      }
+      ,
     
       "technology-sidekiq-process-in-production-with-systemd-and-monit": {
         "title": "Sidekiq process in production with Systemd and Monit",

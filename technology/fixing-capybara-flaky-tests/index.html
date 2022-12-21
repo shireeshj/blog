@@ -5,45 +5,47 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
 <head>
 <meta charset="utf-8">
-<title>Beware of creating $HOME/.ssh folder by hand, when SELinux is turned on &#8211; eLitmus Blog</title>
+<title>Fixing Capybara Flaky Tests &#8211; eLitmus Blog</title>
 <meta name="description" content="We learn new things everyday, and we document our learnings here...">
 
-<meta name="keywords" content="SSH, SELinux">
+<meta name="keywords" content="capybara, rails, system-tests, flaky">
 
 <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary">    
-<meta name="twitter:title" content="Beware of creating $HOME/.ssh folder by hand, when SELinux is turned on">
-<meta name="twitter:description" content=" If you created $HOME in a non-standard place, and created $HOME/.ssh by hand, SELinux may not like it. To please SELinux, you need to set the right "file context" as described in this post">
+<meta name="twitter:title" content="Fixing Capybara Flaky Tests">
+<meta name="twitter:description" content="<p>When writing system tests for a user interface, it is common to encounter test cases that fail randomly. One of the common failure can occur when the JavaScript on a page takes time to render, causing issues with the test case.</p>
+
+">
 <meta name="twitter:site" content="@elitmus">
 
     
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
         
-            <meta name="twitter:creator" content="@shireeshj">
+            <meta name="twitter:creator" content="@https://twitter.com/nick_bhtt">
         
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
     
 
 
@@ -53,9 +55,11 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="/blog/images/blog_logo_taglinedorange.png"/>
 <meta property="og:type" content="article">
-<meta property="og:title" content="Beware of creating $HOME/.ssh folder by hand, when SELinux is turned on">
-<meta property="og:description" content="If you created $HOME in a non-standard place, and created $HOME/.ssh by hand, SELinux may not like it. To please SELinux, you need to set the right "file context" as described in this post">
-<meta property="og:url" content="/blog/technology/beware-of-creating-ssh-folder-by-hand-when-selinux-is-turned-on/">
+<meta property="og:title" content="Fixing Capybara Flaky Tests">
+<meta property="og:description" content="<p>When writing system tests for a user interface, it is common to encounter test cases that fail randomly. One of the common failure can occur when the JavaScript on a page takes time to render, causing issues with the test case.</p>
+
+">
+<meta property="og:url" content="/blog/technology/fixing-capybara-flaky-tests/">
 
 <meta property="og:site_name" content="eLitmus Blog">
 
@@ -65,7 +69,7 @@
 
 
 
-<link rel="canonical" href="https://www.elitmus.com/blog/technology/beware-of-creating-ssh-folder-by-hand-when-selinux-is-turned-on/">
+<link rel="canonical" href="https://www.elitmus.com/blog/technology/fixing-capybara-flaky-tests/">
 <link href="/blog/feed.xml" type="application/atom+xml" rel="alternate" title="eLitmus Blog Feed">
 
 
@@ -273,28 +277,27 @@
               <header>
                 <span class="entry-tags">
                   
-                    <a href="/blog/tags/#SSH" title="Pages tagged SSH">SSH</a>
+                    <a href="/blog/tags/#capybara" title="Pages tagged capybara">capybara</a>
                     &nbsp;&bull;&nbsp;
                   
-                    <a href="/blog/tags/#SELinux" title="Pages tagged SELinux">SELinux</a>
+                    <a href="/blog/tags/#rails" title="Pages tagged rails">rails</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#system-tests" title="Pages tagged system-tests">system-tests</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#flaky" title="Pages tagged flaky">flaky</a>
                     
                   
 
                   <div class=' social-sharing pull-right'>        
-  
-    <span class="social-share-facebook">
-      <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.elitmus.com/blog/technology/beware-of-creating-ssh-folder-by-hand-when-selinux-is-turned-on/" title="Share on Facebook" itemprop="Facebook"><i class="fa fa-facebook-square fa-lg"></i> Like</a>
-    </span>&nbsp;&nbsp;
-    <span class="social-share-twitter">
-       <a href="https://twitter.com/share?hashtags=technology&text=Beware of creating $HOME/.ssh folder by hand, when SELinux is turned on&via=elitmus" title="Share on Twitter" itemprop="Twitter"><i class="fa fa-twitter-square  fa-lg"></i></i> Tweet</a>
-    </span>&nbsp;&nbsp;
      
 </div>
 
                 </span>
               
                 
-                  <h1 class="no-padding">Beware of creating $HOME/.ssh folder by hand, when SELinux is turned on</h1>
+                  <h1 class="no-padding">Fixing Capybara Flaky Tests</h1>
                 
               </header>
             </div>
@@ -305,95 +308,80 @@
               </div>
 
               
-                <div class='pull-left date-show'>
-                  <span class="entry-date date published">
-                    <time datetime="2012-07-22T00:00:00+05:30">
-                      <i class="fa fa-calendar"></i> July 22, 2012
-                    </time>
-                  </span>&nbsp;
-
-                  
-
-                </div>
-
-                <div class='pull-right date-show'>
-                  <span>
-                    <a href="/blog/technology/beware-of-creating-ssh-folder-by-hand-when-selinux-is-turned-on/" rel="bookmark" title="Beware of creating $HOME/.ssh folder by hand, when SELinux is turned on">
-                      <i class="fa fa-link"></i> Permalink
-                    </a>
-                  </span>
-                </div>
-
-              <br>
-              <div class="panel panel-default">
-                <div class="panel-heading ">
-                  <h3 class="panel-title">TL;DR</h3>
-                </div>
-                <div class="panel-body">
-                  <aside>If you created $HOME in a non-standard place, and created $HOME/.ssh by hand, SELinux may not like it. To please SELinux, you need to set the right "file context" as described in this post</aside>
-                </div>
-              </div>
-      
-            
 
               <div class="post-content-justify">
-                <p>I was experimenting with <code>chef</code> to manage our Linux boxes. As a standard practice, our application user <code>deployer</code> is homed in <code>/applications/deployer</code> rather than the usual <code>/home/deployer</code>.</p>
+                <p>When writing system tests for a user interface, it is common to encounter test cases that fail randomly. One of the common failure can occur when the JavaScript on a page takes time to render, causing issues with the test case.</p>
 
-<p>To enable password less login, I appended my public key to <code>~/.ssh/authorized_keys</code></p>
+<p>For example, imagine a test case that clicks a button on a page and then checks for the presence of certain content after the click.</p>
 
-<pre><code> ssh-copy-id -i ~/.ssh/id_rsa deployer@remote.server
+<p><strong>Demo Code</strong></p>
+<pre><code>visit submit_page
+click_on 'Submit'
+assert page.has_content 'Some content after clicking on submit'
 </code></pre>
 
-<p>The first time I run this command, I will be prompted for a password to install my key. After this, I can run the below command to login without a password:</p>
+<p>In most cases, this test will run without any issues. However, occasionally the test may fail on the third line with the error “Expected false to be truthy”. This error can occur when the page is visited and the JavaScript on the page takes a few seconds to load. During this time, the submit button may be clicked, but because there is no JavaScript associated with the button yet, the button click does not do anything. As a result, the test is still on the submit page when it tries to assert that the expected content is present, causing the test to fail.</p>
 
-<pre><code>ssh -i ~/.ssh/id_rsa deployer@remote.server
+<p><strong>Solution</strong></p>
+
+<p>One solution to this problem is to increase the <code>wait_time</code> setting in capybara. However, this approach has several limitations. First, the wait_time setting is global and applies to all test cases, so if it is set to a high value, it will increase the overall execution time of the test suite. Additionally, the wait_time setting only waits for a fixed amount of time before moving on with the test, without checking whether the page has finished loading. This means that if the page takes longer to load than the wait_time</p>
+
+<p>The other solution is to use the <code>execute_script</code> method provided by Capybara to click the button instead of the <code>click_on</code> method. The execute_script method allows you to execute JavaScript code within the context of the current page. By using this method to click the button, the click action is added to the end of the browser’s call stack. This means that the click action will be executed after any existing JavaScript code on the page has finished running, ensuring that the button is fully initialized and ready to be interacted with before the test tries to click it.</p>
+
+<p>To use the execute_script method to click the button, you can use the following code:</p>
+
+<pre><code>page.find_button('Submit').execute_script('this.click()')
 </code></pre>
 
-<p>However, that did not work as expected.</p>
+<p>This way we can ensure that click method will run only after the page javascript is fully loaded.</p>
 
-<p>For some reason, <code>sshd</code> was unable to read the <code>authorized_keys</code> file. I checked all the usual things.. all looked fine. Everything seem to work just fine when <code>SELinux</code> was running in <code>permissive</code> mode on the remote server, but not when it was in <code>enforcing</code> mode.</p>
+<p><strong>Browser Call Stack</strong></p>
 
-<p>Discovered that if <code>.ssh</code> folder was created by hand (or even the folder containing <code>.ssh</code> folder), we need to do few additional things.</p>
-
-<p><strong>Step 1:</strong></p>
-
-<p>Open this file /etc/selinux/targeted/contexts/files/file_contexts.homedirs and append the following line to the bottom</p>
-
-<pre><code> /applications/deployer/[^/]*/\.ssh(/.*)?     system_u:object_r:ssh_home_t:s0
+<pre><code>          |               |
+          |               |
+          |   JavaScript  |  &lt;-- existing code on the page(1)
+          |_______________|
+          |               |
+          |   JavaScript  |  &lt;-- existing code on the page(2)
+          |_______________|
+          |               |
+          |  click action |  &lt;-- added by execute_script method(3)
+          |_______________|
 </code></pre>
-
-<p>Note: remember to adjust the path as per your needs.</p>
-
-<p><strong>Step 2:</strong> run the following command</p>
-
-<pre><code>restorecon -R -v /applications/deployer/.ssh
-</code></pre>
-
-<p>Again, remember to adjust the path as per your needs.</p>
-
-<p>Now you are all set!</p>
-
-<pre><code> ssh -i ~/.ssh/id_rsa deployer@remote.server
-</code></pre>
-
-<p>should log you in without asking for a password!</p>
 
               </div>
               <div class="entry-tags">
                 <div class=' social-sharing pull-right'>        
-  
-    <span class="social-share-facebook">
-      <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.elitmus.com/blog/technology/beware-of-creating-ssh-folder-by-hand-when-selinux-is-turned-on/" title="Share on Facebook" itemprop="Facebook"><i class="fa fa-facebook-square fa-lg"></i> Like</a>
-    </span>&nbsp;&nbsp;
-    <span class="social-share-twitter">
-       <a href="https://twitter.com/share?hashtags=technology&text=Beware of creating $HOME/.ssh folder by hand, when SELinux is turned on&via=elitmus" title="Share on Twitter" itemprop="Twitter"><i class="fa fa-twitter-square  fa-lg"></i></i> Tweet</a>
-    </span>&nbsp;&nbsp;
      
 </div>
               </div>
               <div class="clearfix"><br/></div>
 
                 <div class="panel panel-default">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
 
   
     
@@ -403,22 +391,22 @@
           <div class="row">
             <div class="col-sm-12 col-md-4">
               <center>
-                <img src="/blog/images/shireeshj.png" alt="Shireesh Jayashetty photo" class="author-photo img-circle img-responsive"/>
+                <img src="/blog/images/nikhil.jpg" alt="Nikhil Bhatt photo" class="author-photo img-circle img-responsive"/>
                 
                 <span class="author vcard">
-                  <span class="fn">Shireesh Jayashetty</span>
+                  <span class="fn">Nikhil Bhatt</span>
                 </span>
 
                 <div class="nav-icon-size-reduce social-icons">
                   
-                    <a href="https://twitter.com/shireeshj"  title="Shireesh Jayashetty on Twitter"  target="_blank"><i class="fa fa-twitter "></i></a>
+                    <a href="https://twitter.com/https://twitter.com/nick_bhtt"  title="Nikhil Bhatt on Twitter"  target="_blank"><i class="fa fa-twitter "></i></a>
                   
                   
                   
                   
 
                   
-                    <a href="https://linkedin.com/in/shireeshj" title="Shireesh Jayashetty on LinkedIn" target="_blank"><i class="fa fa-linkedin "></i></a>
+                    <a href="https://linkedin.com/in/nik-bhatt" title="Nikhil Bhatt on LinkedIn" target="_blank"><i class="fa fa-linkedin "></i></a>
                   
 
                   
@@ -428,7 +416,7 @@
                   
 
                   
-                    <a href="https://github.com/shireeshj" title="Shireesh Jayashetty on Github" target="_blank"><i class="fa fa-github "></i></a>
+                    <a href="https://github.com/nikhilbhatt" title="Nikhil Bhatt on Github" target="_blank"><i class="fa fa-github "></i></a>
                   
 
                      
@@ -438,7 +426,7 @@
 
             <div class="col-sm-12 col-md-8">
               
-                <span class="author-bio">Shireesh heads technology at eLitmus. He is generally curious about things, especially technology. His curiosity almost cost him his first job when he hacked into a customer's system to gain unauthorized internet access (mid '90s). He was lucky, his employer saw this as a potential rather than a threat.</span>
+                <span class="author-bio">Nikhil Bhatt is a member of Technology at eLitmus. He enjoys creating small, practical software applications and is enthusiastic about competitive coding and chess</span>
               
             </div>
 
@@ -449,36 +437,12 @@
 
   
 
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
 </div>
                 <div id='discourse-comments'></div>
 
 <script type="text/javascript">
   DiscourseEmbed = { discourseUrl: 'https://adda.elitmus.com/',
-                     discourseEmbedUrl: 'https://www.elitmus.com/blog/technology/beware-of-creating-ssh-folder-by-hand-when-selinux-is-turned-on/'
+                     discourseEmbedUrl: 'https://www.elitmus.com/blog/technology/fixing-capybara-flaky-tests/'
                    };
 
   (function() {
@@ -500,10 +464,8 @@
           <nav class="navbar nav-justified" role="navigation">
             <ul class="nav pager">
               
-                <li class="previous showElem mr-auto"><a href="/blog/technology/importance-of-date-field-in-an-emails-header/" title="Importance of Date field in an email's Header">&larr;<span class="showPrevNex"> Previous </span> </a></li>
+                <li class="previous showElem mr-auto"><a href="/blog/technology/sidekiq-process-in-production-with-systemd-and-monit/" title="Sidekiq process in production with Systemd and Monit">&larr;<span class="showPrevNex"> Previous </span> </a></li>
               
-              
-                <li class="next showElem ml-auto"><a href="/blog/technology/setting-up-amazon-rds-as-a-slave-to-a-self-managed-mysql-server/" title="Setting Up Amazon RDS as a Slave to a self-managed MySQL server"> <span class='showPrevNex'> Next </span> &rarr; </a></li>
               
             </ul>
           </nav>

@@ -7,13 +7,72 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="/" />
-<updated>2022-06-29T10:58:03+05:30</updated>
+<updated>2022-12-21T12:42:58+05:30</updated>
 <id>/</id>
 <author>
   <name>eLitmus.com</name>
   <uri>/</uri>
   <email>site-admin@elitmus.com</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[Fixing Capybara Flaky Tests]]></title>
+  <link rel="alternate" type="text/html" href="/technology/fixing-capybara-flaky-tests/"/>
+  <id>/technology/fixing-capybara-flaky-tests</id>
+  <updated>2022-12-20 00:21:23 +0530T00:00:00-00:00</updated>
+  <published>2022-12-20T00:00:00+05:30</published>
+  
+  <author>
+    <name>eLitmus.com</name>
+    <uri></uri>
+    <email>site-admin@elitmus.com</email>
+  </author>
+  <category scheme="/tags/#capybara" term="capybara" /><category scheme="/tags/#rails" term="rails" /><category scheme="/tags/#system-tests" term="system-tests" /><category scheme="/tags/#flaky" term="flaky" />
+  <content type="html">
+  
+    &lt;p&gt;When writing system tests for a user interface, it is common to encounter test cases that fail randomly. One of the common failure can occur when the JavaScript on a page takes time to render, causing issues with the test case.&lt;/p&gt;
+
+&lt;p&gt;For example, imagine a test case that clicks a button on a page and then checks for the presence of certain content after the click.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Demo Code&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;visit submit_page
+click_on 'Submit'
+assert page.has_content 'Some content after clicking on submit'
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In most cases, this test will run without any issues. However, occasionally the test may fail on the third line with the error “Expected false to be truthy”. This error can occur when the page is visited and the JavaScript on the page takes a few seconds to load. During this time, the submit button may be clicked, but because there is no JavaScript associated with the button yet, the button click does not do anything. As a result, the test is still on the submit page when it tries to assert that the expected content is present, causing the test to fail.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Solution&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;One solution to this problem is to increase the &lt;code&gt;wait_time&lt;/code&gt; setting in capybara. However, this approach has several limitations. First, the wait_time setting is global and applies to all test cases, so if it is set to a high value, it will increase the overall execution time of the test suite. Additionally, the wait_time setting only waits for a fixed amount of time before moving on with the test, without checking whether the page has finished loading. This means that if the page takes longer to load than the wait_time&lt;/p&gt;
+
+&lt;p&gt;The other solution is to use the &lt;code&gt;execute_script&lt;/code&gt; method provided by Capybara to click the button instead of the &lt;code&gt;click_on&lt;/code&gt; method. The execute_script method allows you to execute JavaScript code within the context of the current page. By using this method to click the button, the click action is added to the end of the browser’s call stack. This means that the click action will be executed after any existing JavaScript code on the page has finished running, ensuring that the button is fully initialized and ready to be interacted with before the test tries to click it.&lt;/p&gt;
+
+&lt;p&gt;To use the execute_script method to click the button, you can use the following code:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;page.find_button('Submit').execute_script('this.click()')
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This way we can ensure that click method will run only after the page javascript is fully loaded.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Browser Call Stack&lt;/strong&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;          |               |
+          |               |
+          |   JavaScript  |  &amp;lt;-- existing code on the page(1)
+          |_______________|
+          |               |
+          |   JavaScript  |  &amp;lt;-- existing code on the page(2)
+          |_______________|
+          |               |
+          |  click action |  &amp;lt;-- added by execute_script method(3)
+          |_______________|
+&lt;/code&gt;&lt;/pre&gt;
+
+  
+  &lt;p&gt;&lt;a href=&quot;/technology/fixing-capybara-flaky-tests/&quot;&gt;Fixing Capybara Flaky Tests&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on December 20, 2022.&lt;/p&gt;</content>
+</entry>
 
 
 <entry>
@@ -2130,94 +2189,6 @@ SET mail-format &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
 
   
   &lt;p&gt;&lt;a href=&quot;/technology/using-monit-to-get-email-alert-on-unauthorized-login/&quot;&gt;Using Monit to get email alert on unauthorized login&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on June 04, 2014.&lt;/p&gt;</content>
-</entry>
-
-
-<entry>
-  <title type="html"><![CDATA[Gotcha's while syntactically translating AES encryption logic from PHP to Ruby]]></title>
-  <link rel="alternate" type="text/html" href="/technology/gotchas-while-syntactically-translating-aes-encryption-logic-from-php-to-ruby/"/>
-  <id>/technology/gotchas-while-syntactically-translating-aes-encryption-logic-from-php-to-ruby</id>
-  <updated>2014-05-25 20:39:45 +0530T00:00:00-00:00</updated>
-  <published>2014-05-25T00:00:00+05:30</published>
-  
-  <author>
-    <name>eLitmus.com</name>
-    <uri></uri>
-    <email>site-admin@elitmus.com</email>
-  </author>
-  <category scheme="/tags/#ruby" term="ruby" /><category scheme="/tags/#PHP" term="PHP" /><category scheme="/tags/#AES" term="AES" /><category scheme="/tags/#Cryptography" term="Cryptography" /><category scheme="/tags/#Encryption" term="Encryption" /><category scheme="/tags/#Decryption" term="Decryption" />
-  <content type="html">
-  
-    &lt;p&gt;Our Payment Gateway service provider recently launched a new platform with some nice-to-have features. We wanted those features and so we decided to migrate. Being one of the earliest adopters of the new platform, there was no integration kit available. We had to build it ourselves. Not a problem. Since we are a Ruby On Rails shop, we built our own Ruby integration kit. All went well and we pushed it to production.&lt;/p&gt;
-
-&lt;p&gt;A month or two later, we got an email from our gateway provider seeking our help with writing the &lt;code&gt;encryption&lt;/code&gt; and &lt;code&gt;decryption&lt;/code&gt; logic for the Ruby integration kit they were developing. We were a little surprised, because we noticed they had already published integration kits for PHP, Python, JAVA etc. How difficult can it be to translate that to Ruby?&lt;/p&gt;
-
-&lt;p&gt;Turns out, syntactic transalation of code from one programming language to another does not always work. A slightly more deeper knowledge helps. We could almost guess where they were getting stuck.&lt;/p&gt;
-
-&lt;p&gt;Before we get to the story, some backgroung on the encryption algo will add clarity.&lt;/p&gt;
-
-&lt;p&gt;For secure communication between our server and the gateway, the prescribed cipher was AES, specifically symmetric-key block cipher with a 128 bit secret key in CBC mode. Since OpenSSL already implements this algo and is avaliable on almost all platforms, most programming languages just bundle a wrapper for OpenSSL.&lt;/p&gt;
-
-&lt;p&gt;So if its the same OpenSSL that the wrappers call, why couldn’t the gateway service provider translate their own PHP code to Ruby?&lt;/p&gt;
-
-&lt;h3 id=&quot;here-is-why&quot;&gt;Here is why:&lt;/h3&gt;
-
-&lt;p&gt;AES works by breaking the plain text (the text to be encrypted) into blocks of 128 bits (or 16 bytes). In CBC mode, each block is XORed with the key to get cipher text of that block. The cipher text of the previous block is used for encrypting the next block… so on and so forth, until all the blocks are encrypted.&lt;/p&gt;
-
-&lt;p&gt;Note that the length of the cipher text will be exactly same as that of the plain text.&lt;/p&gt;
-
-&lt;p&gt;The problem occures with the last block. If the length of the plain text is not a multiple of 128. the last block will be shorter than 128 bits. Since the algo can work only on blocks of 128 bits, It is a common practice to pad the last block so that it becomes equal to 128 bits in lenght. This padding is subsequently discarded after decryption.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; The actual algo is more complicated than this. We have deliberately left out details that are not relevent for this post.&lt;/p&gt;
-
-&lt;p&gt;This is the encryption method in the PHP integration kit published by the gateway service provider&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-php&quot; data-lang=&quot;php&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;linenos&quot;&gt; 1&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;function encrypt($plainText,$key)&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 2&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 3&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;  $secretKey = hextobin(md5($key));&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 4&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;  $initVector = &amp;quot;...&amp;quot;;&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 5&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;  $openMode = mcrypt_module_open(MCRYPT_RIJNDAEL_128, &amp;#39;&amp;#39;,&amp;#39;cbc&amp;#39;, &amp;#39;&amp;#39;);&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 6&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;  $blockSize = mcrypt_get_block_size(MCRYPT_RIJNDAEL_128, &amp;#39;cbc&amp;#39;);&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 7&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 8&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;  $plainPad = pkcs5_pad($plainText, $blockSize);  //  &amp;lt;---- Padding&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 9&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;  if (mcrypt_generic_init($openMode, $secretKey, $initVector) != -1) &lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;11&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;  {&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;    $encryptedText = mcrypt_generic($openMode, $plainPad);&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;13&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;    mcrypt_generic_deinit($openMode);      &lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;14&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;  } &lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;15&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;  return bin2hex($encryptedText);&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;16&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;17&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;18&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;// Padding method&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;19&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;function pkcs5_pad ($plainText, $blockSize)&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;21&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;  // padding logic here&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;22&lt;/span&gt;&lt;span class=&quot;x&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;And here is the same implemented in Ruby&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;linenos&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;encrypt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;plain_text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;2&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;secret_key&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Digest&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;MD5&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;digest&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;3&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;cipher&lt;/span&gt;         &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;OpenSSL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Cipher&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;AES&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;128&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:CBC&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;4&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;cipher&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;encrypt&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;5&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;cipher&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;     &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;secret_key&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;6&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;cipher&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;iv&lt;/span&gt;      &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;INIT_VECTOR&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;7&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;encrypted_text&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cipher&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;update&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;plain_text&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cipher&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;final&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;8&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;encrypted_text&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;unpack&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;H*&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;first&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Notice any difference?&lt;/p&gt;
-
-&lt;p&gt;It turns out that, unlike in Python, PHP and few other languages, Ruby wrapper for OpenSSL automatically takes care of padding (default behaviour). This is clearly mentioned in the &lt;a href=&quot;https://ruby-doc.org/stdlib-2.0/libdoc/openssl/rdoc/OpenSSL/Cipher.html#method-i-final&quot;&gt;documentation&lt;/a&gt;. For some reason, techies at our gateway service provider overlooked this and hit a dead-end.&lt;/p&gt;
-
-&lt;p&gt;By the they, they were gracious enough to acknowledge our contribution in their Ruby Integration Kit (accessible only to their subscribers)&lt;/p&gt;
-
-&lt;p&gt;But We have open sourced our code here ‘&lt;a href=&quot;https://github.com/elitmus/cca_crypto&quot;&gt;cca_crypto&lt;/a&gt;’. We have plans of make this into a complete package - with view generators etc., and publish this as a rubygem. We shall gladly accept any pull request!&lt;/p&gt;
-
-
-  
-  &lt;p&gt;&lt;a href=&quot;/technology/gotchas-while-syntactically-translating-aes-encryption-logic-from-php-to-ruby/&quot;&gt;Gotcha's while syntactically translating AES encryption logic from PHP to Ruby&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on May 25, 2014.&lt;/p&gt;</content>
 </entry>
 
 </feed>
