@@ -68,7 +68,7 @@
    github: piyushswain
    twitter: PiyushSwain3
    linkedin: piyush-swain-199406185
-   websote: https://piyushswain.github.io/
+   website: https://piyushswain.github.io/
    bio: "Piyush Swain is a member of the Technology team at eLitmus. He is passionate about developing beautiful applications and football. He is a gaming enthusiast and is always looking for new PC games to try."
 
 -  id: cariappa
@@ -115,3 +115,12 @@
    stackexchange:
    linkedin: heymanish
    bio: "Manish Sharma is a member of Technology at eLitmus. He is passionate about building stuffs. Loves to spend time with nature and swimming."
+-  id: nikhil
+   name: Nikhil Bhatt
+   avatar: nikhil.jpg
+   email: nikhil.bhatt@elitmus.com
+   twitter: https://twitter.com/nick_bhtt
+   github: nikhilbhatt
+   linkedin: nik-bhatt
+   bio: 'Nikhil Bhatt is a member of Technology at eLitmus. He enjoys creating small, practical software applications and is enthusiastic about competitive coding and chess'
+
