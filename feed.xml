@@ -7,13 +7,75 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="/" />
-<updated>2022-12-21T12:42:58+05:30</updated>
+<updated>2022-12-27T13:21:59+05:30</updated>
 <id>/</id>
 <author>
   <name>eLitmus.com</name>
   <uri>/</uri>
   <email>site-admin@elitmus.com</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[The revamp of a Video Proctoring Solution: A Behind-the-Scenes Look]]></title>
+  <link rel="alternate" type="text/html" href="/technology/the-revamp-of-a-video-proctoring-solution-a-behind-the-scenes-look/"/>
+  <id>/technology/the-revamp-of-a-video-proctoring-solution-a-behind-the-scenes-look</id>
+  <updated>2022-12-27 12:33:45 +0530T00:00:00-00:00</updated>
+  <published>2022-12-27T00:00:00+05:30</published>
+  
+  <author>
+    <name>eLitmus.com</name>
+    <uri></uri>
+    <email>site-admin@elitmus.com</email>
+  </author>
+  <category scheme="/tags/#proctoring" term="proctoring" /><category scheme="/tags/#live%20proctoring" term="live proctoring" /><category scheme="/tags/#remote%20proctoring" term="remote proctoring" /><category scheme="/tags/#eLitmus%20proctoring" term="eLitmus proctoring" /><category scheme="/tags/#100ms" term="100ms" /><category scheme="/tags/#webRTC" term="webRTC" />
+  <content type="html">
+  
+    &lt;p&gt;&lt;strong&gt;&lt;em&gt;The story of how we took a good platform and made it even better&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/images/revamp-of-proctoring-solution/proctoring-dashboard.png&quot; alt=&quot;Protcoring Dashboard&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;For the past few months, the number of test takers and clients at eLitmus has increased significantly. Conducting all of these tests remotely poses a significant challenge in terms of preventing cheating. To address this issue, eLitmus has developed an in-house solution using the open-source Kurento media server. While this solution has been effective in terms of recording videos, it is not horizontally scalable.&lt;/p&gt;
+
+&lt;p&gt;In search of a more effective solution, eLitmus turned to Amazon Kinesis and worked with the AWS team to conduct a proof-of-concept. While this approach allowed for live proctoring, it was not possible to record the exams.&lt;/p&gt;
+
+&lt;p&gt;As I was learning about WebRTC and Amazon Kinesis during this time, I had the opportunity to attend a session by a company called 100ms. This company is focused on solving problems related to live conferencing, and I was eager to learn more about their approach.&lt;/p&gt;
+
+&lt;p&gt;After connecting with the co-founder of 100ms, Ankit Behera, I received a message from their salesperson to schedule a demo call. During the call, we determined that 100ms could be a potential solution for eLitmus’ scalability problem. However, we needed to weigh the costs of maintaining engineering time and effort to maintain the solution against the opportunity cost of using that time to build a new product, as well as overall server and bandwidth costs.&lt;/p&gt;
+
+&lt;p&gt;Based on this analysis, we decided to proceed with a proof-of-concept for live remote proctoring. I spent the next week working on the proof-of-concept and was able to complete it successfully. From there, we saw potential synergies between 100ms and eLitmus and decided to make the product an open-source platform.&lt;/p&gt;
+
+&lt;p&gt;I created a document outlining the requirements for the video proctoring solution, including features such as a proctoring dashboard, candidate tests screen, cheating analysis and verification dashboard, admin dashboard, and auto proctoring. For the first version (v0.1), we planned to roll out the proctoring dashboard with multiple streams visible to the proctor, storage of the video stream on an s3 server, retrieval of the video stream in the cheating analysis and verification dashboard, and admin configuration.&lt;/p&gt;
+
+&lt;p&gt;After outlining the requirements for the video proctoring solution, I designed the architecture for the solution, diagrammatically representing how all of the components would be connected. The main components of the app were the 100ms server API, the eLitmus server, and the candidate or proctor’s browser.&lt;/p&gt;
+
+&lt;p&gt;Next, I created a &lt;a href=&quot;https://github.com/elitmus/knights-watch/milestone/1&quot;&gt;milestone&lt;/a&gt; on Github and listed out the issues that needed to be addressed, including the integration of the proctor dashboard, candidate test screen, algorithm for assigning candidates and proctors to rooms, and storage of videos on the eLitmus prescribed directory structure on an s3 server.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/images/revamp-of-proctoring-solution/milestone.png&quot; alt=&quot;Milestone&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;I began working on these issues and was able to roll out the v0.1 of the proctoring solution within a few weeks. During this time, our team encountered various challenges and suggested various features to 100ms.&lt;/p&gt;
+
+&lt;p&gt;As we worked on storing videos on an s3 server in our prescribed directory structure, we encountered a challenge with the 100ms API. The webhook provided by 100ms was only for the composite recording of the room, not for individual recordings. However, we needed webhooks to notify us of the success of each individual recording. In addition, 100ms had the functionality for only a single webhook per account, but we needed to support multiple environments with multiple applications within a single account. We requested this feature from 100ms.&lt;/p&gt;
+
+&lt;p&gt;While working on an algorithm to assign candidates and proctors to rooms, I faced the challenge of storing authentication tokens in the user’s browser and in Redis storage in production. I wrote an algorithm to handle the expiration of tokens from both ends and to handle multiple events.&lt;/p&gt;
+
+&lt;p&gt;As we configured 100ms for various environments including staging, production, and edge, we encountered several issues and suggested various features to 100ms. These included the ability to delete apps and templates from the 100ms dashboard from the front-end, team management options in the dashboard, and handling of access keys and secrets for multiple environments.&lt;/p&gt;
+
+&lt;p&gt;After completing the first version (v0.1) of the video proctoring solution, we were ready to test it in production. eLitmus was conducting an internal hiring event at the time, and we used the live video proctoring feature for this event with around 400 candidates. The event went smoothly, with minor issues. The proctor was able to hear the voices of the candidates and all of the videos were recorded throughout the session.&lt;/p&gt;
+
+&lt;p&gt;This success gave us confidence in the solution, and we made some minor tweaks. However, our main concern from the start had been scalability, and we wanted to test the solution at a larger scale. We had an in-person test at IITK with over 600 candidates, and decided to conduct the event with live proctoring. The event went smoothly, but the next day we conducted data analysis and discovered that 14 out of 600+ videos had some data loss or were not recorded.&lt;/p&gt;
+
+&lt;p&gt;We had a meeting with 100ms to discuss this issue, and after working with their engineering team, we determined that the issue was caused by network connectivity problems. We fixed the issue and the proctoring solution became more stable, with 97% of the videos being recorded.&lt;/p&gt;
+
+&lt;p&gt;After this event, we had discussions with 100ms about pricing and suggested various features, including pricing on the 100ms dashboard itself and the option to opt-in or opt-out of composite recording and browser-based recording.&lt;/p&gt;
+
+&lt;p&gt;After making the video proctoring solution an open-source project, I focused on documenting the project so that it could be used by others in the community and more developers could contribute to it. I wrote several documents, including a readme file, information on the architecture and prerequisites, installation guidelines, development guidelines, deployment guidelines, a code of conduct, and guidelines for contributing and welcoming new contributors.&lt;/p&gt;
+
+&lt;p&gt;In conclusion, the development of the video proctoring solution at eLitmus was a challenging but rewarding process. By identifying a need to solve the problem of vertical scalability, we were able to explore various solutions and ultimately choose 100ms as a partner to help us build a scalable and effective video proctoring platform. Through the development process, we encountered various challenges and were able to work closely with the 100ms team to find solutions and improve the stability of the platform. We are proud to have made the video proctoring solution an open-source project and to have contributed to the community by documenting the project and welcoming new contributors. We hope that others will find this project useful and will be able to build upon it to create even better solutions in the future.&lt;/p&gt;
+
+  
+  &lt;p&gt;&lt;a href=&quot;/technology/the-revamp-of-a-video-proctoring-solution-a-behind-the-scenes-look/&quot;&gt;The revamp of a Video Proctoring Solution: A Behind-the-Scenes Look&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on December 27, 2022.&lt;/p&gt;</content>
+</entry>
 
 
 <entry>
@@ -2086,109 +2148,6 @@ We strongly believe a youngster`s ability to adapt and evolve is much higher tha
 
   
   &lt;p&gt;&lt;a href=&quot;/technology/how-we-host-our-blog-on-github-pages-and-yet-serve-it-from-our-own-sub-url/&quot;&gt;How we host our blog on GitHub pages and yet serve it from our own Sub-URL&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on August 18, 2014.&lt;/p&gt;</content>
-</entry>
-
-
-<entry>
-  <title type="html"><![CDATA[Using Monit to get email alert on unauthorized login]]></title>
-  <link rel="alternate" type="text/html" href="/technology/using-monit-to-get-email-alert-on-unauthorized-login/"/>
-  <id>/technology/using-monit-to-get-email-alert-on-unauthorized-login</id>
-  <updated>2014-06-04 09:57:11 +0530T00:00:00-00:00</updated>
-  <published>2014-06-04T00:00:00+05:30</published>
-  
-  <author>
-    <name>eLitmus.com</name>
-    <uri></uri>
-    <email>site-admin@elitmus.com</email>
-  </author>
-  <category scheme="/tags/#ssh" term="ssh" /><category scheme="/tags/#monit" term="monit" /><category scheme="/tags/#alert" term="alert" />
-  <content type="html">
-  
-    &lt;p&gt;For a long time, we had our own custom written perl script to alert us whenever someone logged into our production servers from an ip address we do not recognize (not whitelisted). The script looked somewhat like this…&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-perl&quot; data-lang=&quot;perl&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;ch&quot;&gt;#!/usr/bin/perl&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;# script file: alert_on_login.pl&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;#&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;my&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$login_str&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Accepted publickey&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;my&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$whitelist_ip&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;122.123.123.111&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;sub&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;sendEmail&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;my&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$from&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$subject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$message&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;@_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;my&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$sendmail&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;/usr/lib/sendmail&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;nb&quot;&gt;open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MAIL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;|$sendmail -oi -t&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MAIL&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;From: $from\n&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MAIL&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;To: $to\n&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MAIL&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;Subject: $subject\n\n&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MAIL&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;$message\n&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;nb&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;MAIL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;/$login_str/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;/$whitelist_ip/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-                &lt;span class=&quot;k&quot;&gt;print&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-                &lt;span class=&quot;nb&quot;&gt;chomp&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-                &lt;span class=&quot;nv&quot;&gt;@arr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;split&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39; &amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-                &lt;span class=&quot;n&quot;&gt;sendEmail&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;recepient1@elitmus.com, recepient2@elitmus.com&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                          &lt;span class=&quot;s&quot;&gt;&amp;#39;monit@elitmus.com&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
-                          &lt;span class=&quot;s&quot;&gt;&amp;#39;Server login from &amp;#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$arr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;
-                          &lt;span class=&quot;nv&quot;&gt;$_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;All we needed to do was to run this script in the background as a daemon, and it would send us an email alert whenever someone logged in successfully. As root user start the script like this:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;  # (perl alert_on_login.pl /var/log/auth.log &amp;amp;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Ever since we started using &lt;a href=&quot;https://mmonit.com/monit/&quot;&gt;monit&lt;/a&gt; for the usual purpose (monitoring processes), we have also entrusted &lt;a href=&quot;https://mmonit.com/monit/&quot;&gt;monit&lt;/a&gt; to do the job of the above perl script. &lt;a href=&quot;https://mmonit.com/monit/&quot;&gt;Monit&lt;/a&gt; makes this super simple…&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://mmonit.com/monit/&quot;&gt;Monit&lt;/a&gt; is a popular opensource process monitoring tool. It is used mostly for monitoring health of any linux process and take necessary action if any of the set parameters are breached. Monit can restart a process if the process failed for some reason. Monit can also notify you of incidents and actions taken.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://mmonit.com/monit/documentation/monit.html#alert_messages&quot;&gt;See this&lt;/a&gt; to learn more about &lt;a href=&quot;https://mmonit.com/monit/&quot;&gt;monit’s&lt;/a&gt; alert capabilities.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://mmonit.com/monit/&quot;&gt;Monit’s&lt;/a&gt; global configuration file is usually /etc/monit/monitrc. Here is what &lt;a href=&quot;https://mmonit.com/monit/&quot;&gt;monit&lt;/a&gt; needs to be told about how to send email alerts:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span&gt;&lt;/span&gt;...
-&lt;span class=&quot;c1&quot;&gt;# This is our SMTP server settings. The complete syntax is&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;# SET MAILSERVER &amp;lt;hostname [PORT] [USERNAME] [PASSWORD] [using SSLAUTO|SSLV2|SSLV3|TLSV11|TLSV12] [CERTMD5 checksum]&amp;gt;, ...&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;#          [with TIMEOUT X SECONDS]&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;#          [using HOSTNAME hostname]&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;#&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;# But for our purpose, localhost is good enough&lt;/span&gt;
-SET mailserver localhost
-
-&lt;span class=&quot;c1&quot;&gt;# This is the email template for alert messages&lt;/span&gt;
-SET mail-format &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-  from: monit@elitmus.com
-  subject: &lt;span class=&quot;nv&quot;&gt;$SERVICE&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$EVENT&lt;/span&gt; at &lt;span class=&quot;nv&quot;&gt;$DATE&lt;/span&gt;
-  message: Monit &lt;span class=&quot;nv&quot;&gt;$ACTION&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$SERVICE&lt;/span&gt; at &lt;span class=&quot;nv&quot;&gt;$DATE&lt;/span&gt; on &lt;span class=&quot;nv&quot;&gt;$HOST&lt;/span&gt;: &lt;span class=&quot;nv&quot;&gt;$DESCRIPTION&lt;/span&gt;.
-           Yours sincerely,
-           monit
-&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;c1&quot;&gt;# Alerts can be triggered for various reasons. Successful ssh login is just one of those reasons.&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;# Since this is a global configuration, we can tell monit to not send alerts for certain events&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;#  We also specify the email address of the recepient who will receive the alerts&lt;/span&gt;
-
-&lt;span class=&quot;nb&quot;&gt;set&lt;/span&gt; alert recepient1@elitmus.com NOT ON &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; action, instance, pid, ppid, nonexist &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-...&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;And then we add this config file &lt;code&gt;ssh_logins.conf&lt;/code&gt; specific to sshd related stuff:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span&gt;&lt;/span&gt;check file ssh_logins with path /var/log/auth.log
-  ignore match &lt;span class=&quot;s2&quot;&gt;&amp;quot;/etc/monit/whitelist_ips.regex&amp;quot;&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; match &lt;span class=&quot;s2&quot;&gt;&amp;quot;Accepted publickey&amp;quot;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;then&lt;/span&gt; alert&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Notice how we tell &lt;a href=&quot;https://mmonit.com/monit/&quot;&gt;monit&lt;/a&gt; to ignore logins from known ip addresses. We can now store all whitelist ip addresses in a separate file &lt;code&gt;/etc/monit/whitelist_ips.regex&lt;/code&gt;, one address per line.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; We have disabled password based login and hence do not monitor for passworded logins. If you use passworded login, you should change &lt;code&gt;&quot;Accepted publickey&quot;&lt;/code&gt; to &lt;code&gt;&quot;Accepted password&quot;&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;Happy monitoring!&lt;/p&gt;
-
-
-  
-  &lt;p&gt;&lt;a href=&quot;/technology/using-monit-to-get-email-alert-on-unauthorized-login/&quot;&gt;Using Monit to get email alert on unauthorized login&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on June 04, 2014.&lt;/p&gt;</content>
 </entry>
 
 </feed>

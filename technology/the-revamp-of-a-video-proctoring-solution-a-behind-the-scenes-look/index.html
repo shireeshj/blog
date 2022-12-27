@@ -5,15 +5,15 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
 <head>
 <meta charset="utf-8">
-<title>Fixing Capybara Flaky Tests &#8211; eLitmus Blog</title>
+<title>The revamp of a Video Proctoring Solution: A Behind-the-Scenes Look &#8211; eLitmus Blog</title>
 <meta name="description" content="We learn new things everyday, and we document our learnings here...">
 
-<meta name="keywords" content="capybara, rails, system-tests, flaky">
+<meta name="keywords" content="proctoring, live proctoring, remote proctoring, eLitmus proctoring, 100ms, webRTC">
 
 <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary">    
-<meta name="twitter:title" content="Fixing Capybara Flaky Tests">
-<meta name="twitter:description" content="<p>When writing system tests for a user interface, it is common to encounter test cases that fail randomly. One of the common failure can occur when the JavaScript on a page takes time to render, causing issues with the test case.</p>
+<meta name="twitter:title" content="The revamp of a Video Proctoring Solution: A Behind-the-Scenes Look">
+<meta name="twitter:description" content="<p><strong><em>The story of how we took a good platform and made it even better</em></strong></p>
 
 ">
 <meta name="twitter:site" content="@elitmus">
@@ -41,11 +41,11 @@
     
 
     
-
+        
+            <meta name="twitter:creator" content="@ManishS77291587">
+        
     
-        
-            <meta name="twitter:creator" content="@https://twitter.com/nick_bhtt">
-        
+
     
 
 
@@ -55,11 +55,11 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="/blog/images/blog_logo_taglinedorange.png"/>
 <meta property="og:type" content="article">
-<meta property="og:title" content="Fixing Capybara Flaky Tests">
-<meta property="og:description" content="<p>When writing system tests for a user interface, it is common to encounter test cases that fail randomly. One of the common failure can occur when the JavaScript on a page takes time to render, causing issues with the test case.</p>
+<meta property="og:title" content="The revamp of a Video Proctoring Solution: A Behind-the-Scenes Look">
+<meta property="og:description" content="<p><strong><em>The story of how we took a good platform and made it even better</em></strong></p>
 
 ">
-<meta property="og:url" content="/blog/technology/fixing-capybara-flaky-tests/">
+<meta property="og:url" content="/blog/technology/the-revamp-of-a-video-proctoring-solution-a-behind-the-scenes-look/">
 
 <meta property="og:site_name" content="eLitmus Blog">
 
@@ -69,7 +69,7 @@
 
 
 
-<link rel="canonical" href="https://www.elitmus.com/blog/technology/fixing-capybara-flaky-tests/">
+<link rel="canonical" href="https://www.elitmus.com/blog/technology/the-revamp-of-a-video-proctoring-solution-a-behind-the-scenes-look/">
 <link href="/blog/feed.xml" type="application/atom+xml" rel="alternate" title="eLitmus Blog Feed">
 
 
@@ -277,16 +277,22 @@
               <header>
                 <span class="entry-tags">
                   
-                    <a href="/blog/tags/#capybara" title="Pages tagged capybara">capybara</a>
+                    <a href="/blog/tags/#proctoring" title="Pages tagged proctoring">proctoring</a>
                     &nbsp;&bull;&nbsp;
                   
-                    <a href="/blog/tags/#rails" title="Pages tagged rails">rails</a>
+                    <a href="/blog/tags/#live proctoring" title="Pages tagged live proctoring">live proctoring</a>
                     &nbsp;&bull;&nbsp;
                   
-                    <a href="/blog/tags/#system-tests" title="Pages tagged system-tests">system-tests</a>
+                    <a href="/blog/tags/#remote proctoring" title="Pages tagged remote proctoring">remote proctoring</a>
                     &nbsp;&bull;&nbsp;
                   
-                    <a href="/blog/tags/#flaky" title="Pages tagged flaky">flaky</a>
+                    <a href="/blog/tags/#eLitmus proctoring" title="Pages tagged eLitmus proctoring">eLitmus proctoring</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#100ms" title="Pages tagged 100ms">100ms</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#webRTC" title="Pages tagged webRTC">webRTC</a>
                     
                   
 
@@ -297,7 +303,7 @@
                 </span>
               
                 
-                  <h1 class="no-padding">Fixing Capybara Flaky Tests</h1>
+                  <h1 class="no-padding">The revamp of a Video Proctoring Solution: A Behind-the-Scenes Look</h1>
                 
               </header>
             </div>
@@ -310,44 +316,47 @@
               
 
               <div class="post-content-justify">
-                <p>When writing system tests for a user interface, it is common to encounter test cases that fail randomly. One of the common failure can occur when the JavaScript on a page takes time to render, causing issues with the test case.</p>
+                <p><strong><em>The story of how we took a good platform and made it even better</em></strong></p>
 
-<p>For example, imagine a test case that clicks a button on a page and then checks for the presence of certain content after the click.</p>
+<p><img src="/blog/images/revamp-of-proctoring-solution/proctoring-dashboard.png" alt="Protcoring Dashboard" /></p>
 
-<p><strong>Demo Code</strong></p>
-<pre><code>visit submit_page
-click_on 'Submit'
-assert page.has_content 'Some content after clicking on submit'
-</code></pre>
+<p>For the past few months, the number of test takers and clients at eLitmus has increased significantly. Conducting all of these tests remotely poses a significant challenge in terms of preventing cheating. To address this issue, eLitmus has developed an in-house solution using the open-source Kurento media server. While this solution has been effective in terms of recording videos, it is not horizontally scalable.</p>
 
-<p>In most cases, this test will run without any issues. However, occasionally the test may fail on the third line with the error “Expected false to be truthy”. This error can occur when the page is visited and the JavaScript on the page takes a few seconds to load. During this time, the submit button may be clicked, but because there is no JavaScript associated with the button yet, the button click does not do anything. As a result, the test is still on the submit page when it tries to assert that the expected content is present, causing the test to fail.</p>
+<p>In search of a more effective solution, eLitmus turned to Amazon Kinesis and worked with the AWS team to conduct a proof-of-concept. While this approach allowed for live proctoring, it was not possible to record the exams.</p>
 
-<p><strong>Solution</strong></p>
+<p>As I was learning about WebRTC and Amazon Kinesis during this time, I had the opportunity to attend a session by a company called 100ms. This company is focused on solving problems related to live conferencing, and I was eager to learn more about their approach.</p>
 
-<p>One solution to this problem is to increase the <code>wait_time</code> setting in capybara. However, this approach has several limitations. First, the wait_time setting is global and applies to all test cases, so if it is set to a high value, it will increase the overall execution time of the test suite. Additionally, the wait_time setting only waits for a fixed amount of time before moving on with the test, without checking whether the page has finished loading. This means that if the page takes longer to load than the wait_time</p>
+<p>After connecting with the co-founder of 100ms, Ankit Behera, I received a message from their salesperson to schedule a demo call. During the call, we determined that 100ms could be a potential solution for eLitmus’ scalability problem. However, we needed to weigh the costs of maintaining engineering time and effort to maintain the solution against the opportunity cost of using that time to build a new product, as well as overall server and bandwidth costs.</p>
 
-<p>The other solution is to use the <code>execute_script</code> method provided by Capybara to click the button instead of the <code>click_on</code> method. The execute_script method allows you to execute JavaScript code within the context of the current page. By using this method to click the button, the click action is added to the end of the browser’s call stack. This means that the click action will be executed after any existing JavaScript code on the page has finished running, ensuring that the button is fully initialized and ready to be interacted with before the test tries to click it.</p>
+<p>Based on this analysis, we decided to proceed with a proof-of-concept for live remote proctoring. I spent the next week working on the proof-of-concept and was able to complete it successfully. From there, we saw potential synergies between 100ms and eLitmus and decided to make the product an open-source platform.</p>
 
-<p>To use the execute_script method to click the button, you can use the following code:</p>
+<p>I created a document outlining the requirements for the video proctoring solution, including features such as a proctoring dashboard, candidate tests screen, cheating analysis and verification dashboard, admin dashboard, and auto proctoring. For the first version (v0.1), we planned to roll out the proctoring dashboard with multiple streams visible to the proctor, storage of the video stream on an s3 server, retrieval of the video stream in the cheating analysis and verification dashboard, and admin configuration.</p>
 
-<pre><code>page.find_button('Submit').execute_script('this.click()')
-</code></pre>
+<p>After outlining the requirements for the video proctoring solution, I designed the architecture for the solution, diagrammatically representing how all of the components would be connected. The main components of the app were the 100ms server API, the eLitmus server, and the candidate or proctor’s browser.</p>
 
-<p>This way we can ensure that click method will run only after the page javascript is fully loaded.</p>
+<p>Next, I created a <a href="https://github.com/elitmus/knights-watch/milestone/1">milestone</a> on Github and listed out the issues that needed to be addressed, including the integration of the proctor dashboard, candidate test screen, algorithm for assigning candidates and proctors to rooms, and storage of videos on the eLitmus prescribed directory structure on an s3 server.</p>
 
-<p><strong>Browser Call Stack</strong></p>
+<p><img src="/blog/images/revamp-of-proctoring-solution/milestone.png" alt="Milestone" /></p>
 
-<pre><code>          |               |
-          |               |
-          |   JavaScript  |  &lt;-- existing code on the page(1)
-          |_______________|
-          |               |
-          |   JavaScript  |  &lt;-- existing code on the page(2)
-          |_______________|
-          |               |
-          |  click action |  &lt;-- added by execute_script method(3)
-          |_______________|
-</code></pre>
+<p>I began working on these issues and was able to roll out the v0.1 of the proctoring solution within a few weeks. During this time, our team encountered various challenges and suggested various features to 100ms.</p>
+
+<p>As we worked on storing videos on an s3 server in our prescribed directory structure, we encountered a challenge with the 100ms API. The webhook provided by 100ms was only for the composite recording of the room, not for individual recordings. However, we needed webhooks to notify us of the success of each individual recording. In addition, 100ms had the functionality for only a single webhook per account, but we needed to support multiple environments with multiple applications within a single account. We requested this feature from 100ms.</p>
+
+<p>While working on an algorithm to assign candidates and proctors to rooms, I faced the challenge of storing authentication tokens in the user’s browser and in Redis storage in production. I wrote an algorithm to handle the expiration of tokens from both ends and to handle multiple events.</p>
+
+<p>As we configured 100ms for various environments including staging, production, and edge, we encountered several issues and suggested various features to 100ms. These included the ability to delete apps and templates from the 100ms dashboard from the front-end, team management options in the dashboard, and handling of access keys and secrets for multiple environments.</p>
+
+<p>After completing the first version (v0.1) of the video proctoring solution, we were ready to test it in production. eLitmus was conducting an internal hiring event at the time, and we used the live video proctoring feature for this event with around 400 candidates. The event went smoothly, with minor issues. The proctor was able to hear the voices of the candidates and all of the videos were recorded throughout the session.</p>
+
+<p>This success gave us confidence in the solution, and we made some minor tweaks. However, our main concern from the start had been scalability, and we wanted to test the solution at a larger scale. We had an in-person test at IITK with over 600 candidates, and decided to conduct the event with live proctoring. The event went smoothly, but the next day we conducted data analysis and discovered that 14 out of 600+ videos had some data loss or were not recorded.</p>
+
+<p>We had a meeting with 100ms to discuss this issue, and after working with their engineering team, we determined that the issue was caused by network connectivity problems. We fixed the issue and the proctoring solution became more stable, with 97% of the videos being recorded.</p>
+
+<p>After this event, we had discussions with 100ms about pricing and suggested various features, including pricing on the 100ms dashboard itself and the option to opt-in or opt-out of composite recording and browser-based recording.</p>
+
+<p>After making the video proctoring solution an open-source project, I focused on documenting the project so that it could be used by others in the community and more developers could contribute to it. I wrote several documents, including a readme file, information on the architecture and prerequisites, installation guidelines, development guidelines, deployment guidelines, a code of conduct, and guidelines for contributing and welcoming new contributors.</p>
+
+<p>In conclusion, the development of the video proctoring solution at eLitmus was a challenging but rewarding process. By identifying a need to solve the problem of vertical scalability, we were able to explore various solutions and ultimately choose 100ms as a partner to help us build a scalable and effective video proctoring platform. Through the development process, we encountered various challenges and were able to work closely with the 100ms team to find solutions and improve the stability of the platform. We are proud to have made the video proctoring solution an open-source project and to have contributed to the community by documenting the project and welcoming new contributors. We hope that others will find this project useful and will be able to build upon it to create even better solutions in the future.</p>
 
               </div>
               <div class="entry-tags">
@@ -382,8 +391,6 @@ assert page.has_content 'Some content after clicking on submit'
   
 
   
-
-  
     
       <div class="panel-body">
         <div class="container-fluid">
@@ -391,22 +398,22 @@ assert page.has_content 'Some content after clicking on submit'
           <div class="row">
             <div class="col-sm-12 col-md-4">
               <center>
-                <img src="/blog/images/nikhil.jpg" alt="Nikhil Bhatt photo" class="author-photo img-circle img-responsive"/>
+                <img src="/blog/images/manish.jpg" alt="Manish Sharma photo" class="author-photo img-circle img-responsive"/>
                 
                 <span class="author vcard">
-                  <span class="fn">Nikhil Bhatt</span>
+                  <span class="fn">Manish Sharma</span>
                 </span>
 
                 <div class="nav-icon-size-reduce social-icons">
                   
-                    <a href="https://twitter.com/https://twitter.com/nick_bhtt"  title="Nikhil Bhatt on Twitter"  target="_blank"><i class="fa fa-twitter "></i></a>
+                    <a href="https://twitter.com/ManishS77291587"  title="Manish Sharma on Twitter"  target="_blank"><i class="fa fa-twitter "></i></a>
                   
                   
                   
                   
 
                   
-                    <a href="https://linkedin.com/in/nik-bhatt" title="Nikhil Bhatt on LinkedIn" target="_blank"><i class="fa fa-linkedin "></i></a>
+                    <a href="https://linkedin.com/in/heymanish" title="Manish Sharma on LinkedIn" target="_blank"><i class="fa fa-linkedin "></i></a>
                   
 
                   
@@ -416,7 +423,7 @@ assert page.has_content 'Some content after clicking on submit'
                   
 
                   
-                    <a href="https://github.com/nikhilbhatt" title="Nikhil Bhatt on Github" target="_blank"><i class="fa fa-github "></i></a>
+                    <a href="https://github.com/maniSHarma7575" title="Manish Sharma on Github" target="_blank"><i class="fa fa-github "></i></a>
                   
 
                      
@@ -426,7 +433,7 @@ assert page.has_content 'Some content after clicking on submit'
 
             <div class="col-sm-12 col-md-8">
               
-                <span class="author-bio">Nikhil Bhatt is a member of Technology at eLitmus. He enjoys creating small, practical software applications and is enthusiastic about competitive coding and chess</span>
+                <span class="author-bio">Manish Sharma is a member of Technology at eLitmus. He is passionate about building stuffs. Loves to spend time with nature and swimming.</span>
               
             </div>
 
@@ -437,12 +444,14 @@ assert page.has_content 'Some content after clicking on submit'
 
   
 
+  
+
 </div>
                 <div id='discourse-comments'></div>
 
 <script type="text/javascript">
   DiscourseEmbed = { discourseUrl: 'https://adda.elitmus.com/',
-                     discourseEmbedUrl: 'https://www.elitmus.com/blog/technology/fixing-capybara-flaky-tests/'
+                     discourseEmbedUrl: 'https://www.elitmus.com/blog/technology/the-revamp-of-a-video-proctoring-solution-a-behind-the-scenes-look/'
                    };
 
   (function() {
@@ -464,10 +473,8 @@ assert page.has_content 'Some content after clicking on submit'
           <nav class="navbar nav-justified" role="navigation">
             <ul class="nav pager">
               
-                <li class="previous showElem mr-auto"><a href="/blog/technology/sidekiq-process-in-production-with-systemd-and-monit/" title="Sidekiq process in production with Systemd and Monit">&larr;<span class="showPrevNex"> Previous </span> </a></li>
+                <li class="previous showElem mr-auto"><a href="/blog/technology/fixing-capybara-flaky-tests/" title="Fixing Capybara Flaky Tests">&larr;<span class="showPrevNex"> Previous </span> </a></li>
               
-              
-                <li class="next showElem ml-auto"><a href="/blog/technology/the-revamp-of-a-video-proctoring-solution-a-behind-the-scenes-look/" title="The revamp of a Video Proctoring Solution: A Behind-the-Scenes Look"> <span class='showPrevNex'> Next </span> &rarr; </a></li>
               
             </ul>
           </nav>
