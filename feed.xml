@@ -7,7 +7,7 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="/" />
-<updated>2022-12-27T13:21:59+05:30</updated>
+<updated>2022-12-28T14:57:29+05:30</updated>
 <id>/</id>
 <author>
   <name>eLitmus.com</name>
@@ -35,19 +35,25 @@
 
 &lt;p&gt;&lt;img src=&quot;/blog/images/revamp-of-proctoring-solution/proctoring-dashboard.png&quot; alt=&quot;Protcoring Dashboard&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;For the past few months, the number of test takers and clients at eLitmus has increased significantly. Conducting all of these tests remotely poses a significant challenge in terms of preventing cheating. To address this issue, eLitmus has developed an in-house solution using the open-source Kurento media server. While this solution has been effective in terms of recording videos, it is not horizontally scalable.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Background&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;In search of a more effective solution, eLitmus turned to Amazon Kinesis and worked with the AWS team to conduct a proof-of-concept. While this approach allowed for live proctoring, it was not possible to record the exams.&lt;/p&gt;
+&lt;p&gt;For the past few months, the number of test takers and clients at eLitmus has increased significantly. Conducting all of these tests remotely poses a significant challenge in terms of preventing cheating. To address this issue, eLitmus has developed an in-house solution using the open-source &lt;a href=&quot;https://github.com/Kurento/kurento-media-server&quot;&gt;Kurento media server&lt;/a&gt;. While this solution has been effective in terms of recording videos, it is not horizontally scalable.&lt;/p&gt;
 
-&lt;p&gt;As I was learning about WebRTC and Amazon Kinesis during this time, I had the opportunity to attend a session by a company called 100ms. This company is focused on solving problems related to live conferencing, and I was eager to learn more about their approach.&lt;/p&gt;
+&lt;p&gt;In search of a more effective solution, eLitmus turned to &lt;a href=&quot;https://aws.amazon.com/kinesis/&quot;&gt;Amazon Kinesis&lt;/a&gt; and worked with the AWS team to conduct a proof-of-concept. While this approach allowed for live proctoring, it was not possible to record the exams.&lt;/p&gt;
 
-&lt;p&gt;After connecting with the co-founder of 100ms, Ankit Behera, I received a message from their salesperson to schedule a demo call. During the call, we determined that 100ms could be a potential solution for eLitmus’ scalability problem. However, we needed to weigh the costs of maintaining engineering time and effort to maintain the solution against the opportunity cost of using that time to build a new product, as well as overall server and bandwidth costs.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;How did it get begin?&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;Based on this analysis, we decided to proceed with a proof-of-concept for live remote proctoring. I spent the next week working on the proof-of-concept and was able to complete it successfully. From there, we saw potential synergies between 100ms and eLitmus and decided to make the product an open-source platform.&lt;/p&gt;
+&lt;p&gt;As I was learning about &lt;a href=&quot;https://webrtc.org/&quot;&gt;WebRTC&lt;/a&gt; and Amazon Kinesis during this time, I had the opportunity to attend a session by a company called &lt;a href=&quot;https://www.100ms.live/&quot;&gt;100ms&lt;/a&gt;. This company is focused on solving problems related to live conferencing, and I was eager to learn more about their approach.&lt;/p&gt;
+
+&lt;p&gt;After connecting with the co-founder of &lt;a href=&quot;https://www.100ms.live/&quot;&gt;100ms&lt;/a&gt;, I received a message from their salesperson to schedule a demo call. During the call, we determined that 100ms could be a potential solution for eLitmus’ scalability problem. However, we needed to weigh the costs of maintaining engineering time and effort to maintain the solution against the opportunity cost of using that time to build a new product, as well as overall server and bandwidth costs.&lt;/p&gt;
+
+&lt;p&gt;Based on this analysis, we decided to proceed with a proof-of-concept for live remote proctoring. I spent the next week working on the proof-of-concept and was able to complete it successfully. From there, we saw potential synergies between 100ms and eLitmus and decided to make the product(&lt;a href=&quot;https://github.com/elitmus/knights-watch&quot;&gt;Knights Watch&lt;/a&gt;) an open-source platform.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Designing &amp;amp; Developing&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;I created a document outlining the requirements for the video proctoring solution, including features such as a proctoring dashboard, candidate tests screen, cheating analysis and verification dashboard, admin dashboard, and auto proctoring. For the first version (v0.1), we planned to roll out the proctoring dashboard with multiple streams visible to the proctor, storage of the video stream on an s3 server, retrieval of the video stream in the cheating analysis and verification dashboard, and admin configuration.&lt;/p&gt;
 
-&lt;p&gt;After outlining the requirements for the video proctoring solution, I designed the architecture for the solution, diagrammatically representing how all of the components would be connected. The main components of the app were the 100ms server API, the eLitmus server, and the candidate or proctor’s browser.&lt;/p&gt;
+&lt;p&gt;After outlining the requirements for the video proctoring solution, I designed the &lt;a href=&quot;https://docs.google.com/presentation/d/1_CebvXEStUtx8m4Hw9DLQPK6AD8gxBKU/edit?usp=sharing&amp;amp;ouid=100590295233713204603&amp;amp;rtpof=true&amp;amp;sd=true&quot;&gt;architecture&lt;/a&gt; for the solution, diagrammatically representing how all of the components would be connected. The main components of the app were the 100ms server API, the eLitmus server, and the candidate or proctor’s browser.&lt;/p&gt;
 
 &lt;p&gt;Next, I created a &lt;a href=&quot;https://github.com/elitmus/knights-watch/milestone/1&quot;&gt;milestone&lt;/a&gt; on Github and listed out the issues that needed to be addressed, including the integration of the proctor dashboard, candidate test screen, algorithm for assigning candidates and proctors to rooms, and storage of videos on the eLitmus prescribed directory structure on an s3 server.&lt;/p&gt;
 
@@ -55,11 +61,15 @@
 
 &lt;p&gt;I began working on these issues and was able to roll out the v0.1 of the proctoring solution within a few weeks. During this time, our team encountered various challenges and suggested various features to 100ms.&lt;/p&gt;
 
-&lt;p&gt;As we worked on storing videos on an s3 server in our prescribed directory structure, we encountered a challenge with the 100ms API. The webhook provided by 100ms was only for the composite recording of the room, not for individual recordings. However, we needed webhooks to notify us of the success of each individual recording. In addition, 100ms had the functionality for only a single webhook per account, but we needed to support multiple environments with multiple applications within a single account. We requested this feature from 100ms.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Challenges Faced&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;As we worked on storing videos on an AWS s3 server in our prescribed directory structure, we encountered a challenge with the 100ms API. The webhook provided by 100ms was only for the composite recording of the room, not for individual recordings. However, we needed webhooks to notify us of the success of each individual recording. In addition, 100ms had the functionality for only a single webhook per account, but we needed to support multiple environments with multiple applications within a single account. We requested this feature from 100ms.&lt;/p&gt;
 
 &lt;p&gt;While working on an algorithm to assign candidates and proctors to rooms, I faced the challenge of storing authentication tokens in the user’s browser and in Redis storage in production. I wrote an algorithm to handle the expiration of tokens from both ends and to handle multiple events.&lt;/p&gt;
 
 &lt;p&gt;As we configured 100ms for various environments including staging, production, and edge, we encountered several issues and suggested various features to 100ms. These included the ability to delete apps and templates from the 100ms dashboard from the front-end, team management options in the dashboard, and handling of access keys and secrets for multiple environments.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Testing live remote proctoring solution&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;After completing the first version (v0.1) of the video proctoring solution, we were ready to test it in production. eLitmus was conducting an internal hiring event at the time, and we used the live video proctoring feature for this event with around 400 candidates. The event went smoothly, with minor issues. The proctor was able to hear the voices of the candidates and all of the videos were recorded throughout the session.&lt;/p&gt;
 
@@ -67,9 +77,13 @@
 
 &lt;p&gt;We had a meeting with 100ms to discuss this issue, and after working with their engineering team, we determined that the issue was caused by network connectivity problems. We fixed the issue and the proctoring solution became more stable, with 97% of the videos being recorded.&lt;/p&gt;
 
+&lt;p&gt;&lt;strong&gt;Open-sourcing video proctoring solution&lt;/strong&gt;&lt;/p&gt;
+
 &lt;p&gt;After this event, we had discussions with 100ms about pricing and suggested various features, including pricing on the 100ms dashboard itself and the option to opt-in or opt-out of composite recording and browser-based recording.&lt;/p&gt;
 
 &lt;p&gt;After making the video proctoring solution an open-source project, I focused on documenting the project so that it could be used by others in the community and more developers could contribute to it. I wrote several documents, including a readme file, information on the architecture and prerequisites, installation guidelines, development guidelines, deployment guidelines, a code of conduct, and guidelines for contributing and welcoming new contributors.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Conclusion&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;In conclusion, the development of the video proctoring solution at eLitmus was a challenging but rewarding process. By identifying a need to solve the problem of vertical scalability, we were able to explore various solutions and ultimately choose 100ms as a partner to help us build a scalable and effective video proctoring platform. Through the development process, we encountered various challenges and were able to work closely with the 100ms team to find solutions and improve the stability of the platform. We are proud to have made the video proctoring solution an open-source project and to have contributed to the community by documenting the project and welcoming new contributors. We hope that others will find this project useful and will be able to build upon it to create even better solutions in the future.&lt;/p&gt;
 
