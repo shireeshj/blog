@@ -19,11 +19,11 @@ When writing system tests for a user interface, it is common to encounter test c
 For example, imagine a test case that clicks a button on a page and then checks for the presence of certain content after the click.
 
 **Demo Code**
-```
+{% highlight shell %}
 visit submit_page
 click_on 'Submit'
 assert page.has_content 'Some content after clicking on submit'
-```
+{% endhighlight %}
 
 In most cases, this test will run without any issues. However, occasionally the test may fail on the third line with the error "Expected false to be truthy". This error can occur when the page is visited and the JavaScript on the page takes a few seconds to load. During this time, the submit button may be clicked, but because there is no JavaScript associated with the button yet, the button click does not do anything. As a result, the test is still on the submit page when it tries to assert that the expected content is present, causing the test to fail.
 
@@ -35,15 +35,15 @@ The other solution is to use the `execute_script` method provided by Capybara to
 
 To use the execute_script method to click the button, you can use the following code:
 
-```
+{% highlight shell %}
 page.find_button('Submit').execute_script('this.click()')
-```
+{% endhighlight %}
 
 This way we can ensure that click method will run only after the page javascript is fully loaded.
 
 **Browser Call Stack**
 
-```
+{% highlight shell %}
           |               |
           |               |
           |   JavaScript  |  <-- existing code on the page(1)
@@ -54,4 +54,4 @@ This way we can ensure that click method will run only after the page javascript
           |               |
           |  click action |  <-- added by execute_script method(3)
           |_______________|
-```
+{% endhighlight %}
