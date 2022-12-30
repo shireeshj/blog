@@ -5,7 +5,7 @@ tldr:
 modified: 2022-12-30 02:04:27 +0530
 category: technology
 tags: [google-app-script, uptime-monitor, website-status, upptime]
-author nikhil: 
+author: nikhil
 image:
   feature: 
   credit: 
@@ -85,4 +85,4 @@ In conclusion, Google App Script is a useful tool for creating a customized webs
 
 **Additional investigations**
 
-[Upptime](https://github.com/upptime/upptime){:target="_blank"} is one of the good open-source alternative which can be used to monitor a website. it uses github actions to make sure the website is up and creates a issue if website is down for some reason. it also logs the information about the website speed. 
+<a href="https://github.com/upptime/upptime" target="_blank" style="color: blue;">Upptime</a> is one of the good open-source alternative which can be used to monitor a website. it uses github actions to make sure the website is up and creates a issue if website is down for some reason. it also logs the information about the website speed. 
