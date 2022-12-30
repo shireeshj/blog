@@ -7,13 +7,111 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="/" />
-<updated>2022-12-28T18:31:36+05:30</updated>
+<updated>2022-12-30T21:39:38+05:30</updated>
 <id>/</id>
 <author>
   <name>eLitmus.com</name>
   <uri>/</uri>
   <email>site-admin@elitmus.com</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[Website Monitor Using Google App Script]]></title>
+  <link rel="alternate" type="text/html" href="/technology/website-monitor-using-google-app-script/"/>
+  <id>/technology/website-monitor-using-google-app-script</id>
+  <updated>2022-12-30 02:04:27 +0530T00:00:00-00:00</updated>
+  <published>2022-12-30T00:00:00+05:30</published>
+  
+  <author>
+    <name>eLitmus.com</name>
+    <uri></uri>
+    <email>site-admin@elitmus.com</email>
+  </author>
+  <category scheme="/tags/#google-app-script" term="google-app-script" /><category scheme="/tags/#uptime-monitor" term="uptime-monitor" /><category scheme="/tags/#website-status" term="website-status" /><category scheme="/tags/#upptime" term="upptime" />
+  <content type="html">
+  
+    &lt;p&gt;Recently, I was looking for a solution to notify me when a website is down and when it is back up. I found a few solutions, but they all had a learning curve. So I thought of an alternative solution using Google App Script, which I had recently learned about.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Requirements&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Can run every 5 minutes.&lt;/li&gt;
+  &lt;li&gt;Can send emails when the website is down.&lt;/li&gt;
+  &lt;li&gt;Trustworthy.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I wasn’t sure if the first requirement was possible with Google App Script, but the other two were. After reading the documentation, I found that it was possible to create a time-based trigger for a script.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Steps to follow:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Create a new Google App Script project.&lt;/li&gt;
+  &lt;li&gt;Create a function to track the website. Here is an example:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;function&lt;/span&gt; myFunction&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+   const &lt;span class=&quot;nv&quot;&gt;initialUrls&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;
+     &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; uri: &lt;span class=&quot;s1&quot;&gt;&amp;#39;https://mock.codes/200&amp;#39;&lt;/span&gt;, status: &lt;span class=&quot;s1&quot;&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;,
+     &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; uri: &lt;span class=&quot;s1&quot;&gt;&amp;#39;https://mock.codes/500&amp;#39;&lt;/span&gt;, status: &lt;span class=&quot;s1&quot;&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+ 
+ const &lt;span class=&quot;nv&quot;&gt;properties&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; PropertiesService.getScriptProperties&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+ &lt;span class=&quot;nb&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;urls&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;  JSON.parse&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;properties.getProperty&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;URL_LIST&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; initialUrls&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+ const &lt;span class=&quot;nv&quot;&gt;errorResponseCodes&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;500&lt;/span&gt;, &lt;span class=&quot;m&quot;&gt;502&lt;/span&gt;, &lt;span class=&quot;m&quot;&gt;503&lt;/span&gt;, &lt;span class=&quot;m&quot;&gt;504&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+ const &lt;span class=&quot;nv&quot;&gt;alertEmail&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;alertmail@gmail.com&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+ 
+ const &lt;span class=&quot;nv&quot;&gt;options&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; muteHttpExceptions: &lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+ 
+ urls.forEach&lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;url&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+   &lt;span class=&quot;nb&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;responseCode&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; UrlFetchApp.fetch&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;url.uri, options&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getResponseCode&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+ 
+   const &lt;span class=&quot;nv&quot;&gt;isErrorResponse&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; errorResponseCodes.includes&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;responseCode&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+   const &lt;span class=&quot;nv&quot;&gt;wasPreviouslyDown&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; url.status &lt;span class=&quot;o&quot;&gt;===&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;down&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+   &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;isErrorResponse &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; !wasPreviouslyDown&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+     // Site is now down &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; the first &lt;span class=&quot;nb&quot;&gt;time&lt;/span&gt;
+     const &lt;span class=&quot;nv&quot;&gt;subject&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;Alert: Your site &lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.uri&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt; is currently down&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+     const &lt;span class=&quot;nv&quot;&gt;body&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.uri&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt; has encountered an error with status code &lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;responseCode&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+     MailApp.sendEmail&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;alertEmail, subject, body&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+     url.status &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;down&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;!isErrorResponse &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; wasPreviouslyDown&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+     // Site was previously down, but is now back up
+     const &lt;span class=&quot;nv&quot;&gt;subject&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;Your site &lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.uri&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt; is now back up&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+     const &lt;span class=&quot;nv&quot;&gt;body&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;url&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.uri&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt; has recovered and is now back up&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+     MailApp.sendEmail&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;alertEmail, subject, body&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+     url.status &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+ &lt;span class=&quot;o&quot;&gt;})&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+ properties.setProperty&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;URL_LIST&amp;#39;&lt;/span&gt;, JSON.stringify&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;urls&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Go to the “Triggers” menu in the left sidebar of the Google App Script project.&lt;/li&gt;
+  &lt;li&gt;Click the “Add Trigger” button and select the function to run.&lt;/li&gt;
+  &lt;li&gt;Choose the options to run the trigger every 5 minutes and click “Save”&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Explanation&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;This above code uses the UrlFetchApp service to make HTTP requests to the websites and check their status. it stores the value of each trigger in a variable so that whenver site goes live again it can send email of website backed up.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;You can also check the logs for each trigger execution in the “Execution” menu on the left side of the project.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/images/website-monitor/email.jpg&quot; alt=&quot;Email Sample&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Conclusion&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;In conclusion, Google App Script is a useful tool for creating a customized website tracker that can notify the user when a website is down. The process of setting up the tracker is straightforward and the logs can be easily accessed to track the execution of the function. this basic functionality can be enhanced more to record the status in a csv file. also interesting graphs and charts can be made using that data.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Additional investigations&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/upptime/upptime&quot; target=&quot;_blank&quot;&gt;Upptime&lt;/a&gt; is one of the good open-source alternative which can be used to monitor a website. it uses github actions to make sure the website is up and creates a issue if website is down for some reason. it also logs the information about the website speed.&lt;/p&gt;
+
+  
+  &lt;p&gt;&lt;a href=&quot;/technology/website-monitor-using-google-app-script/&quot;&gt;Website Monitor Using Google App Script&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on December 30, 2022.&lt;/p&gt;</content>
+</entry>
 
 
 <entry>
@@ -112,10 +210,10 @@
 &lt;p&gt;For example, imagine a test case that clicks a button on a page and then checks for the presence of certain content after the click.&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;Demo Code&lt;/strong&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;visit submit_page
-click_on 'Submit'
-assert page.has_content 'Some content after clicking on submit'
-&lt;/code&gt;&lt;/pre&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;visit submit_page
+click_on &lt;span class=&quot;s1&quot;&gt;&amp;#39;Submit&amp;#39;&lt;/span&gt;
+assert page.has_content &lt;span class=&quot;s1&quot;&gt;&amp;#39;Some content after clicking on submit&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;In most cases, this test will run without any issues. However, occasionally the test may fail on the third line with the error “Expected false to be truthy”. This error can occur when the page is visited and the JavaScript on the page takes a few seconds to load. During this time, the submit button may be clicked, but because there is no JavaScript associated with the button yet, the button click does not do anything. As a result, the test is still on the submit page when it tries to assert that the expected content is present, causing the test to fail.&lt;/p&gt;
 
@@ -127,24 +225,23 @@ assert page.has_content 'Some content after clicking on submit'
 
 &lt;p&gt;To use the execute_script method to click the button, you can use the following code:&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;page.find_button('Submit').execute_script('this.click()')
-&lt;/code&gt;&lt;/pre&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;page.find_button&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;Submit&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.execute_script&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;this.click()&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;This way we can ensure that click method will run only after the page javascript is fully loaded.&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;Browser Call Stack&lt;/strong&gt;&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;          |               |
-          |               |
-          |   JavaScript  |  &amp;lt;-- existing code on the page(1)
-          |_______________|
-          |               |
-          |   JavaScript  |  &amp;lt;-- existing code on the page(2)
-          |_______________|
-          |               |
-          |  click action |  &amp;lt;-- added by execute_script method(3)
-          |_______________|
-&lt;/code&gt;&lt;/pre&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;          &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   JavaScript  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;  &amp;lt;-- existing code on the page&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;_______________&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;   JavaScript  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;  &amp;lt;-- existing code on the page&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;_______________&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;               &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;  click action &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;  &amp;lt;-- added by execute_script method&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+          &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;_______________&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
 
   
   &lt;p&gt;&lt;a href=&quot;/technology/fixing-capybara-flaky-tests/&quot;&gt;Fixing Capybara Flaky Tests&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on December 20, 2022.&lt;/p&gt;</content>
@@ -2113,55 +2210,6 @@ We strongly believe a youngster`s ability to adapt and evolve is much higher tha
 
   
   &lt;p&gt;&lt;a href=&quot;/career/it-career-pitfalls-to-avoid/&quot;&gt;IT Career - Pitfalls to avoid&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on September 22, 2014.&lt;/p&gt;</content>
-</entry>
-
-
-<entry>
-  <title type="html"><![CDATA[How we host our blog on GitHub pages and yet serve it from our own Sub-URL]]></title>
-  <link rel="alternate" type="text/html" href="/technology/how-we-host-our-blog-on-github-pages-and-yet-serve-it-from-our-own-sub-url/"/>
-  <id>/technology/how-we-host-our-blog-on-github-pages-and-yet-serve-it-from-our-own-sub-url</id>
-  <updated>2014-08-18 12:26:44 +0530T00:00:00-00:00</updated>
-  <published>2014-08-18T00:00:00+05:30</published>
-  
-  <author>
-    <name>eLitmus.com</name>
-    <uri></uri>
-    <email>site-admin@elitmus.com</email>
-  </author>
-  <category scheme="/tags/#Github" term="Github" /><category scheme="/tags/#nginx" term="nginx" /><category scheme="/tags/#reverse%20proxy" term="reverse proxy" />
-  <content type="html">
-  
-    &lt;p&gt;There are umpteen number of blog posts telling you how to host your static site on GitHub Pages for free. They also tell you how to serve such a site from your own domain name.&lt;/p&gt;
-
-&lt;p&gt;As you may have guessed, this blog is also hosted on GH Pages. Don’t believe me? try visiting this URL &lt;code&gt;https://shireeshj.github.io/blog/&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;It is easy to map a &lt;code&gt;github.io&lt;/code&gt; url such as this, to a subdomain. For example, it is easy to map the url to &lt;code&gt;https://blog.elitmus.com/blog/&lt;/code&gt;.  All you need to do is check-in a file named CNAME into the root folder of your git repo that contains your static site.&lt;/p&gt;
-
-&lt;p&gt;What if you want your static site to be served from domain apex? That is easy too.  &lt;a href=&quot;https://help.github.com/articles/setting-up-a-custom-domain-with-github-pages&quot;&gt;GitHub pages help&lt;/a&gt; explains this in a simple manner.&lt;/p&gt;
-
-&lt;p&gt;However, If your domain apex is already taken, say by your other website, you have a problem.  To host your static site on a domain apex (or a sub-url of domain apex) the domain apex should be available exclusively for use by github pages.&lt;/p&gt;
-
-&lt;p&gt;We had to overcome this very problem, since our business website is already hosted on &lt;code&gt;elitmus.com&lt;/code&gt; (and &lt;code&gt;www.elitmus.com&lt;/code&gt;).  Given that we are not in great love with subdomains. We had to find a workaround. And here is what we did:&lt;/p&gt;
-
-&lt;p&gt;Since we use nginx to server our business website, all we had to do was to write a simple traffic-cop rule. What this rule did was, to parse the request url to see if it starts with &lt;code&gt;/blog/&lt;/code&gt;. If yes, then the request is reverse proxied to GitHub Pages. If no, then it is served from local disk.&lt;/p&gt;
-
-&lt;p&gt;The relevant lines from the config file are here&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;	location /blog/ {
-	    proxy_pass       http://shireeshj.github.io/;
-	    proxy_redirect off;
-	    proxy_set_header Host &amp;lt;shireeshj.github.io&amp;gt;;
-	    proxy_set_header X-Host &amp;lt;shireeshj.github.io&amp;gt;;;
-	    proxy_set_header X-Real-IP $remote_addr;
-	    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-	  }
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This is how we get free hosting for our blog, yet serve it from our official URL. If GitHub pages ever stops us from reverse proxying, we shall simply spin our own webserver to run this static site and reverse proxy to that web server.&lt;/p&gt;
-
-
-  
-  &lt;p&gt;&lt;a href=&quot;/technology/how-we-host-our-blog-on-github-pages-and-yet-serve-it-from-our-own-sub-url/&quot;&gt;How we host our blog on GitHub pages and yet serve it from our own Sub-URL&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on August 18, 2014.&lt;/p&gt;</content>
 </entry>
 
 </feed>

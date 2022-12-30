@@ -5,15 +5,15 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
 <head>
 <meta charset="utf-8">
-<title>Fixing Capybara Flaky Tests &#8211; eLitmus Blog</title>
+<title>Website Monitor Using Google App Script &#8211; eLitmus Blog</title>
 <meta name="description" content="We learn new things everyday, and we document our learnings here...">
 
-<meta name="keywords" content="capybara, rails, system-tests, flaky">
+<meta name="keywords" content="google-app-script, uptime-monitor, website-status, upptime">
 
 <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary">    
-<meta name="twitter:title" content="Fixing Capybara Flaky Tests">
-<meta name="twitter:description" content="<p>When writing system tests for a user interface, it is common to encounter test cases that fail randomly. One of the common failure can occur when the JavaScript on a page takes time to render, causing issues with the test case.</p>
+<meta name="twitter:title" content="Website Monitor Using Google App Script">
+<meta name="twitter:description" content="<p>Recently, I was looking for a solution to notify me when a website is down and when it is back up. I found a few solutions, but they all had a learning curve. So I thought of an alternative solution using Google App Script, which I had recently learned about.</p>
 
 ">
 <meta name="twitter:site" content="@elitmus">
@@ -43,10 +43,6 @@
     
 
     
-        
-            <meta name="twitter:creator" content="@https://twitter.com/nick_bhtt">
-        
-    
 
 
 
@@ -55,11 +51,11 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="/blog/images/blog_logo_taglinedorange.png"/>
 <meta property="og:type" content="article">
-<meta property="og:title" content="Fixing Capybara Flaky Tests">
-<meta property="og:description" content="<p>When writing system tests for a user interface, it is common to encounter test cases that fail randomly. One of the common failure can occur when the JavaScript on a page takes time to render, causing issues with the test case.</p>
+<meta property="og:title" content="Website Monitor Using Google App Script">
+<meta property="og:description" content="<p>Recently, I was looking for a solution to notify me when a website is down and when it is back up. I found a few solutions, but they all had a learning curve. So I thought of an alternative solution using Google App Script, which I had recently learned about.</p>
 
 ">
-<meta property="og:url" content="/blog/technology/fixing-capybara-flaky-tests/">
+<meta property="og:url" content="/blog/technology/website-monitor-using-google-app-script/">
 
 <meta property="og:site_name" content="eLitmus Blog">
 
@@ -69,7 +65,7 @@
 
 
 
-<link rel="canonical" href="https://www.elitmus.com/blog/technology/fixing-capybara-flaky-tests/">
+<link rel="canonical" href="https://www.elitmus.com/blog/technology/website-monitor-using-google-app-script/">
 <link href="/blog/feed.xml" type="application/atom+xml" rel="alternate" title="eLitmus Blog Feed">
 
 
@@ -277,16 +273,16 @@
               <header>
                 <span class="entry-tags">
                   
-                    <a href="/blog/tags/#capybara" title="Pages tagged capybara">capybara</a>
+                    <a href="/blog/tags/#google-app-script" title="Pages tagged google-app-script">google-app-script</a>
                     &nbsp;&bull;&nbsp;
                   
-                    <a href="/blog/tags/#rails" title="Pages tagged rails">rails</a>
+                    <a href="/blog/tags/#uptime-monitor" title="Pages tagged uptime-monitor">uptime-monitor</a>
                     &nbsp;&bull;&nbsp;
                   
-                    <a href="/blog/tags/#system-tests" title="Pages tagged system-tests">system-tests</a>
+                    <a href="/blog/tags/#website-status" title="Pages tagged website-status">website-status</a>
                     &nbsp;&bull;&nbsp;
                   
-                    <a href="/blog/tags/#flaky" title="Pages tagged flaky">flaky</a>
+                    <a href="/blog/tags/#upptime" title="Pages tagged upptime">upptime</a>
                     
                   
 
@@ -297,7 +293,7 @@
                 </span>
               
                 
-                  <h1 class="no-padding">Fixing Capybara Flaky Tests</h1>
+                  <h1 class="no-padding">Website Monitor Using Google App Script</h1>
                 
               </header>
             </div>
@@ -310,43 +306,83 @@
               
 
               <div class="post-content-justify">
-                <p>When writing system tests for a user interface, it is common to encounter test cases that fail randomly. One of the common failure can occur when the JavaScript on a page takes time to render, causing issues with the test case.</p>
+                <p>Recently, I was looking for a solution to notify me when a website is down and when it is back up. I found a few solutions, but they all had a learning curve. So I thought of an alternative solution using Google App Script, which I had recently learned about.</p>
 
-<p>For example, imagine a test case that clicks a button on a page and then checks for the presence of certain content after the click.</p>
+<p><strong>Requirements</strong></p>
+<ul>
+  <li>Can run every 5 minutes.</li>
+  <li>Can send emails when the website is down.</li>
+  <li>Trustworthy.</li>
+</ul>
 
-<p><strong>Demo Code</strong></p>
+<p>I wasn’t sure if the first requirement was possible with Google App Script, but the other two were. After reading the documentation, I found that it was possible to create a time-based trigger for a script.</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>visit submit_page
-click_on <span class="s1">&#39;Submit&#39;</span>
-assert page.has_content <span class="s1">&#39;Some content after clicking on submit&#39;</span></code></pre></figure>
+<p><strong>Steps to follow:</strong></p>
+<ul>
+  <li>Create a new Google App Script project.</li>
+  <li>Create a function to track the website. Here is an example:</li>
+</ul>
 
-<p>In most cases, this test will run without any issues. However, occasionally the test may fail on the third line with the error “Expected false to be truthy”. This error can occur when the page is visited and the JavaScript on the page takes a few seconds to load. During this time, the submit button may be clicked, but because there is no JavaScript associated with the button yet, the button click does not do anything. As a result, the test is still on the submit page when it tries to assert that the expected content is present, causing the test to fail.</p>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="k">function</span> myFunction<span class="o">()</span> <span class="o">{</span>
+   const <span class="nv">initialUrls</span> <span class="o">=</span> <span class="o">[</span>
+     <span class="o">{</span> uri: <span class="s1">&#39;https://mock.codes/200&#39;</span>, status: <span class="s1">&#39;&#39;</span><span class="o">}</span>,
+     <span class="o">{</span> uri: <span class="s1">&#39;https://mock.codes/500&#39;</span>, status: <span class="s1">&#39;&#39;</span><span class="o">}</span>
+   <span class="o">]</span><span class="p">;</span>
+ 
+ const <span class="nv">properties</span> <span class="o">=</span> PropertiesService.getScriptProperties<span class="o">()</span><span class="p">;</span>
+ <span class="nb">let</span> <span class="nv">urls</span> <span class="o">=</span>  JSON.parse<span class="o">(</span>properties.getProperty<span class="o">(</span><span class="s1">&#39;URL_LIST&#39;</span><span class="o">))</span> <span class="o">||</span> initialUrls<span class="p">;</span>
+ const <span class="nv">errorResponseCodes</span> <span class="o">=</span> <span class="o">[</span><span class="m">500</span>, <span class="m">502</span>, <span class="m">503</span>, <span class="m">504</span><span class="o">]</span><span class="p">;</span>
+ const <span class="nv">alertEmail</span> <span class="o">=</span> <span class="s1">&#39;alertmail@gmail.com&#39;</span><span class="p">;</span>
+ 
+ const <span class="nv">options</span> <span class="o">=</span> <span class="o">{</span> muteHttpExceptions: <span class="nb">true</span> <span class="o">}</span><span class="p">;</span>
+ 
+ urls.forEach<span class="o">((</span>url<span class="o">)</span> <span class="o">=</span>&gt; <span class="o">{</span>
+   <span class="nb">let</span> <span class="nv">responseCode</span> <span class="o">=</span> UrlFetchApp.fetch<span class="o">(</span>url.uri, options<span class="o">)</span>.getResponseCode<span class="o">()</span><span class="p">;</span>
+ 
+   const <span class="nv">isErrorResponse</span> <span class="o">=</span> errorResponseCodes.includes<span class="o">(</span>responseCode<span class="o">)</span><span class="p">;</span>
+   const <span class="nv">wasPreviouslyDown</span> <span class="o">=</span> url.status <span class="o">===</span> <span class="s1">&#39;down&#39;</span><span class="p">;</span>
 
-<p><strong>Solution</strong></p>
+   <span class="k">if</span> <span class="o">(</span>isErrorResponse <span class="o">&amp;&amp;</span> !wasPreviouslyDown<span class="o">)</span> <span class="o">{</span>
+     // Site is now down <span class="k">for</span> the first <span class="nb">time</span>
+     const <span class="nv">subject</span> <span class="o">=</span> <span class="sb">`</span>Alert: Your site <span class="si">${</span><span class="nv">url</span><span class="p">.uri</span><span class="si">}</span> is currently down<span class="sb">`</span><span class="p">;</span>
+     const <span class="nv">body</span> <span class="o">=</span> <span class="sb">`</span><span class="si">${</span><span class="nv">url</span><span class="p">.uri</span><span class="si">}</span> has encountered an error with status code <span class="si">${</span><span class="nv">responseCode</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+     MailApp.sendEmail<span class="o">(</span>alertEmail, subject, body<span class="o">)</span><span class="p">;</span>
+     url.status <span class="o">=</span> <span class="s1">&#39;down&#39;</span><span class="p">;</span>
+   <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span>!isErrorResponse <span class="o">&amp;&amp;</span> wasPreviouslyDown<span class="o">)</span> <span class="o">{</span>
+     // Site was previously down, but is now back up
+     const <span class="nv">subject</span> <span class="o">=</span> <span class="sb">`</span>Your site <span class="si">${</span><span class="nv">url</span><span class="p">.uri</span><span class="si">}</span> is now back up<span class="sb">`</span><span class="p">;</span>
+     const <span class="nv">body</span> <span class="o">=</span> <span class="sb">`</span><span class="si">${</span><span class="nv">url</span><span class="p">.uri</span><span class="si">}</span> has recovered and is now back up<span class="sb">`</span><span class="p">;</span>
+     MailApp.sendEmail<span class="o">(</span>alertEmail, subject, body<span class="o">)</span><span class="p">;</span>
+     url.status <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+   <span class="o">}</span>
+ <span class="o">})</span><span class="p">;</span>
 
-<p>One solution to this problem is to increase the <code>wait_time</code> setting in capybara. However, this approach has several limitations. First, the wait_time setting is global and applies to all test cases, so if it is set to a high value, it will increase the overall execution time of the test suite. Additionally, the wait_time setting only waits for a fixed amount of time before moving on with the test, without checking whether the page has finished loading. This means that if the page takes longer to load than the wait_time</p>
+ properties.setProperty<span class="o">(</span><span class="s1">&#39;URL_LIST&#39;</span>, JSON.stringify<span class="o">(</span>urls<span class="o">))</span><span class="p">;</span>
+<span class="o">}</span></code></pre></figure>
 
-<p>The other solution is to use the <code>execute_script</code> method provided by Capybara to click the button instead of the <code>click_on</code> method. The execute_script method allows you to execute JavaScript code within the context of the current page. By using this method to click the button, the click action is added to the end of the browser’s call stack. This means that the click action will be executed after any existing JavaScript code on the page has finished running, ensuring that the button is fully initialized and ready to be interacted with before the test tries to click it.</p>
+<ul>
+  <li>Go to the “Triggers” menu in the left sidebar of the Google App Script project.</li>
+  <li>Click the “Add Trigger” button and select the function to run.</li>
+  <li>Choose the options to run the trigger every 5 minutes and click “Save”</li>
+</ul>
 
-<p>To use the execute_script method to click the button, you can use the following code:</p>
+<p><strong>Explanation</strong></p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>page.find_button<span class="o">(</span><span class="s1">&#39;Submit&#39;</span><span class="o">)</span>.execute_script<span class="o">(</span><span class="s1">&#39;this.click()&#39;</span><span class="o">)</span></code></pre></figure>
+<p>This above code uses the UrlFetchApp service to make HTTP requests to the websites and check their status. it stores the value of each trigger in a variable so that whenver site goes live again it can send email of website backed up.</p>
 
-<p>This way we can ensure that click method will run only after the page javascript is fully loaded.</p>
+<blockquote>
+  <p>You can also check the logs for each trigger execution in the “Execution” menu on the left side of the project.</p>
+</blockquote>
 
-<p><strong>Browser Call Stack</strong></p>
+<p><img src="/blog/images/website-monitor/email.jpg" alt="Email Sample" /></p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>          <span class="p">|</span>               <span class="p">|</span>
-          <span class="p">|</span>               <span class="p">|</span>
-          <span class="p">|</span>   JavaScript  <span class="p">|</span>  &lt;-- existing code on the page<span class="o">(</span><span class="m">1</span><span class="o">)</span>
-          <span class="p">|</span>_______________<span class="p">|</span>
-          <span class="p">|</span>               <span class="p">|</span>
-          <span class="p">|</span>   JavaScript  <span class="p">|</span>  &lt;-- existing code on the page<span class="o">(</span><span class="m">2</span><span class="o">)</span>
-          <span class="p">|</span>_______________<span class="p">|</span>
-          <span class="p">|</span>               <span class="p">|</span>
-          <span class="p">|</span>  click action <span class="p">|</span>  &lt;-- added by execute_script method<span class="o">(</span><span class="m">3</span><span class="o">)</span>
-          <span class="p">|</span>_______________<span class="p">|</span></code></pre></figure>
+<p><strong>Conclusion</strong></p>
 
+<p>In conclusion, Google App Script is a useful tool for creating a customized website tracker that can notify the user when a website is down. The process of setting up the tracker is straightforward and the logs can be easily accessed to track the execution of the function. this basic functionality can be enhanced more to record the status in a csv file. also interesting graphs and charts can be made using that data.</p>
+
+<p><strong>Additional investigations</strong></p>
+
+<p><a href="https://github.com/upptime/upptime" target="_blank">Upptime</a> is one of the good open-source alternative which can be used to monitor a website. it uses github actions to make sure the website is up and creates a issue if website is down for some reason. it also logs the information about the website speed.</p>
 
               </div>
               <div class="entry-tags">
@@ -383,65 +419,13 @@ assert page.has_content <span class="s1">&#39;Some content after clicking on sub
   
 
   
-    
-      <div class="panel-body">
-        <div class="container-fluid">
-
-          <div class="row">
-            <div class="col-sm-12 col-md-4">
-              <center>
-                <img src="/blog/images/nikhil.jpg" alt="Nikhil Bhatt photo" class="author-photo img-circle img-responsive"/>
-                
-                <span class="author vcard">
-                  <span class="fn">Nikhil Bhatt</span>
-                </span>
-
-                <div class="nav-icon-size-reduce social-icons">
-                  
-                    <a href="https://twitter.com/https://twitter.com/nick_bhtt"  title="Nikhil Bhatt on Twitter"  target="_blank"><i class="fa fa-twitter "></i></a>
-                  
-                  
-                  
-                  
-
-                  
-                    <a href="https://linkedin.com/in/nik-bhatt" title="Nikhil Bhatt on LinkedIn" target="_blank"><i class="fa fa-linkedin "></i></a>
-                  
-
-                  
-
-                  
-
-                  
-
-                  
-                    <a href="https://github.com/nikhilbhatt" title="Nikhil Bhatt on Github" target="_blank"><i class="fa fa-github "></i></a>
-                  
-
-                     
-                </div><!-- /.social-icons -->
-              </center>
-            </div>
-
-            <div class="col-sm-12 col-md-8">
-              
-                <span class="author-bio">Nikhil Bhatt is a member of Technology at eLitmus. He enjoys creating small, practical software applications and is enthusiastic about competitive coding and chess</span>
-              
-            </div>
-
-          </div>
-
-        </div>
-      </div>
-
-  
 
 </div>
                 <div id='discourse-comments'></div>
 
 <script type="text/javascript">
   DiscourseEmbed = { discourseUrl: 'https://adda.elitmus.com/',
-                     discourseEmbedUrl: 'https://www.elitmus.com/blog/technology/fixing-capybara-flaky-tests/'
+                     discourseEmbedUrl: 'https://www.elitmus.com/blog/technology/website-monitor-using-google-app-script/'
                    };
 
   (function() {
@@ -463,10 +447,8 @@ assert page.has_content <span class="s1">&#39;Some content after clicking on sub
           <nav class="navbar nav-justified" role="navigation">
             <ul class="nav pager">
               
-                <li class="previous showElem mr-auto"><a href="/blog/technology/sidekiq-process-in-production-with-systemd-and-monit/" title="Sidekiq process in production with Systemd and Monit">&larr;<span class="showPrevNex"> Previous </span> </a></li>
+                <li class="previous showElem mr-auto"><a href="/blog/technology/the-revamp-of-a-video-proctoring-solution-a-behind-the-scenes-look/" title="The revamp of a Video Proctoring Solution: A Behind-the-Scenes Look">&larr;<span class="showPrevNex"> Previous </span> </a></li>
               
-              
-                <li class="next showElem ml-auto"><a href="/blog/technology/the-revamp-of-a-video-proctoring-solution-a-behind-the-scenes-look/" title="The revamp of a Video Proctoring Solution: A Behind-the-Scenes Look"> <span class='showPrevNex'> Next </span> &rarr; </a></li>
               
             </ul>
           </nav>
