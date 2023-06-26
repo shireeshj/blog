@@ -7,13 +7,180 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="/" />
-<updated>2022-12-30T22:33:17+05:30</updated>
+<updated>2023-06-26T12:05:52+05:30</updated>
 <id>/</id>
 <author>
   <name>eLitmus.com</name>
   <uri>/</uri>
   <email>site-admin@elitmus.com</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[Debugging &amp; Fixing mysql deadlock issue]]></title>
+  <link rel="alternate" type="text/html" href="/technology/debugging-and-fixing-mysql-deadlock-issue/"/>
+  <id>/technology/debugging-and-fixing-mysql-deadlock-issue</id>
+  <updated>2023-06-12 18:31:00 +0530T00:00:00-00:00</updated>
+  <published>2023-06-12T00:00:00+05:30</published>
+  
+  <author>
+    <name>eLitmus.com</name>
+    <uri></uri>
+    <email>site-admin@elitmus.com</email>
+  </author>
+  <category scheme="/tags/#Mysql" term="Mysql" /><category scheme="/tags/#deadlock" term="deadlock" /><category scheme="/tags/#Index%20locks" term="Index locks" /><category scheme="/tags/#Next%20Key%20Lock" term="Next Key Lock" /><category scheme="/tags/#ruby" term="ruby" /><category scheme="/tags/#Ruby%20on%20Rails" term="Ruby on Rails" /><category scheme="/tags/#aasm" term="aasm" />
+  <content type="html">
+  
+    &lt;p&gt;Recently, during one of our tests, we encountered a deadlock issue that was reported by Sentry. The deadlock occurred while attempting to insert scores into a table after completing a candidate’s test. We were initially unsure about the cause of this deadlock. Upon investigation, we discovered that it was due to the interplay of various locks in our MySQL database. In this blog post, we will deep dive into the nature of these locks, understand their impact on transactions, and present the solutions we implemented to mitigate deadlock occurrences.&lt;/p&gt;
+
+&lt;h4 id=&quot;understanding-deadlocks&quot;&gt;&lt;strong&gt;Understanding deadlocks&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;To understand the deadlock situation, let’s familiarize ourselves with the different types of locks involved, as defined by the official MySQL documentation:&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;GAP Lock:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;A gap lock is a lock on a gap between index records, or a lock on the gap before the first or after the last index record. A gap might span a single index value, multiple index values, or even be empty.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;If id is not indexed or has a nonunique index, the statement does lock the preceding gap.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Next Key Lock:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;A next-key lock is a combination of a record lock on the index record and a gap lock on the gap before the index record. in simple words If one session has a shared or exclusive lock on record R in an index, another session cannot insert a new index record in the gap immediately before R in the index order.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Insert Intention Lock:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;An insert intention lock is a type of gap lock set by INSERT operations prior to row insertion. This lock signals the intent to insert in such a way that multiple transactions inserting into the same index gap need not wait for each other if they are not inserting at the same position within the gap.&lt;/p&gt;
+
+&lt;h4 id=&quot;problem-scenario&quot;&gt;&lt;strong&gt;Problem Scenario&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;In our case, we have two tables, table1 and table2, with a has_many relationship. All operations are performed on table2, which has an index on table1 as a foreign key.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Transaction A&lt;/strong&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;BEGIN&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+DELETE FROM table2 WHERE table2.table1_id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;127&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+Query OK, &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt; row affected &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;.00 sec&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Resulting data locks&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;mysql&amp;gt; SELECT INDEX_NAME, LOCK_TYPE,LOCK_DATA,LOCK_MODE,LOCK_STATUS, EVENT_ID FROM performance_schema.data_locks&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
++-----------------------------------------+-----------+-----------+---------------+-------------+----------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; INDEX_NAME                &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; LOCK_TYPE &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; LOCK_DATA &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; LOCK_MODE     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; LOCK_STATUS &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; EVENT_ID &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++-----------------------------------------+-----------+-----------+---------------+-------------+----------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; NULL                      &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; TABLE     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; NULL      &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; IX            &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; GRANTED     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      &lt;span class=&quot;m&quot;&gt;408&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; index_table2_on_table1_id &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; RECORD    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;127&lt;/span&gt;, &lt;span class=&quot;m&quot;&gt;92&lt;/span&gt;   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; X             &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; GRANTED     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      &lt;span class=&quot;m&quot;&gt;408&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; PRIMARY                   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; RECORD    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;92&lt;/span&gt;        &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; X,REC_NOT_GAP &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; GRANTED     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      &lt;span class=&quot;m&quot;&gt;408&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; index_table2_on_table1_id &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; RECORD    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;128&lt;/span&gt;, &lt;span class=&quot;m&quot;&gt;93&lt;/span&gt;   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; X,GAP         &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; GRANTED     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      &lt;span class=&quot;m&quot;&gt;408&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++-----------------------------------------+-----------+-----------+---------------+-------------+----------+
+&lt;span class=&quot;m&quot;&gt;4&lt;/span&gt; rows &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;set&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;.00 sec&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This query acquires a gap lock on table2 and an insert intention lock on table1_id values 126 and 127.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Transaction B&lt;/strong&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;BEGIN&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+INSERT INTO table2&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;table1_id&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; VALUES&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;126&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+ERROR &lt;span class=&quot;m&quot;&gt;1205&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;HY000&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: Lock &lt;span class=&quot;nb&quot;&gt;wait&lt;/span&gt; timeout exceeded&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; try restarting transaction&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Resulting data locks&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;mysql&amp;gt; SELECT INDEX_NAME,LOCK_TYPE,LOCK_DATA,LOCK_MODE,LOCK_STATUS, EVENT_ID FROM performance_schema.data_locks&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
++-----------------------------------------+-----------+-----------+------------------------+-------------+----------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; INDEX_NAME                  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; LOCK_TYPE &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; LOCK_DATA &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; LOCK_MODE              &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; LOCK_STATUS &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; EVENT_ID &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++-----------------------------------------+-----------+-----------+------------------------+-------------+----------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; NULL                        &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; TABLE     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; NULL      &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; IX                     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; GRANTED     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      &lt;span class=&quot;m&quot;&gt;351&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; index_table2_on_table1_id   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; RECORD    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;127&lt;/span&gt;, &lt;span class=&quot;m&quot;&gt;92&lt;/span&gt;   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; X,GAP,INSERT_INTENTION &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; WAITING     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      &lt;span class=&quot;m&quot;&gt;351&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; NULL                        &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; TABLE     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; NULL      &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; IX                     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; GRANTED     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      &lt;span class=&quot;m&quot;&gt;408&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; index_table2_on_table1_id   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; RECORD    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;127&lt;/span&gt;, &lt;span class=&quot;m&quot;&gt;92&lt;/span&gt;   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; X                      &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; GRANTED     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      &lt;span class=&quot;m&quot;&gt;408&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; PRIMARY                     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; RECORD    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;92&lt;/span&gt;        &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; X,REC_NOT_GAP          &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; GRANTED     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      &lt;span class=&quot;m&quot;&gt;408&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; index_table2_on_table1_id   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; RECORD    &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;128&lt;/span&gt;, &lt;span class=&quot;m&quot;&gt;93&lt;/span&gt;   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; X,GAP                  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; GRANTED     &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;      &lt;span class=&quot;m&quot;&gt;408&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++-----------------------------------------+-----------+-----------+------------------------+-------------+----------+
+&lt;span class=&quot;m&quot;&gt;6&lt;/span&gt; rows &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;set&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;.01 sec&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;As Transaction A holds the lock on table1_id 126 due to the gap lock, Transaction B waits for the lock. However, it eventually times out, resulting in a lock wait timeout error.&lt;/p&gt;
+
+&lt;p&gt;To create a deadlock, one must perform a delete query in Transaction B. Then, when attempting to insert a record in Transaction A, a deadlock error is thrown, with Transaction B becoming the victim. &lt;strong&gt;This deadlock situation arises due to the conflicts in the next-key lock, preventing Transaction B from inserting the record.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;in-a-nutshell&quot;&gt;&lt;strong&gt;In a nutshell&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;Lets understood the above queries in nutshell to create a deadlock.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Transaction A -&amp;gt; BEGIN;&lt;/li&gt;
+  &lt;li&gt;Transaction A -&amp;gt; DELETE records on table2 with table1_id=x.&lt;/li&gt;
+  &lt;li&gt;Transaction B -&amp;gt; BEGIN;&lt;/li&gt;
+  &lt;li&gt;Transaction B -&amp;gt; DELETE record on table2 with table1_id=y;&lt;/li&gt;
+  &lt;li&gt;Transaction B -&amp;gt; INSERT a record on table2 and table1_id is x-1.&lt;/li&gt;
+  &lt;li&gt;Transaction A -&amp;gt; INSERT a record on table2 and table1_id is y-1.&lt;/li&gt;
+  &lt;li&gt;A deadlock occurs, with Transaction A being the victim.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;practical-example-of-gap-lock--next-key-lock&quot;&gt;&lt;strong&gt;Practical example of GAP lock &amp;amp; Next Key Lock.&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;Gap lock is basically on range of values &amp;amp; will be aquired on a range if we try to delete a record which does not exist.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;table1&lt;/strong&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;+----+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; id &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++----+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;73&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;74&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;81&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;82&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++----+&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;strong&gt;table2&lt;/strong&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;+-----+-----------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; id  &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; table1_id &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++-----+-----------+
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;73&lt;/span&gt;        &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; 
+&lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;   &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;82&lt;/span&gt;        &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt;
++-----+-----------+&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;strong&gt;Transaction A&lt;/strong&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;BEGIN&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+DELETE from table2 where &lt;span class=&quot;nv&quot;&gt;table1_id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;75&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+Query OK, &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt; rows affected &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;.00 sec&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This transaction will aquire a gap lock on range from 74-80.
+this means if we try to insert new values in table2(in another session) with table1_id ranging from 74-80 it will wait until delete transaction commits.&lt;/p&gt;
+
+&lt;h4 id=&quot;other-issues&quot;&gt;&lt;strong&gt;Other issues&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;In addition to addressing the deadlock issues caused by gap locks, we also encountered problems related to AASM records. We were using the AASM gem, a library that manages state transitions. In our case, this library was responsible for changing the state of the test to “completed” and executing several callback functions. These operations were performed as part of a single transaction, which sometimes resulted in prolonged transaction durations and increased the likelihood of deadlocks.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Model dummy code&lt;/strong&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;aasm &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  state :active, initial: &lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;
+  state :complete
+  event :complete, after: &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;:method1, :method2, :method3&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+      transitions from: :active, to: :complete
+  end
+end&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;When the test is marked as complete and the state changes, all the MySQL-related queries are executed as part of a single transaction.&lt;/p&gt;
+
+&lt;p&gt;Due to the execution of all these methods within a single transaction, there were instances where the transaction took a considerable amount of time to complete. These prolonged transactions duration increased the risk of deadlocks occurrence and also resulted in issues related to lock wait time.&lt;/p&gt;
+
+&lt;h4 id=&quot;fix&quot;&gt;&lt;strong&gt;FIX&lt;/strong&gt;&lt;/h4&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;To fix this we moved the insertion of records as a separate transaction out of the aasm state change.&lt;/li&gt;
+  &lt;li&gt;Optimized transaction size: We optimized the other badly written queries in the transaction.&lt;/li&gt;
+  &lt;li&gt;Reduced transaction duration: Only limited number of queries were part of the state change transaction (to keep the transaction short).&lt;/li&gt;
+  &lt;li&gt;We further optimized the GAP lock by avoiding unnecessary delete queries when the records were not present in the table with the corresponding ID.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&quot;references&quot;&gt;&lt;strong&gt;References&lt;/strong&gt;&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://dev.mysql.com/doc/refman/8.0/en/innodb-locking.html#innodb-gap-locks&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Innodb Gap Lock&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://dev.mysql.com/doc/refman/8.0/en/innodb-locking.html#innodb-next-key-locks&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Innodb Next Key Lock&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://dev.mysql.com/doc/refman/8.0/en/innodb-locking.html#innodb-insert-intention-locks&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Innodb Insert Intention Lock&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://medium.com/@tanishiking/avoid-deadlock-caused-by-a-conflict-of-transactions-that-accidentally-acquire-gap-lock-in-innodb-a114e975fd72&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Gap lock with example medium article&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.percona.com/blog/innodbs-gap-lock&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Gap lock article by percona&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+  
+  &lt;p&gt;&lt;a href=&quot;/technology/debugging-and-fixing-mysql-deadlock-issue/&quot;&gt;Debugging &amp; Fixing mysql deadlock issue&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on June 12, 2023.&lt;/p&gt;</content>
+</entry>
 
 
 <entry>
@@ -2162,54 +2329,6 @@ Insert your Dongel into an USB port. You should see “Mobile Partner” applica
 
   
   &lt;p&gt;&lt;a href=&quot;/technology/making-airtel-3g-dongle-work-on-mac-os-10-dot-10-yosemite/&quot;&gt;Making Airtel 3G dongle work on Mac OS 10.10 Yosemite&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on December 03, 2014.&lt;/p&gt;</content>
-</entry>
-
-
-<entry>
-  <title type="html"><![CDATA[IT Career - Pitfalls to avoid]]></title>
-  <link rel="alternate" type="text/html" href="/career/it-career-pitfalls-to-avoid/"/>
-  <id>/career/it-career-pitfalls-to-avoid</id>
-  <updated>2014-09-22 17:01:53 +0530T00:00:00-00:00</updated>
-  <published>2014-09-22T00:00:00+05:30</published>
-  
-  <author>
-    <name>eLitmus.com</name>
-    <uri></uri>
-    <email>site-admin@elitmus.com</email>
-  </author>
-  <category scheme="/tags/#pyramid%20effect" term="pyramid effect" /><category scheme="/tags/#Indian%20IT%20industry" term="Indian IT industry" /><category scheme="/tags/#Freshers" term="Freshers" />
-  <content type="html">
-  
-    &lt;p&gt;It is very humbling when a youngster walks up to us and says “Thanks for helping me get my first job”. While we are delighted at one end, we are worried at the other.  Why? Because, most of the time a fledgling mind does not see the disaster ahead! &lt;br /&gt;&lt;br /&gt;Yes, we mean disaster – 75% of IT professionals of 2011-2014 batches will be unemployed 20 years from now.  And this is assuming IT industry does well !! Looks unlikely? Read on to know more.&lt;/p&gt;
-
-&lt;p&gt;Indian IT industry has employed around 7,50,000 professionals from the four batches (2011, 2012, 2013, 2014). An estimated 1,50,000 of these will leave the Indian IT industry to pursue higher studies and never come back to work for the same industry. That leaves us with 6,00,000 professionals who will be in the industry for long. The question is: How long? Being highly paid with around 20 years of experience, in the year 2030, companies would want them to take larger responsibilities and oversee at least 100 professionals under them. Summing it up, these 6 lakh professionals should have 6 crore professionals below them. Assuming IT industry grows at 10% per annum for 20 years (caution - it may already be slowing down), the whole industry will be just 1.2 crore strong. That means at most 1.2 lakh senior professionals will be needed. What would happen to the rest 4.8 lakh professionals? They would, of course, be unemployed.&lt;/p&gt;
-
-&lt;p&gt;Difficult to digest? In 1995, there were approximately 11,000 software professionals across all levels. Nearly 50% of them are now citizens of another country or earned enough money from the exponentially growing market (nascent market then) growing market to retire, appropriately called VIP (vested in peace). Another at most 15,500 professionals of the same era migrated into IT industry from other industries (like SAP consultants, Supply Chain, Financial professionals). So that is a conservative 21,000 senior professionals in the whole of Indian IT industry. Many of these who lose a job today struggle to find another suitable profile (20 Yrs of experience) and this is when growth rates in this period have been over 25%. You can see it happening for the current 40+ year old professionals!!&lt;/p&gt;
-
-&lt;p&gt;Now you have a lingering doubt – could there be something wrong in the projections? Yes !! But it is unfortunately on the negative side. What if the industry grows slower than 10% (may be another bad patch of no growth for 2-4 years). What if automation makes many more jobs redundant (now in IT itself, think about it!)? Last but not the least, another country taking away jobs from India (like China did in manufacturing)?&lt;/p&gt;
-
-&lt;p&gt;A tell-a-tale from not very long ago is the textile mills of Bombay. They were teeming with activity and nothing could go wrong for them in 1970s and early 1980s. It could only get better as population was growing and people’s ability to spend was increasing. These very mills today are malls!! It can be argued to be a ‘crowding out’ phenomenon, surely not applicable to sunrise IT industry. Or maybe it is visible only in hindsight !!!&lt;/p&gt;
-
-&lt;h4 id=&quot;what-are-we-doing-at-elitmus-to-help-the-cause&quot;&gt;&lt;strong&gt;What are we doing at eLitmus to help the cause?&lt;/strong&gt;&lt;/h4&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;p&gt;We are pushing companies not to lower the entry barriers. We have found that immediately after a slow down year, quality and quantity of candidates improve. Quantity ok, but how quality? You call it competition, you call it lowered demand or call it buyers market. So if companies can adopt the quality principals in this period, why not in growth phase as well. It will help students also.
-We strongly believe a youngster`s ability to adapt and evolve is much higher than an older person. So push them today rather than tomorrow. If you remember your grandparents had the fitness and ability to walk kilometres at their old age (not spoilt by automobiles when they were a child)&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Educating students that the easy path out, though rosy for short term, will destroy them. We want them to go that extra mile. That explains our rigorous question paper which tests fundamentals and concepts. We want them to earn their job rather than get it. In the process their ability goes up. Few students who wrote pH test in the initial years of eLitmus have founded their own start-ups.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Ensuring start-ups and companies with great work environment do not struggle for lack of talent. Most of these engagements are loss making. We survive thanks to the fact that most of our colleagues at eLitmus are passionate about what they do and work at a fraction of their market salary!!&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;We are committed to “making India competitive” and we hope we have challenged the young reader of this blog to go the extra mile. As Steve Jobs once quoted the Whole Earth catalogue “Stay hungry, Stay foolish!”&lt;/p&gt;
-
-
-  
-  &lt;p&gt;&lt;a href=&quot;/career/it-career-pitfalls-to-avoid/&quot;&gt;IT Career - Pitfalls to avoid&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on September 22, 2014.&lt;/p&gt;</content>
 </entry>
 
 </feed>
