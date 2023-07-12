@@ -169,7 +169,7 @@ This test aims to assess the behavior of navigation and redirection implemented 
 </div>
 
 <div align="center">
-    <img src="../images/frontend-scoring-engine/submt.png" alt="Screenshot 5" width="400" style="margin-top: 20px; margin-right: 20px" />
+    <img src="../images/frontend-scoring-engine/submit.png" alt="Screenshot 5" width="400" style="margin-top: 20px; margin-right: 20px" />
     <img src="../images/frontend-scoring-engine/problem.png" alt="Screenshot 6" width="400" style="margin-top: 20px" />
 </div>
 
