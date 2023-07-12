@@ -158,20 +158,21 @@ This test aims to assess the behavior of navigation and redirection implemented 
 ## 📸 Screenshots
 
 
-<div style="display:flex; flex-direction:row; margin-bottom:20px">
-<img src="../images/frontend-scoring-engine/home.png" style="height:300px; width:500px;margin-right:10px"></img>
-<img src="../images/frontend-scoring-engine/explore.png" style="height:300px; width:500px;margin-left:10px"></img>
+<div align="center">
+    <img src="../images/frontend-scoring-engine/home.png" alt="Screenshot 1" width="400" style="margin-right: 20px" />
+    <img src="../images/frontend-scoring-engine/explore.png" alt="Screenshot 2" width="400" />
 </div>
 
-<div style="display:flex; flex-direction:row">
-<img src="../images/frontend-scoring-engine/create.png" style="height:250px; width:500px"></img>
-<img src="../images/frontend-scoring-engine/testcases.png" style="height:250px; width:500px"></img>
+<div align="center">
+    <img src="../images/frontend-scoring-engine/create.png" alt="Screenshot 3" width="400" style="margin-top: 20px; margin-right: 20px" />
+    <img src="../images/frontend-scoring-engine/testcases.png" alt="Screenshot 4" width="400" style="margin-top: 20px" />
 </div>
 
-<div style="display:flex; flex-direction:row">
-<img src="../images/frontend-scoring-engine/submit.png" style="height:250px; width:500px"></img>
-<img src="../images/frontend-scoring-engine/problem.png" style="height:250px; width:500px"></img>
+<div align="center">
+    <img src="../images/frontend-scoring-engine/submt.png" alt="Screenshot 5" width="400" style="margin-top: 20px; margin-right: 20px" />
+    <img src="../images/frontend-scoring-engine/problem.png" alt="Screenshot 6" width="400" style="margin-top: 20px" />
 </div>
+
 ---
 
 ## ⚒️ Tools & Technologies
