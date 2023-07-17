@@ -1,0 +1,1373 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Resume Parsing: Insights and Steps to Create Your Own Parser &#8211; eLitmus Blog</title>
+<meta name="description" content="We learn new things everyday, and we document our learnings here...">
+
+<meta name="keywords" content="Resume-parser, Python, Flask, NLP, LLM">
+
+<!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary">    
+<meta name="twitter:title" content="Resume Parsing: Insights and Steps to Create Your Own Parser">
+<meta name="twitter:description" content="<p>Resume parsing is the automated process of extracting relevant information from resumes or CVs. 
+It analyzes the unstructured text of a resume and extracts specific details like contact information, work experience, education, skills, and achievements. 
+The extracted data is then converted into a structured format, allowing for easy analysis and integration into recruitment systems.</p>
+
+">
+<meta name="twitter:site" content="@elitmus">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        
+            <meta name="twitter:creator" content="@jhamadhav28">
+        
+    
+
+
+
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="/blog/images/blog_logo_taglinedorange.png"/>
+<meta property="og:type" content="article">
+<meta property="og:title" content="Resume Parsing: Insights and Steps to Create Your Own Parser">
+<meta property="og:description" content="<p>Resume parsing is the automated process of extracting relevant information from resumes or CVs. 
+It analyzes the unstructured text of a resume and extracts specific details like contact information, work experience, education, skills, and achievements. 
+The extracted data is then converted into a structured format, allowing for easy analysis and integration into recruitment systems.</p>
+
+">
+<meta property="og:url" content="/blog/technology/resume-parsing-insights-and-steps-to-create-your-own-parser/">
+
+<meta property="og:site_name" content="eLitmus Blog">
+
+
+
+
+
+
+
+<link rel="canonical" href="https://www.elitmus.com/blog/technology/resume-parsing-insights-and-steps-to-create-your-own-parser/">
+<link href="/blog/feed.xml" type="application/atom+xml" rel="alternate" title="eLitmus Blog Feed">
+
+
+	<link rel="author" href="https://plus.google.com/+eLitmus?rel=author">
+
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Icons -->
+<!-- apple touch icons -->
+<link rel="apple-touch-icon" sizes="57x57" href="/blog/images/apple-touch-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="114x114" href="/blog/images/apple-touch-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/blog/images/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/blog/images/apple-touch-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="60x60" href="/blog/images/apple-touch-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/blog/images/apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/blog/images/apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/blog/images/apple-touch-icon-152x152.png">
+<!-- Favicons default 16x16 -->
+<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="/blog/favicon.ico">
+
+<!-- Favicons others -->
+<link rel="icon" type="image/png" href="/blog/images/favicon-196x196.png" sizes="196x196">
+<link rel="icon" type="image/png" href="/blog/images/favicon-160x160.png" sizes="160x160">
+<link rel="icon" type="image/png" href="/blog/images/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/blog/images/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/blog/images/favicon-32x32.png" sizes="32x32">
+
+<!-- Icons for Windows 8 Tiles -->
+<meta name="msapplication-TileColor" content="#ffffff"/>
+<meta name="msapplication-TileImage" content="/blog/images/mstile-144x144.png">
+
+<!-- For all browsers -->
+
+
+<!-- Webfonts -->
+<link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:600,300,300italic|The+Girl+Next+Door" rel="stylesheet" type="text/css">
+<link href='//fonts.googleapis.com/css?family=Source+Code+Pro:300' rel='stylesheet' type='text/css'>
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- bootstrap 4 -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/bootstrap.min.css">
+
+<!-- below css file is used for navbar in individual blogposts -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/main.min.css">
+
+<!-- <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"> -->
+
+<!-- Optional theme -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/bootstrap-theme.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Font Awesome -->
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/font-elitmuslogo.css" />
+
+<link rel="stylesheet" href="/blog/assets/css/customize.css">
+<link rel="stylesheet" href="/blog/assets/css/forkit.css">
+</head>
+
+<body id="post">
+
+  <header class="headroom">
+
+  <nav class="navbar navbar-expand-md navbar-dark bg-black fixed-top" role="navigation">
+
+      <a class="navbar-brand" href="/blog/">
+        <img src="https://cdn0.elitmus.net/assets/elitmus-only-logo-6efc8a74032179afdb89829a093e05bd05d627dd4354bbd1ff7f4eb5db8a0af8.svg" class="img-logo">
+        <span><div class="blog-label">blog</div></span>
+      </a>
+
+      <!-- the toggle button -->
+      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="navbar-toggler-icon"></span>
+        <span class="sr-only">Toggle navigation</span><!-- only for screen readers -->
+      </button>
+
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav mr-auto">
+
+          <!-- first item = dropdown search -->
+          <li class="nav-item">
+            <div class="dropdown search-box-margin">
+
+            
+              <div class="form-inline">
+                 
+
+                <input data-toggle="dropdown" placeholder="Search..." id="search-box" class="form-control form-control-sm search-input dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+
+
+                <div class="dropdown-menu" id="search-dropdown">
+                  <a role='presentation' class='dropdown-item search-results'> Type more.... </a>
+                </div>
+
+              </div>
+
+
+
+            <!-- the below line will pass "search word" to search.html -->
+
+            <!--
+            <form class="form-inline" action="/blog/search" method="get">
+               
+
+
+              <label for="search_box">Search</label>
+              <input data-toggle="dropdown" type="text" name="query" placeholder="Search..." id="search-box" class="form-control form-control-sm search-input dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+
+              <div class="dropdown-menu" id="search-dropdown">
+                  <a role='presentation' class='dropdown-item search-results'> Type more.... </a>
+              </div>
+
+              <input type="submit" value="search">
+
+            </form>
+            -->
+
+            <!-- end of form -->
+
+
+            </div>
+          </li>
+        </ul>
+
+        
+
+        <!-- every link on the right side -->
+        <ul class="nav navbar-nav navbar-right nav-icon-size-reduce">
+          
+          <li class="nav-item">
+             
+              <a href="/blog/" class="nav-link">
+                <i class="fa fa-home"></i> Home
+              </a>
+            
+          </li>
+          
+          <li class="nav-item">
+             
+              <a href="/blog/posts/" class="nav-link">
+                <i class="fa fa-file-text-o"></i> Posts
+              </a>
+            
+          </li>
+          
+          <li class="nav-item">
+             
+              <a href="//www.elitmus.com/" class="nav-link">
+                <i class="el el-elitmuslogo"></i> eLitmus
+              </a>
+            
+          </li>
+          
+
+          <!-- feed is the last link -->
+          <li class="nav-item">
+            <a href="/blog/feed.xml" class="nav-link" title="Atom/RSS feed">
+              <i class="fa fa-rss"></i> Feed
+            </a>
+          </li>
+        </ul>
+
+
+
+      </div> <!-- /.navbar-collapse -->
+
+  </nav><!--[if lt IE 9]><div class="upgrade"><strong><a href="https://whatbrowser.org/">Your browser is quite old!</strong> Why not upgrade to a different browser to better enjoy this site?</a></div><![endif]-->
+</header>
+<!-- 
+
+  <div class="search-wrapper">
+    <div class="search-form">
+      <input type="text" class="search-field" placeholder="Search...">
+      <i class="icon-remove-sign icon-2x"></i>
+      <ul class="search-results post-list"></ul> -->
+<!-- /.search-results -->
+<!-- </div> -->
+<!-- /.search-form -->
+<!-- </div> -->
+<!-- ./search-wrapper -->
+<!--  -->
+
+  
+
+  <div class="container-fluid">
+
+  <div class="row">
+
+
+    <div class="col-md-2"></div>
+      <div class="col-md-8">
+        
+
+        <div id="main" role="main" class="marginal">
+          <article class="entry">
+
+            
+
+            <div>
+              <header>
+                <span class="entry-tags">
+                  
+                    <a href="/blog/tags/#Resume-parser" title="Pages tagged Resume-parser">Resume-parser</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#Python" title="Pages tagged Python">Python</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#Flask" title="Pages tagged Flask">Flask</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#NLP" title="Pages tagged NLP">NLP</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#LLM" title="Pages tagged LLM">LLM</a>
+                    
+                  
+
+                  <div class=' social-sharing pull-right'>        
+     
+</div>
+
+                </span>
+              
+                
+                  <h1 class="no-padding">Resume Parsing: Insights and Steps to Create Your Own Parser</h1>
+                
+              </header>
+            </div>
+           
+            <div>
+              <div>
+                <span class='badge badge-warning'> <a href="/blog/categories/technology/index.html" > technology </a></span>
+              </div>
+
+              
+
+              <div class="post-content-justify">
+                <p>Resume parsing is the automated process of extracting relevant information from resumes or CVs. 
+It analyzes the unstructured text of a resume and extracts specific details like contact information, work experience, education, skills, and achievements. 
+The extracted data is then converted into a structured format, allowing for easy analysis and integration into recruitment systems.</p>
+
+<h2 id="benefits-of-resume-parsing">Benefits of Resume Parsing</h2>
+
+<ul>
+  <li>It is a time-saving automation</li>
+  <li>It increases efficiency in candidate screening</li>
+  <li>Improves accuracy in data extraction</li>
+  <li>It standardizes the data extraction and formatting</li>
+</ul>
+
+<h2 id="what-youll-learn-from-this-blog">What you’ll learn from this blog:</h2>
+
+<ol>
+  <li>Resume parsing techniques for different file formats.</li>
+  <li>Extracting specific details from resumes.</li>
+  <li>Leveraging NLP techniques for parsing.</li>
+  <li>Handling multicolumn resumes.</li>
+  <li>Dockerizing the Application: Simplifying Deployment and Scalability</li>
+  <li>Hosting it on AWS EC2.</li>
+</ol>
+
+<p><strong>Let’s get Started 🎉</strong></p>
+
+<p>We’ll utilize Python and its Flask framework to create a resume parsing server.</p>
+
+<h2 id="application-flow-chart">Application Flow Chart:</h2>
+
+<p><img src="/blog/images/resume-parsing-insights-and-steps-to-create-your-own-parser/file-flow.jpg" alt="Application Flow Chart Image" /></p>
+
+<p>We will be primarily working on 3 categories of file formats:</p>
+<ol>
+  <li>PDF</li>
+  <li>DOCX</li>
+  <li>Images (.png, .jpg, etc.)</li>
+</ol>
+
+<h3 id="data-that-we-will-be-extracting">Data that we will be extracting</h3>
+
+<ol>
+  <li>Embedded links in PDF</li>
+  <li>Personal data: <br />
+ 2.1. Name: First name and last name <br />
+ 2.2. Email <br />
+ 2.3. Phone Number <br />
+ 2.4. Address: City, Country, and Zip code <br />
+ 2.5. Links: Social and Coding Platform links <br /></li>
+  <li>Education <br />
+ 3.1. Institute name <br />
+ 3.2. Duration: Start date and End date <br />
+ 3.3. Grade/CGPA <br />
+ 3.4. Degree <br /></li>
+  <li>Experience<br />
+ 4.1. Company name<br />
+ 4.2. Role<br />
+ 4.3. Durations: Start date and End date<br />
+ 4.4. Skills<br /></li>
+  <li>Certification: <br />
+ 5.1. Description <br />
+ 5.2. Duration <br />
+ 5.3. Skill <br /></li>
+  <li>Project: <br />
+ 6.1. Project name <br />
+ 6.2. Skills <br />
+ 6.3. Description <br /></li>
+  <li>Skills</li>
+  <li>Achievements</li>
+  <li>Exam scores<br />
+ 9.1. Exam name<br />
+ 9.2 Score<br /></li>
+  <li>All other sections present in resume</li>
+</ol>
+
+<h2 id="dateduration-extraction">Date/Duration Extraction</h2>
+
+<p>To extract dates from text, we will use <code>datefinder</code> module, and regexp to extract years.
+Then we will combine these two and sort dates to get start and end date for our duration.</p>
+
+<pre><code class="language-python">import re
+from datetime import date
+import datefinder
+
+
+def get_date(input_string):
+    '''Get date from text'''
+    matches = list(datefinder.find_dates(input_string))
+
+    res = []
+    for i in matches:
+        date_str = str(i).split(' ')
+        extracted_date = date_str[0]
+
+        res.append(extracted_date)
+    return res
+
+
+def get_years(txt):
+    '''Get years from text'''
+    pattern = r'[0-9]{4}'
+    lst = re.findall(pattern, txt)
+
+    current_date = date.today()
+    current_year = current_date.year
+    res = []
+    for i in lst:
+        year = int(i)
+        if 1900 &lt;= year &lt;= (current_year + 10):
+            res.append(i + "-01-01")
+    return res
+
+
+def get_duration(input_text):
+    '''Get duration from text'''
+
+    dates = get_date(input_text)
+    years = get_years(input_text)
+
+    for i in years:
+        dates.append(i)
+    dates.sort()
+
+    duration = {
+        "start_date": "",
+        "end_date": ""
+    }
+    if len(dates) &gt; 1:
+        duration["start_date"] = dates[0]
+        duration["end_date"] = dates[len(dates) - 1]
+    return duration
+
+</code></pre>
+
+<h2 id="extracting-links-from-pdf">Extracting links from PDF:</h2>
+
+<p>To extract links from the PDF, we will use the python module <code>PDFx</code>.</p>
+
+<pre><code class="language-python">import pdfx
+
+def get_urls_from_pdf(file_path):
+    '''extract urls from pdf file'''
+    url_list = []
+
+    # for invalid file path
+    if os.path.exists(file_path) is False:
+        return url_list
+
+    pdf = pdfx.PDFx(file_path)
+
+    # get urls
+    pdf_url_dict = pdf.get_references_as_dict()
+
+    if "url" not in pdf_url_dict.keys():
+        return url_list
+
+    url_list = pdf_url_dict["url"]
+
+    return url_list
+</code></pre>
+
+<h2 id="pdf-to-text">PDF to Text</h2>
+
+<pre><code class="language-python">import pdfx
+def get_text_from_pdf(file_path):
+    '''extract complete text from pdf'''
+
+    # for invalid file path
+    if os.path.exists(file_path) is False:
+        return ""
+
+    pdf = pdfx.PDFx(file_path)
+
+    pdf_text = pdf.get_text()
+
+    return pdf_text
+
+</code></pre>
+
+<h2 id="extracting-personal-details">Extracting Personal Details:</h2>
+
+<p>We will extract text from the PDF and move ahead with further extractions.</p>
+
+<h3 id="name">Name</h3>
+
+<p>Extracting the name from the text is one of the challenging tasks.</p>
+
+<p>For this, we will be using <code>NLP: Named Entity Recognition</code> to extract name from the text.</p>
+
+<h4 id="nlp-function">NLP function:</h4>
+
+<pre><code class="language-python">def get_name_via_nltk(input_text):
+    '''extract name from text via nltk functions'''
+    names = []
+    for sent in nltk.sent_tokenize(input_text):
+        for chunk in nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(sent))):
+            if hasattr(chunk, 'label'):
+                name = ' '.join(c[0] for c in chunk.leaves())
+                names.append(name)
+    return names
+</code></pre>
+<ul>
+  <li>The text is tokenized into sentences using nltk.sent_tokenize().</li>
+  <li>Each sentence is further tokenized into words using nltk.word_tokenize().</li>
+  <li>The part-of-speech tags are assigned to each word using nltk.pos_tag().</li>
+  <li>The named entities are identified by applying the named entity recognition (NER) using nltk.ne_chunk().</li>
+  <li>For each identified named entity chunk, if it has a ‘label’, indicating it is a named entity, the individual words are concatenated to form a name.</li>
+  <li>The extracted names are appended to the names list.</li>
+</ul>
+
+<h3 id="phone-number">Phone Number</h3>
+
+<p>To extract the Phone number, we use the following module <code>phonenumbers</code>, we extract users country from text and using that we will extract relevant phone numbers.</p>
+<pre><code class="language-python">import geotext
+from phonenumbers import PhoneNumberMatcher
+
+def get_phone(input_text):
+    '''extract phone number from text'''
+
+    phone_numbers = []
+
+    countries_dict = geotext.GeoText(input_text).country_mentions
+    
+    country_code = "IN"
+    for i in countries_dict.items():
+        country_code = i[0]
+        break
+
+    search_result = PhoneNumberMatcher(input_text, country_code)
+
+    phone_number_list = []
+    for i in search_result:
+        i = str(i).split(' ')
+        match = i[2:]
+
+        phone_number = ''.join(match)
+        phone_number_list.append(phone_number)
+
+    for i in phone_number_list:
+        if i not in phone_numbers:
+            phone_numbers.append(i)
+
+    return phone_numbers
+</code></pre>
+
+<h3 id="email">Email</h3>
+
+<p>To extract the Email, we use the following regexp: <code>[^\s]+@[^\s]+[.][^\s]+</code></p>
+<pre><code class="language-python">def get_email(input_text):
+    '''extract email from text'''
+    email_pattern = '[^\s]+@[^\s]+[.][^\s]+'
+
+    emails = []
+    emails = re.findall(email_pattern, input_text)
+
+    # pick only unique emails
+    emails = set(emails)
+    emails = list(emails)
+
+    return emails
+
+</code></pre>
+
+<h3 id="address">Address</h3>
+
+<p>To Extract address, we use the <code>geotext</code> module; we get City, Country, and Zipcode.</p>
+<pre><code class="language-python">import geotext
+def get_address(input_arr):
+    '''get address information from input array'''
+
+    input_text = " \n ".join(input_arr)
+
+    res = {}
+    # getting all countries
+    countries_dict = geotext.GeoText(input_text).country_mentions
+
+    res["country"] = []
+    for i in countries_dict:
+        res["country"].append(i)
+
+    # getting all cities
+    res["city"] = geotext.GeoText(input_text).cities
+
+    # zip code
+    pattern = "\b([1-9]{1}[0-9]{5}|[1-9]{1}[0-9]{2}\\s[0-9]{3})\b"
+    res["zipcode"] = re.findall(pattern, input_text)
+
+    return res
+
+</code></pre>
+
+<h3 id="links">Links</h3>
+
+<p>As we already have a URL list from 1st operation, we will match links from a list of our own, this can be saved in any database or hard-coded, and categorize them into <code>social</code> or <code>coding</code> sections.</p>
+
+<h2 id="other-sections">Other Sections</h2>
+
+<p>There can be many sections in a resume, that we cannot always account for.
+To extract them, we will create a list of possible section heading and match them against each line from the resume that we have extracted.</p>
+
+<p>The code will be as following:</p>
+<pre><code class="language-python">
+from utils import dynamo_db
+
+RESUME_SECTIONS = dynamo_db.get_item_db("RESUME_SECTIONS")
+
+
+def extract_resume_sections(text):
+    '''Extract section based on resume heading keywords'''
+    text_split = [i.strip() for i in text.split('\n')]
+
+    entities = {}
+    entities["extra"] = []
+    key = False
+    for phrase in text_split:
+        if len(phrase.split(' ')) &gt; 10:
+            if key is not False:
+                entities[key].append(phrase)
+            else:
+                entities["extra"].append(phrase)
+            continue
+
+        if len(phrase) == 1:
+            p_key = phrase
+        else:
+            p_key = set(phrase.lower().split()) &amp; set(RESUME_SECTIONS)
+
+        try:
+            p_key = list(p_key)[0]
+        except IndexError:
+            pass
+
+        if p_key in RESUME_SECTIONS and (p_key not in entities.keys()):
+            entities[p_key] = []
+            key = p_key
+        elif key and phrase.strip():
+            entities[key].append(phrase)
+        else:
+            if len(phrase.strip()) &lt; 1:
+                continue
+            entities["extra"].append(phrase)
+
+    return entities
+
+</code></pre>
+
+<h2 id="education">Education</h2>
+
+<p>To extract education, we need to identify a line from our education section that represent the school/institute name, and a line that represents the degree. After which we can search for CGPA or Percentage using regexp.
+For name recognition, we will make use of a list of keywords that can be present in the name.</p>
+
+<p>Code to get school name, similarly we can implement to get degree as well.</p>
+<pre><code class="language-python">import re
+from utils import helper, dynamo_db
+
+SCHOOL_KEYWORDS = dynamo_db.get_item_db("SCHOOL_KEYWORDS")
+
+
+def get_school_name(input_text):
+    '''Extract list of school names from text'''
+    text_split = [i.strip() for i in input_text.split('\n')]
+
+    school_names = []
+
+    for phrase in text_split:
+        p_key = set(phrase.lower().split(' ')) &amp; set(SCHOOL_KEYWORDS)
+
+        if (len(p_key) == 0):
+            continue
+
+        school_names.append(phrase)
+    return school_names
+
+</code></pre>
+
+<p>Code to extract CGPA/GPA or Percentage grade</p>
+<pre><code class="language-python">def get_percentage(txt):
+    '''Extract percentage from text'''
+    pattern = r'((\d+\.)?\d+%)'
+    lst = re.findall(pattern, txt)
+    lst = [i[0] for i in lst]
+    return lst
+
+
+def get_gpa(txt):
+    '''Extract cgpa or gpa from text in format x.x/x'''
+    pattern = r'((\d+\.)?\d+\/\d+)'
+    lst = re.findall(pattern, txt)
+    lst = [i[0] for i in lst]
+    return lst
+
+
+def get_grades(input_text):
+    '''Extract grades from text'''
+    input_text = input_text.lower()
+    # gpa
+    gpa = get_gpa(input_text)
+
+    if (len(gpa) != 0):
+        return gpa
+
+    # percentage
+    percentage = get_percentage(input_text)
+
+    if (len(percentage) != 0):
+        return percentage
+
+    return []
+</code></pre>
+
+<h2 id="skills">Skills</h2>
+
+<p>In order to extract skills from the text, a master list of commonly used skills can be created and stored in a database, such as AWS DynamoDB. Each skill from the list can be matched against the text to identify relevant skills. By doing so, a comprehensive master skill list can be generated, which can be utilized for more specific skill extraction in subsequent sections.</p>
+
+<pre><code class="language-python">
+from utils import dynamo_db
+
+skills = dynamo_db.get_item_db("ALL_SKILLS")
+
+
+def get_skill_tags(input_text):
+    '''Extract skill tags from text'''
+    user_skills = []
+    for skill in skills:
+        if skill in input_text.lower():
+            user_skills.append(skill.upper())
+
+    return user_skills
+
+</code></pre>
+
+<h2 id="experience">Experience</h2>
+
+<p>To extract company names and roles, a similar strategy can be employed as we used for finding school names and degrees. By applying appropriate techniques, such as named entity recognition or pattern matching, we can identify company names and associated job roles from the text. Additionally, for skill extraction, we can match the text against our previously calculated list of skills to identify and extract relevant skills mentioned in the text</p>
+
+<h2 id="achievements-and-certifications">Achievements and Certifications</h2>
+
+<p>We can use the section text that we extracted previously and for each line of it, we can search for duration and skills in it.</p>
+
+<pre><code class="language-python">
+from utils import helper, skill_tags
+
+
+def get_certifications(input_array):
+    '''Function to extract certificate information'''
+
+    res = {
+        "description": input_array,
+        "details": []
+    }
+
+    try:
+
+        for cert in input_array:
+            elem_dict = {
+                "institute_name": str(cert),
+                "skills": skill_tags.get_skill_tags(cert),
+                "duration": helper.get_duration(cert)
+            }
+            res["details"].append(elem_dict)
+
+    except Exception as function_exception:
+        helper.logger.error(function_exception)
+
+    return res
+
+</code></pre>
+
+<h2 id="projects">Projects</h2>
+
+<p>When it comes to extracting project titles, it can be challenging due to the variations in how individuals choose to title their projects. However, we can make an assumption that project titles are often written in a larger font size compared to the rest of the text. Leveraging this assumption, we can analyze the font sizes of each line in the text and sort them in descending order. By selecting the lines with the largest font sizes from the top, we can identify potential project titles. This approach allows us to further segment the project section and extract additional details such as skills utilized and project durations.</p>
+
+<p>Link: <a href="https://stackoverflow.com/questions/68097779/how-to-find-the-font-size-of-every-paragraph-of-pdf-file-using-python-code">How to find the Font Size of every paragraph of PDF file using python code?</a></p>
+<pre><code class="language-python">import fitz
+
+def scrape(keyword, filePath):
+    results = [] # list of tuples that store the information as (text, font size, font name) 
+    pdf = fitz.open(filePath) # filePath is a string that contains the path to the pdf
+    for page in pdf:
+        dict = page.get_text("dict")
+        blocks = dict["blocks"]
+        for block in blocks:
+            if "lines" in block.keys():
+                spans = block['lines']
+                for span in spans:
+                    data = span['spans']
+                    for lines in data:
+                            results.append((lines['text'], lines['size'], lines['font']))
+
+    pdf.close()
+    return results
+</code></pre>
+
+<p>Using this we find our project titles:</p>
+<pre><code class="language-python">from utils import helper, skill_tags
+from difflib import SequenceMatcher
+
+def similar(string_a, string_b):
+    '''Find similarity between two string'''
+    return SequenceMatcher(None, string_a, string_b).ratio()
+
+def extract_project_titles(input_array, text_font_size):
+    ls = []
+    for line_tuple in text_font_size:
+        line = line_tuple[0]
+        for s in input_array:
+            if similar(line,s) &gt; 0.85:
+                ls.append([line_tuple[1], s])
+    ls.sort(reverse=True)
+
+    title_font_size = ls[0][0] if(len(ls) &gt; 0) else 0
+    project_title = []
+    for i in ls:
+        if i[0] == title_font_size:
+          project_title.append(i[1])
+    return project_title
+
+def get_projects(input_array, text_font_size):
+    '''extract project details from text'''
+    res = {
+        "description": input_array,
+        "details": []
+    }
+    txt = ' \n '.join(input_array)
+
+    project_titles = helper.extract_titles_via_font_size(
+        input_array, text_font_size)
+
+    project_sections = helper.extract_sections(txt, project_titles)
+
+    try:
+        for i in project_sections.items():
+            key = i[0]
+            txt = '\n'.join(project_sections[key])
+
+            elem_dict = {
+                "project_name": key,
+                "skills": skill_tags.get_skill_tags(txt),
+                "duration": helper.get_duration(txt)
+            }
+
+            res["details"].append(elem_dict)
+    except Exception as function_exception:
+        helper.logger.error(function_exception)
+
+    return res
+
+</code></pre>
+
+<h2 id="handling-multicolumn-resumes">Handling multicolumn resumes</h2>
+
+<p>Up until now, we have explored techniques to handle single-column resumes successfully. 
+However, when it comes to two-column or multicolumn resumes, a direct extraction of text may not be sufficient. If we attempt to extract text from a multicolumn PDF using the same method as before, we will encounter challenges such as, the text from different columns will merge together, as our previous approach scans the text from left to right and top to bottom, rather than column-wise.</p>
+
+<p>To overcome this issue, let’s delve into how we can solve this problem and effectively handle multicolumn resumes.</p>
+
+<h3 id="drawing-textboxes">Drawing textboxes</h3>
+
+<p><code>Optical Character Recognition (OCR)</code> comes to the rescue by identifying textboxes and providing their coordinates within the document. By utilizing OCR, we can pinpoint the location of these textboxes, which serve as a starting point for further analysis.</p>
+
+<p>To tackle the challenge of multicolumn resumes, a line sweep algorithm is implemented. This algorithm systematically scans along the X-axis and determines how many textboxes intersect each point. By analyzing this distribution, potential column divide lines can be inferred. These lines act as reference markers, indicating the boundaries between columns.</p>
+
+<p>Once the column lines are established, the text can be extracted from the identified textboxes in a column-wise manner. Following the order of the column lines, the text can be retrieved and processed accordingly.</p>
+
+<p>By leveraging OCR, the line sweep algorithm, and the concept of column lines, we can effectively handle multicolumn resumes and extract the necessary information in an organized and structured manner.</p>
+
+<p>Code:</p>
+<pre><code class="language-python">import cv2
+import fitz
+from fitz import Document, Page, Rect
+import pytesseract
+import functools
+
+def textbox_recognition(file_path):
+    '''Extract text_boxes from image'''
+
+    img = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
+
+    ret, thresh1 = cv2.threshold(
+        img, 0, 255, cv2.THRESH_OTSU | cv2.THRESH_BINARY_INV)
+
+    # kernel
+    kernel_size = 10
+    rect_kernel = cv2.getStructuringElement(
+        cv2.MORPH_RECT, (kernel_size, kernel_size))
+
+    # Applying dilation on the threshold image
+    dilation = cv2.dilate(thresh1, rect_kernel, iterations=1)
+
+    # Finding contours
+    contours, hierarchy = cv2.findContours(
+        dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+
+    segments = []
+    text_boxes = []
+    # Looping through the identified contours
+    for cnt in contours:
+        x, y, w, h = cv2.boundingRect(cnt)
+        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        segments.append([x, x+w])
+        text_boxes.append((x, y, w, h))
+
+    return (segments, text_boxes)
+
+
+def detect_column_lines(segments):
+    '''Detect column lines from segments'''
+
+    mx = max(i[1] for i in segments)
+
+    line_sweep_arr = [0 for _ in range(mx+10)]
+    for i in segments:
+        line_sweep_arr[i[0] + 1] += 1
+        line_sweep_arr[i[1]] -= 1
+
+    for i in range(1, mx+10):
+        line_sweep_arr[i] += line_sweep_arr[i-1]
+
+    line_mean = sum(line_sweep_arr)/len(line_sweep_arr)
+
+    potential_points = []
+    for i in range(1, mx+10):
+        if line_sweep_arr[i] &lt; int(line_mean/2.5):
+            potential_points.append(i)
+
+    line_points = []
+    for i in potential_points:
+        if len(line_points) == 0:
+            line_points.append(i)
+            continue
+        prev = line_points[len(line_points) - 1]
+
+        if i == prev + 1:
+            line_points[len(line_points) - 1] = i
+        else:
+            line_points.append(i)
+
+    return line_points
+
+
+def get_text(img, box_data):
+    '''Extract text from given box data'''
+    (x, y, w, h) = box_data
+    cropped_image = img[y:y+h, x:x+w]
+
+    # to show image
+    txt = pytesseract.image_to_string(cropped_image)
+    return txt
+
+
+def box_coverage_percentage(x, w, line):
+    '''Extract coverage area in percentage for box'''
+
+    covered_width = line - x
+    cover_percentage = covered_width / w
+    return cover_percentage
+
+
+def clean_text(txt):
+    '''Clean text'''
+    txt = txt.strip()
+    txt = txt.replace("•", '')
+    return txt
+
+
+Y_LIMIT = 10
+
+
+def custom_sort(a, b):
+    '''custom sort logic'''
+    if a[1] - Y_LIMIT &lt;= b[1] &gt;= a[1] + Y_LIMIT:
+        return -1 if (a[0] &lt;= b[0]) else 1
+    return -1 if (a[1] &lt;= b[1]) else 1
+
+
+def get_boxes_for_line(text_boxes, line, ordered_text_box, prev_line):
+    '''get boxes with line constraints'''
+    temp_boxes = [i for i in text_boxes]
+    temp_boxes.sort(key=functools.cmp_to_key(custom_sort))
+
+    res = []
+
+    # check if 90% of box is before line
+    for box in temp_boxes:
+        if box in ordered_text_box:
+            continue
+
+        (x, y, w, h) = box
+
+        if (x &gt;= prev_line - Y_LIMIT and x &lt; line and box_coverage_percentage(x, w, line) &gt;= 0.9):
+            res.append(box)
+    res.sort(key=lambda x: x[1])
+    return res
+
+
+def map_size(x, org, new):
+    '''map box co-ordinates from image to pdf'''
+    return (x*new)/org
+
+
+def get_text_from_pdf(box, img_shape, pdf_shape, page):
+    '''extract text from pdf box'''
+    (x, y, w, h) = box
+    (height, width) = img_shape
+    (W, H) = pdf_shape
+    x = map_size(x, width, W)
+    w = map_size(w, width, W)
+    y = map_size(y, height, H)
+    h = map_size(h, height, W)
+    rect = Rect(x, y, x+w, y+h)
+    text = page.get_textbox(rect)
+    return text
+
+
+def image_to_text(file_path, pdf_file_path=""):
+    '''extract text from image'''
+    segments, text_boxes = textbox_recognition(file_path)
+    column_lines = detect_column_lines(segments)
+
+    # if single column
+    if len(column_lines) &lt; 3:
+        return ""
+
+    # align text boxes by column
+    # text boxes within columns
+    ordered_text_box = []
+    for i in range(len(column_lines)):
+        prev_line = column_lines[i-1] if ((i-1) &gt;= 0) else 0
+        boxes = get_boxes_for_line(
+            text_boxes, column_lines[i], ordered_text_box, prev_line)
+        for b in boxes:
+            ordered_text_box.append(b)
+
+    # boxes that are not in any column
+    # text boxes not in any column
+    non_selected_boxes = []
+    for i in text_boxes:
+        if i not in ordered_text_box:
+            non_selected_boxes.append(i)
+
+    for i in non_selected_boxes:
+        y = i[1]
+        if y &lt;= ordered_text_box[0][1]:
+            ordered_text_box.insert(0, i)
+        else:
+            ordered_text_box.append(i)
+
+    img = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
+    ret, thresh = cv2.threshold(img, 225, 255, 0)
+    img_shape = img.shape
+
+    pdf_shape = (0, 0)
+    page = None
+    if pdf_file_path != "":
+        doc = fitz.open(pdf_file_path)
+        page = doc[0]
+        pdf_shape = (page.rect.width, page.rect.height)
+
+    resume_text = ""
+    for i in ordered_text_box:
+        if pdf_file_path != "":
+            txt = clean_text(get_text_from_pdf(i, img_shape, pdf_shape, page))
+        else:
+            txt = clean_text(get_text(thresh, i))
+        resume_text += txt + "\n"
+
+    # clean text
+    txt = resume_text.split("\n")
+
+    res = []
+    for line in txt:
+        if len(line) == 0:
+            continue
+        res.append(line)
+
+    resume_text = ' \n '.join(res)
+    return resume_text
+
+</code></pre>
+
+<h2 id="dockerizing-the-application">Dockerizing the Application</h2>
+
+<p>To make deploying the application easy we will be <code>Dockerizing the Application</code>.</p>
+
+<p>Dockerfile</p>
+<pre><code># syntax=docker/dockerfile:1
+
+FROM python:3.9-buster
+
+WORKDIR /resume-parser-docker
+
+RUN mkdir input_files
+RUN pip3 install --upgrade pip
+
+COPY requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
+
+# download nltk required
+RUN python -m nltk.downloader punkt
+RUN python -m nltk.downloader averaged_perceptron_tagger
+RUN python -m nltk.downloader maxent_ne_chunker
+RUN python -m nltk.downloader words
+
+RUN apt-get update \
+  &amp;&amp; apt-get -y install tesseract-ocr
+
+RUN apt-get update &amp;&amp; apt-get install ffmpeg libsm6 libxext6  -y
+
+COPY . .
+
+EXPOSE 5000/tcp
+
+CMD [ "python3", "-u" , "main.py"]
+</code></pre>
+
+<p>Then run following commands to create image and run it.</p>
+<ul>
+  <li>Build Image
+    <pre><code>docker build --tag jhamadhav/resume-parser-docker .
+</code></pre>
+  </li>
+  <li>Run Image at port 5000
+    <pre><code>docker run -d -p 5000:5000 jhamadhav/resume-parser-docker
+</code></pre>
+  </li>
+  <li>Check images
+    <pre><code>docker ps
+</code></pre>
+  </li>
+  <li>Stop once done
+    <pre><code>docker stop jhamadhav/resume-parser-docker
+</code></pre>
+  </li>
+</ul>
+
+<h2 id="hosting-on-aws">Hosting on AWS</h2>
+
+<p>Now that we have a docker image of our application.</p>
+
+<p>We can publish it to dockerHub:</p>
+<pre><code>docker push jhamadhav/resume-parser-docker
+</code></pre>
+
+<p>Then login to your EC2 instance and pull the image:</p>
+<pre><code>docker pull jhamadhav/resume-parser-docker
+</code></pre>
+
+<p>Run the image:</p>
+<pre><code>docker run -d -p 5000:5000 jhamadhav/resume-parser-docker
+</code></pre>
+
+<blockquote>
+  <p>🎉🎉🎉 We have a fully functional Resume parser ready.</p>
+</blockquote>
+
+<h2 id="future-work">Future Work</h2>
+
+<p>We can make use of <code>Large Language Models (LLM)</code>, train on datasets and fine tune LLM model to make extraction of below fields more accurate:</p>
+<ol>
+  <li>School/Institute name</li>
+  <li>Degree</li>
+  <li>Company name</li>
+  <li>Role in a job</li>
+</ol>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<ul>
+  <li>In conclusion, resume parsing using NLP techniques offers a streamlined approach to extract crucial information from resumes, enhancing the efficiency and accuracy of candidate screening.</li>
+  <li>By leveraging OCR, named entity recognition, and line sweep algorithms, we can handle various resume formats, including multicolumn layouts.</li>
+  <li>The power of NLP automates the parsing process, empowering recruiters to efficiently process resumes and make informed hiring decisions.</li>
+  <li>Embracing resume parsing techniques ensures fair and objective evaluation of applicants, leading to successful recruitment outcomes.</li>
+  <li>With this skillset, you can revolutionize resume processing and contribute to more efficient hiring practices.</li>
+</ul>
+
+<p>If you have any questions, doubts, or just want to say hi, feel free to reach out to me at <code>contact@jhamadhav.com</code> ! I’m always ready to chat about this cool project and help you out. Don’t be shy, drop me a line and let’s geek out together!</p>
+
+              </div>
+              <div class="entry-tags">
+                <div class=' social-sharing pull-right'>        
+     
+</div>
+              </div>
+              <div class="clearfix"><br/></div>
+
+                <div class="panel panel-default">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+      <div class="panel-body">
+        <div class="container-fluid">
+
+          <div class="row">
+            <div class="col-sm-12 col-md-4">
+              <center>
+                <img src="/blog/images/madhav.jpg" alt="Madhav Jha photo" class="author-photo img-circle img-responsive"/>
+                
+                <span class="author vcard">
+                  <span class="fn">Madhav Jha</span>
+                </span>
+
+                <div class="nav-icon-size-reduce social-icons">
+                  
+                    <a href="https://twitter.com/jhamadhav28"  title="Madhav Jha on Twitter"  target="_blank"><i class="fa fa-twitter "></i></a>
+                  
+                  
+                  
+                  
+
+                  
+                    <a href="https://linkedin.com/in/jhamadhav" title="Madhav Jha on LinkedIn" target="_blank"><i class="fa fa-linkedin "></i></a>
+                  
+
+                  
+
+                  
+
+                  
+
+                  
+                    <a href="https://github.com/jhamadhav" title="Madhav Jha on Github" target="_blank"><i class="fa fa-github "></i></a>
+                  
+
+                     
+                </div><!-- /.social-icons -->
+              </center>
+            </div>
+
+            <div class="col-sm-12 col-md-8">
+              
+                <span class="author-bio">Madhav Jha is an intern at eLitmus. He has a keen inclination towards competitive programming and actively participates in hackathons. Loves music and badminton.</span>
+              
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+  
+
+</div>
+                <div id='discourse-comments'></div>
+
+<script type="text/javascript">
+  DiscourseEmbed = { discourseUrl: 'https://adda.elitmus.com/',
+                     discourseEmbedUrl: 'https://www.elitmus.com/blog/technology/resume-parsing-insights-and-steps-to-create-your-own-parser/'
+                   };
+
+  (function() {
+    var d = document.createElement('script'); 
+    d.type = 'text/javascript'; 
+    d.async = true;
+    d.src = DiscourseEmbed.discourseUrl + 'javascripts/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(d);
+  })();
+</script>
+
+
+                
+              </div><!-- /.entry-content -->
+            </div><!-- /.entry-wrapper -->
+
+          </article>
+
+          <nav class="navbar nav-justified" role="navigation">
+            <ul class="nav pager">
+              
+                <li class="previous showElem mr-auto"><a href="/blog/technology/debugging-and-fixing-mysql-deadlock-issue/" title="Debugging &amp; Fixing mysql deadlock issue">&larr;<span class="showPrevNex"> Previous </span> </a></li>
+              
+              
+            </ul>
+          </nav>
+        
+        </div><!-- /#main -->
+
+      <!--/col-md-2 -->
+      <div class="col-md-2">
+
+      </div>
+
+    </div><!-- /row -->
+    </div>
+    <div class="footer-color">
+      <footer role="contentinfo">
+        <center>
+            <span class='footer-text'>
+    &copy;  2005-<script> document.write(new Date().getFullYear()) </script>, eLitmus.com. | <a href="/terms_of_use/">Terms of Use</a> &middot; <a href="/privacy_policy/">Privacy Policy</a>
+
+  </span>
+        </center>
+      </footer>
+    </div><!-- /.footer-wrapper -->
+    
+
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-707704-1', 'elitmus.com');
+	  ga('send', 'pageview');
+	</script>
+
+
+
+<!-- Load Modernizr -->
+<script src="/blog/assets/js/vendor/modernizr-2.6.2.custom.min.js"></script>
+
+<!-- adding jquery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- end of jquery -->
+
+<script src="/blog/assets/js/scripts.min.js"></script>
+<script src="/blog/assets/js/lunr.min.js"></script>
+<script src="/blog/assets/js/lunr-search.js"></script>
+<script src="/blog/assets/js/plugins/headroom.min.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+<script src="/blog/assets/js/vendor/forkit.js"></script>
+  
+
+  </body>
+</html>

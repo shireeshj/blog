@@ -7,13 +7,910 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="/" />
-<updated>2023-06-26T12:05:52+05:30</updated>
+<updated>2023-07-17T10:10:05+05:30</updated>
 <id>/</id>
 <author>
   <name>eLitmus.com</name>
   <uri>/</uri>
   <email>site-admin@elitmus.com</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[Resume Parsing: Insights and Steps to Create Your Own Parser]]></title>
+  <link rel="alternate" type="text/html" href="/technology/resume-parsing-insights-and-steps-to-create-your-own-parser/"/>
+  <id>/technology/resume-parsing-insights-and-steps-to-create-your-own-parser</id>
+  <updated>2023-06-20 13:40:00 +0530T00:00:00-00:00</updated>
+  <published>2023-06-20T00:00:00+05:30</published>
+  
+  <author>
+    <name>eLitmus.com</name>
+    <uri></uri>
+    <email>site-admin@elitmus.com</email>
+  </author>
+  <category scheme="/tags/#Resume-parser" term="Resume-parser" /><category scheme="/tags/#Python" term="Python" /><category scheme="/tags/#Flask" term="Flask" /><category scheme="/tags/#NLP" term="NLP" /><category scheme="/tags/#LLM" term="LLM" />
+  <content type="html">
+  
+    &lt;p&gt;Resume parsing is the automated process of extracting relevant information from resumes or CVs. 
+It analyzes the unstructured text of a resume and extracts specific details like contact information, work experience, education, skills, and achievements. 
+The extracted data is then converted into a structured format, allowing for easy analysis and integration into recruitment systems.&lt;/p&gt;
+
+&lt;h2 id=&quot;benefits-of-resume-parsing&quot;&gt;Benefits of Resume Parsing&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;It is a time-saving automation&lt;/li&gt;
+  &lt;li&gt;It increases efficiency in candidate screening&lt;/li&gt;
+  &lt;li&gt;Improves accuracy in data extraction&lt;/li&gt;
+  &lt;li&gt;It standardizes the data extraction and formatting&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;what-youll-learn-from-this-blog&quot;&gt;What you’ll learn from this blog:&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Resume parsing techniques for different file formats.&lt;/li&gt;
+  &lt;li&gt;Extracting specific details from resumes.&lt;/li&gt;
+  &lt;li&gt;Leveraging NLP techniques for parsing.&lt;/li&gt;
+  &lt;li&gt;Handling multicolumn resumes.&lt;/li&gt;
+  &lt;li&gt;Dockerizing the Application: Simplifying Deployment and Scalability&lt;/li&gt;
+  &lt;li&gt;Hosting it on AWS EC2.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;Let’s get Started 🎉&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;We’ll utilize Python and its Flask framework to create a resume parsing server.&lt;/p&gt;
+
+&lt;h2 id=&quot;application-flow-chart&quot;&gt;Application Flow Chart:&lt;/h2&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/images/resume-parsing-insights-and-steps-to-create-your-own-parser/file-flow.jpg&quot; alt=&quot;Application Flow Chart Image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We will be primarily working on 3 categories of file formats:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;PDF&lt;/li&gt;
+  &lt;li&gt;DOCX&lt;/li&gt;
+  &lt;li&gt;Images (.png, .jpg, etc.)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;data-that-we-will-be-extracting&quot;&gt;Data that we will be extracting&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Embedded links in PDF&lt;/li&gt;
+  &lt;li&gt;Personal data: &lt;br /&gt;
+ 2.1. Name: First name and last name &lt;br /&gt;
+ 2.2. Email &lt;br /&gt;
+ 2.3. Phone Number &lt;br /&gt;
+ 2.4. Address: City, Country, and Zip code &lt;br /&gt;
+ 2.5. Links: Social and Coding Platform links &lt;br /&gt;&lt;/li&gt;
+  &lt;li&gt;Education &lt;br /&gt;
+ 3.1. Institute name &lt;br /&gt;
+ 3.2. Duration: Start date and End date &lt;br /&gt;
+ 3.3. Grade/CGPA &lt;br /&gt;
+ 3.4. Degree &lt;br /&gt;&lt;/li&gt;
+  &lt;li&gt;Experience&lt;br /&gt;
+ 4.1. Company name&lt;br /&gt;
+ 4.2. Role&lt;br /&gt;
+ 4.3. Durations: Start date and End date&lt;br /&gt;
+ 4.4. Skills&lt;br /&gt;&lt;/li&gt;
+  &lt;li&gt;Certification: &lt;br /&gt;
+ 5.1. Description &lt;br /&gt;
+ 5.2. Duration &lt;br /&gt;
+ 5.3. Skill &lt;br /&gt;&lt;/li&gt;
+  &lt;li&gt;Project: &lt;br /&gt;
+ 6.1. Project name &lt;br /&gt;
+ 6.2. Skills &lt;br /&gt;
+ 6.3. Description &lt;br /&gt;&lt;/li&gt;
+  &lt;li&gt;Skills&lt;/li&gt;
+  &lt;li&gt;Achievements&lt;/li&gt;
+  &lt;li&gt;Exam scores&lt;br /&gt;
+ 9.1. Exam name&lt;br /&gt;
+ 9.2 Score&lt;br /&gt;&lt;/li&gt;
+  &lt;li&gt;All other sections present in resume&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;dateduration-extraction&quot;&gt;Date/Duration Extraction&lt;/h2&gt;
+
+&lt;p&gt;To extract dates from text, we will use &lt;code&gt;datefinder&lt;/code&gt; module, and regexp to extract years.
+Then we will combine these two and sort dates to get start and end date for our duration.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;import re
+from datetime import date
+import datefinder
+
+
+def get_date(input_string):
+    '''Get date from text'''
+    matches = list(datefinder.find_dates(input_string))
+
+    res = []
+    for i in matches:
+        date_str = str(i).split(' ')
+        extracted_date = date_str[0]
+
+        res.append(extracted_date)
+    return res
+
+
+def get_years(txt):
+    '''Get years from text'''
+    pattern = r'[0-9]{4}'
+    lst = re.findall(pattern, txt)
+
+    current_date = date.today()
+    current_year = current_date.year
+    res = []
+    for i in lst:
+        year = int(i)
+        if 1900 &amp;lt;= year &amp;lt;= (current_year + 10):
+            res.append(i + &quot;-01-01&quot;)
+    return res
+
+
+def get_duration(input_text):
+    '''Get duration from text'''
+
+    dates = get_date(input_text)
+    years = get_years(input_text)
+
+    for i in years:
+        dates.append(i)
+    dates.sort()
+
+    duration = {
+        &quot;start_date&quot;: &quot;&quot;,
+        &quot;end_date&quot;: &quot;&quot;
+    }
+    if len(dates) &amp;gt; 1:
+        duration[&quot;start_date&quot;] = dates[0]
+        duration[&quot;end_date&quot;] = dates[len(dates) - 1]
+    return duration
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;extracting-links-from-pdf&quot;&gt;Extracting links from PDF:&lt;/h2&gt;
+
+&lt;p&gt;To extract links from the PDF, we will use the python module &lt;code&gt;PDFx&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;import pdfx
+
+def get_urls_from_pdf(file_path):
+    '''extract urls from pdf file'''
+    url_list = []
+
+    # for invalid file path
+    if os.path.exists(file_path) is False:
+        return url_list
+
+    pdf = pdfx.PDFx(file_path)
+
+    # get urls
+    pdf_url_dict = pdf.get_references_as_dict()
+
+    if &quot;url&quot; not in pdf_url_dict.keys():
+        return url_list
+
+    url_list = pdf_url_dict[&quot;url&quot;]
+
+    return url_list
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;pdf-to-text&quot;&gt;PDF to Text&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;import pdfx
+def get_text_from_pdf(file_path):
+    '''extract complete text from pdf'''
+
+    # for invalid file path
+    if os.path.exists(file_path) is False:
+        return &quot;&quot;
+
+    pdf = pdfx.PDFx(file_path)
+
+    pdf_text = pdf.get_text()
+
+    return pdf_text
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;extracting-personal-details&quot;&gt;Extracting Personal Details:&lt;/h2&gt;
+
+&lt;p&gt;We will extract text from the PDF and move ahead with further extractions.&lt;/p&gt;
+
+&lt;h3 id=&quot;name&quot;&gt;Name&lt;/h3&gt;
+
+&lt;p&gt;Extracting the name from the text is one of the challenging tasks.&lt;/p&gt;
+
+&lt;p&gt;For this, we will be using &lt;code&gt;NLP: Named Entity Recognition&lt;/code&gt; to extract name from the text.&lt;/p&gt;
+
+&lt;h4 id=&quot;nlp-function&quot;&gt;NLP function:&lt;/h4&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;def get_name_via_nltk(input_text):
+    '''extract name from text via nltk functions'''
+    names = []
+    for sent in nltk.sent_tokenize(input_text):
+        for chunk in nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(sent))):
+            if hasattr(chunk, 'label'):
+                name = ' '.join(c[0] for c in chunk.leaves())
+                names.append(name)
+    return names
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+  &lt;li&gt;The text is tokenized into sentences using nltk.sent_tokenize().&lt;/li&gt;
+  &lt;li&gt;Each sentence is further tokenized into words using nltk.word_tokenize().&lt;/li&gt;
+  &lt;li&gt;The part-of-speech tags are assigned to each word using nltk.pos_tag().&lt;/li&gt;
+  &lt;li&gt;The named entities are identified by applying the named entity recognition (NER) using nltk.ne_chunk().&lt;/li&gt;
+  &lt;li&gt;For each identified named entity chunk, if it has a ‘label’, indicating it is a named entity, the individual words are concatenated to form a name.&lt;/li&gt;
+  &lt;li&gt;The extracted names are appended to the names list.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;phone-number&quot;&gt;Phone Number&lt;/h3&gt;
+
+&lt;p&gt;To extract the Phone number, we use the following module &lt;code&gt;phonenumbers&lt;/code&gt;, we extract users country from text and using that we will extract relevant phone numbers.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;import geotext
+from phonenumbers import PhoneNumberMatcher
+
+def get_phone(input_text):
+    '''extract phone number from text'''
+
+    phone_numbers = []
+
+    countries_dict = geotext.GeoText(input_text).country_mentions
+    
+    country_code = &quot;IN&quot;
+    for i in countries_dict.items():
+        country_code = i[0]
+        break
+
+    search_result = PhoneNumberMatcher(input_text, country_code)
+
+    phone_number_list = []
+    for i in search_result:
+        i = str(i).split(' ')
+        match = i[2:]
+
+        phone_number = ''.join(match)
+        phone_number_list.append(phone_number)
+
+    for i in phone_number_list:
+        if i not in phone_numbers:
+            phone_numbers.append(i)
+
+    return phone_numbers
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;email&quot;&gt;Email&lt;/h3&gt;
+
+&lt;p&gt;To extract the Email, we use the following regexp: &lt;code&gt;[^\s]+@[^\s]+[.][^\s]+&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;def get_email(input_text):
+    '''extract email from text'''
+    email_pattern = '[^\s]+@[^\s]+[.][^\s]+'
+
+    emails = []
+    emails = re.findall(email_pattern, input_text)
+
+    # pick only unique emails
+    emails = set(emails)
+    emails = list(emails)
+
+    return emails
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;address&quot;&gt;Address&lt;/h3&gt;
+
+&lt;p&gt;To Extract address, we use the &lt;code&gt;geotext&lt;/code&gt; module; we get City, Country, and Zipcode.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;import geotext
+def get_address(input_arr):
+    '''get address information from input array'''
+
+    input_text = &quot; \n &quot;.join(input_arr)
+
+    res = {}
+    # getting all countries
+    countries_dict = geotext.GeoText(input_text).country_mentions
+
+    res[&quot;country&quot;] = []
+    for i in countries_dict:
+        res[&quot;country&quot;].append(i)
+
+    # getting all cities
+    res[&quot;city&quot;] = geotext.GeoText(input_text).cities
+
+    # zip code
+    pattern = &quot;\b([1-9]{1}[0-9]{5}|[1-9]{1}[0-9]{2}\\s[0-9]{3})\b&quot;
+    res[&quot;zipcode&quot;] = re.findall(pattern, input_text)
+
+    return res
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&quot;links&quot;&gt;Links&lt;/h3&gt;
+
+&lt;p&gt;As we already have a URL list from 1st operation, we will match links from a list of our own, this can be saved in any database or hard-coded, and categorize them into &lt;code&gt;social&lt;/code&gt; or &lt;code&gt;coding&lt;/code&gt; sections.&lt;/p&gt;
+
+&lt;h2 id=&quot;other-sections&quot;&gt;Other Sections&lt;/h2&gt;
+
+&lt;p&gt;There can be many sections in a resume, that we cannot always account for.
+To extract them, we will create a list of possible section heading and match them against each line from the resume that we have extracted.&lt;/p&gt;
+
+&lt;p&gt;The code will be as following:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;
+from utils import dynamo_db
+
+RESUME_SECTIONS = dynamo_db.get_item_db(&quot;RESUME_SECTIONS&quot;)
+
+
+def extract_resume_sections(text):
+    '''Extract section based on resume heading keywords'''
+    text_split = [i.strip() for i in text.split('\n')]
+
+    entities = {}
+    entities[&quot;extra&quot;] = []
+    key = False
+    for phrase in text_split:
+        if len(phrase.split(' ')) &amp;gt; 10:
+            if key is not False:
+                entities[key].append(phrase)
+            else:
+                entities[&quot;extra&quot;].append(phrase)
+            continue
+
+        if len(phrase) == 1:
+            p_key = phrase
+        else:
+            p_key = set(phrase.lower().split()) &amp;amp; set(RESUME_SECTIONS)
+
+        try:
+            p_key = list(p_key)[0]
+        except IndexError:
+            pass
+
+        if p_key in RESUME_SECTIONS and (p_key not in entities.keys()):
+            entities[p_key] = []
+            key = p_key
+        elif key and phrase.strip():
+            entities[key].append(phrase)
+        else:
+            if len(phrase.strip()) &amp;lt; 1:
+                continue
+            entities[&quot;extra&quot;].append(phrase)
+
+    return entities
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;education&quot;&gt;Education&lt;/h2&gt;
+
+&lt;p&gt;To extract education, we need to identify a line from our education section that represent the school/institute name, and a line that represents the degree. After which we can search for CGPA or Percentage using regexp.
+For name recognition, we will make use of a list of keywords that can be present in the name.&lt;/p&gt;
+
+&lt;p&gt;Code to get school name, similarly we can implement to get degree as well.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;import re
+from utils import helper, dynamo_db
+
+SCHOOL_KEYWORDS = dynamo_db.get_item_db(&quot;SCHOOL_KEYWORDS&quot;)
+
+
+def get_school_name(input_text):
+    '''Extract list of school names from text'''
+    text_split = [i.strip() for i in input_text.split('\n')]
+
+    school_names = []
+
+    for phrase in text_split:
+        p_key = set(phrase.lower().split(' ')) &amp;amp; set(SCHOOL_KEYWORDS)
+
+        if (len(p_key) == 0):
+            continue
+
+        school_names.append(phrase)
+    return school_names
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Code to extract CGPA/GPA or Percentage grade&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;def get_percentage(txt):
+    '''Extract percentage from text'''
+    pattern = r'((\d+\.)?\d+%)'
+    lst = re.findall(pattern, txt)
+    lst = [i[0] for i in lst]
+    return lst
+
+
+def get_gpa(txt):
+    '''Extract cgpa or gpa from text in format x.x/x'''
+    pattern = r'((\d+\.)?\d+\/\d+)'
+    lst = re.findall(pattern, txt)
+    lst = [i[0] for i in lst]
+    return lst
+
+
+def get_grades(input_text):
+    '''Extract grades from text'''
+    input_text = input_text.lower()
+    # gpa
+    gpa = get_gpa(input_text)
+
+    if (len(gpa) != 0):
+        return gpa
+
+    # percentage
+    percentage = get_percentage(input_text)
+
+    if (len(percentage) != 0):
+        return percentage
+
+    return []
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;skills&quot;&gt;Skills&lt;/h2&gt;
+
+&lt;p&gt;In order to extract skills from the text, a master list of commonly used skills can be created and stored in a database, such as AWS DynamoDB. Each skill from the list can be matched against the text to identify relevant skills. By doing so, a comprehensive master skill list can be generated, which can be utilized for more specific skill extraction in subsequent sections.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;
+from utils import dynamo_db
+
+skills = dynamo_db.get_item_db(&quot;ALL_SKILLS&quot;)
+
+
+def get_skill_tags(input_text):
+    '''Extract skill tags from text'''
+    user_skills = []
+    for skill in skills:
+        if skill in input_text.lower():
+            user_skills.append(skill.upper())
+
+    return user_skills
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;experience&quot;&gt;Experience&lt;/h2&gt;
+
+&lt;p&gt;To extract company names and roles, a similar strategy can be employed as we used for finding school names and degrees. By applying appropriate techniques, such as named entity recognition or pattern matching, we can identify company names and associated job roles from the text. Additionally, for skill extraction, we can match the text against our previously calculated list of skills to identify and extract relevant skills mentioned in the text&lt;/p&gt;
+
+&lt;h2 id=&quot;achievements-and-certifications&quot;&gt;Achievements and Certifications&lt;/h2&gt;
+
+&lt;p&gt;We can use the section text that we extracted previously and for each line of it, we can search for duration and skills in it.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;
+from utils import helper, skill_tags
+
+
+def get_certifications(input_array):
+    '''Function to extract certificate information'''
+
+    res = {
+        &quot;description&quot;: input_array,
+        &quot;details&quot;: []
+    }
+
+    try:
+
+        for cert in input_array:
+            elem_dict = {
+                &quot;institute_name&quot;: str(cert),
+                &quot;skills&quot;: skill_tags.get_skill_tags(cert),
+                &quot;duration&quot;: helper.get_duration(cert)
+            }
+            res[&quot;details&quot;].append(elem_dict)
+
+    except Exception as function_exception:
+        helper.logger.error(function_exception)
+
+    return res
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;projects&quot;&gt;Projects&lt;/h2&gt;
+
+&lt;p&gt;When it comes to extracting project titles, it can be challenging due to the variations in how individuals choose to title their projects. However, we can make an assumption that project titles are often written in a larger font size compared to the rest of the text. Leveraging this assumption, we can analyze the font sizes of each line in the text and sort them in descending order. By selecting the lines with the largest font sizes from the top, we can identify potential project titles. This approach allows us to further segment the project section and extract additional details such as skills utilized and project durations.&lt;/p&gt;
+
+&lt;p&gt;Link: &lt;a href=&quot;https://stackoverflow.com/questions/68097779/how-to-find-the-font-size-of-every-paragraph-of-pdf-file-using-python-code&quot;&gt;How to find the Font Size of every paragraph of PDF file using python code?&lt;/a&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;import fitz
+
+def scrape(keyword, filePath):
+    results = [] # list of tuples that store the information as (text, font size, font name) 
+    pdf = fitz.open(filePath) # filePath is a string that contains the path to the pdf
+    for page in pdf:
+        dict = page.get_text(&quot;dict&quot;)
+        blocks = dict[&quot;blocks&quot;]
+        for block in blocks:
+            if &quot;lines&quot; in block.keys():
+                spans = block['lines']
+                for span in spans:
+                    data = span['spans']
+                    for lines in data:
+                            results.append((lines['text'], lines['size'], lines['font']))
+
+    pdf.close()
+    return results
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Using this we find our project titles:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;from utils import helper, skill_tags
+from difflib import SequenceMatcher
+
+def similar(string_a, string_b):
+    '''Find similarity between two string'''
+    return SequenceMatcher(None, string_a, string_b).ratio()
+
+def extract_project_titles(input_array, text_font_size):
+    ls = []
+    for line_tuple in text_font_size:
+        line = line_tuple[0]
+        for s in input_array:
+            if similar(line,s) &amp;gt; 0.85:
+                ls.append([line_tuple[1], s])
+    ls.sort(reverse=True)
+
+    title_font_size = ls[0][0] if(len(ls) &amp;gt; 0) else 0
+    project_title = []
+    for i in ls:
+        if i[0] == title_font_size:
+          project_title.append(i[1])
+    return project_title
+
+def get_projects(input_array, text_font_size):
+    '''extract project details from text'''
+    res = {
+        &quot;description&quot;: input_array,
+        &quot;details&quot;: []
+    }
+    txt = ' \n '.join(input_array)
+
+    project_titles = helper.extract_titles_via_font_size(
+        input_array, text_font_size)
+
+    project_sections = helper.extract_sections(txt, project_titles)
+
+    try:
+        for i in project_sections.items():
+            key = i[0]
+            txt = '\n'.join(project_sections[key])
+
+            elem_dict = {
+                &quot;project_name&quot;: key,
+                &quot;skills&quot;: skill_tags.get_skill_tags(txt),
+                &quot;duration&quot;: helper.get_duration(txt)
+            }
+
+            res[&quot;details&quot;].append(elem_dict)
+    except Exception as function_exception:
+        helper.logger.error(function_exception)
+
+    return res
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;handling-multicolumn-resumes&quot;&gt;Handling multicolumn resumes&lt;/h2&gt;
+
+&lt;p&gt;Up until now, we have explored techniques to handle single-column resumes successfully. 
+However, when it comes to two-column or multicolumn resumes, a direct extraction of text may not be sufficient. If we attempt to extract text from a multicolumn PDF using the same method as before, we will encounter challenges such as, the text from different columns will merge together, as our previous approach scans the text from left to right and top to bottom, rather than column-wise.&lt;/p&gt;
+
+&lt;p&gt;To overcome this issue, let’s delve into how we can solve this problem and effectively handle multicolumn resumes.&lt;/p&gt;
+
+&lt;h3 id=&quot;drawing-textboxes&quot;&gt;Drawing textboxes&lt;/h3&gt;
+
+&lt;p&gt;&lt;code&gt;Optical Character Recognition (OCR)&lt;/code&gt; comes to the rescue by identifying textboxes and providing their coordinates within the document. By utilizing OCR, we can pinpoint the location of these textboxes, which serve as a starting point for further analysis.&lt;/p&gt;
+
+&lt;p&gt;To tackle the challenge of multicolumn resumes, a line sweep algorithm is implemented. This algorithm systematically scans along the X-axis and determines how many textboxes intersect each point. By analyzing this distribution, potential column divide lines can be inferred. These lines act as reference markers, indicating the boundaries between columns.&lt;/p&gt;
+
+&lt;p&gt;Once the column lines are established, the text can be extracted from the identified textboxes in a column-wise manner. Following the order of the column lines, the text can be retrieved and processed accordingly.&lt;/p&gt;
+
+&lt;p&gt;By leveraging OCR, the line sweep algorithm, and the concept of column lines, we can effectively handle multicolumn resumes and extract the necessary information in an organized and structured manner.&lt;/p&gt;
+
+&lt;p&gt;Code:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;import cv2
+import fitz
+from fitz import Document, Page, Rect
+import pytesseract
+import functools
+
+def textbox_recognition(file_path):
+    '''Extract text_boxes from image'''
+
+    img = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
+
+    ret, thresh1 = cv2.threshold(
+        img, 0, 255, cv2.THRESH_OTSU | cv2.THRESH_BINARY_INV)
+
+    # kernel
+    kernel_size = 10
+    rect_kernel = cv2.getStructuringElement(
+        cv2.MORPH_RECT, (kernel_size, kernel_size))
+
+    # Applying dilation on the threshold image
+    dilation = cv2.dilate(thresh1, rect_kernel, iterations=1)
+
+    # Finding contours
+    contours, hierarchy = cv2.findContours(
+        dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+
+    segments = []
+    text_boxes = []
+    # Looping through the identified contours
+    for cnt in contours:
+        x, y, w, h = cv2.boundingRect(cnt)
+        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        segments.append([x, x+w])
+        text_boxes.append((x, y, w, h))
+
+    return (segments, text_boxes)
+
+
+def detect_column_lines(segments):
+    '''Detect column lines from segments'''
+
+    mx = max(i[1] for i in segments)
+
+    line_sweep_arr = [0 for _ in range(mx+10)]
+    for i in segments:
+        line_sweep_arr[i[0] + 1] += 1
+        line_sweep_arr[i[1]] -= 1
+
+    for i in range(1, mx+10):
+        line_sweep_arr[i] += line_sweep_arr[i-1]
+
+    line_mean = sum(line_sweep_arr)/len(line_sweep_arr)
+
+    potential_points = []
+    for i in range(1, mx+10):
+        if line_sweep_arr[i] &amp;lt; int(line_mean/2.5):
+            potential_points.append(i)
+
+    line_points = []
+    for i in potential_points:
+        if len(line_points) == 0:
+            line_points.append(i)
+            continue
+        prev = line_points[len(line_points) - 1]
+
+        if i == prev + 1:
+            line_points[len(line_points) - 1] = i
+        else:
+            line_points.append(i)
+
+    return line_points
+
+
+def get_text(img, box_data):
+    '''Extract text from given box data'''
+    (x, y, w, h) = box_data
+    cropped_image = img[y:y+h, x:x+w]
+
+    # to show image
+    txt = pytesseract.image_to_string(cropped_image)
+    return txt
+
+
+def box_coverage_percentage(x, w, line):
+    '''Extract coverage area in percentage for box'''
+
+    covered_width = line - x
+    cover_percentage = covered_width / w
+    return cover_percentage
+
+
+def clean_text(txt):
+    '''Clean text'''
+    txt = txt.strip()
+    txt = txt.replace(&quot;•&quot;, '')
+    return txt
+
+
+Y_LIMIT = 10
+
+
+def custom_sort(a, b):
+    '''custom sort logic'''
+    if a[1] - Y_LIMIT &amp;lt;= b[1] &amp;gt;= a[1] + Y_LIMIT:
+        return -1 if (a[0] &amp;lt;= b[0]) else 1
+    return -1 if (a[1] &amp;lt;= b[1]) else 1
+
+
+def get_boxes_for_line(text_boxes, line, ordered_text_box, prev_line):
+    '''get boxes with line constraints'''
+    temp_boxes = [i for i in text_boxes]
+    temp_boxes.sort(key=functools.cmp_to_key(custom_sort))
+
+    res = []
+
+    # check if 90% of box is before line
+    for box in temp_boxes:
+        if box in ordered_text_box:
+            continue
+
+        (x, y, w, h) = box
+
+        if (x &amp;gt;= prev_line - Y_LIMIT and x &amp;lt; line and box_coverage_percentage(x, w, line) &amp;gt;= 0.9):
+            res.append(box)
+    res.sort(key=lambda x: x[1])
+    return res
+
+
+def map_size(x, org, new):
+    '''map box co-ordinates from image to pdf'''
+    return (x*new)/org
+
+
+def get_text_from_pdf(box, img_shape, pdf_shape, page):
+    '''extract text from pdf box'''
+    (x, y, w, h) = box
+    (height, width) = img_shape
+    (W, H) = pdf_shape
+    x = map_size(x, width, W)
+    w = map_size(w, width, W)
+    y = map_size(y, height, H)
+    h = map_size(h, height, W)
+    rect = Rect(x, y, x+w, y+h)
+    text = page.get_textbox(rect)
+    return text
+
+
+def image_to_text(file_path, pdf_file_path=&quot;&quot;):
+    '''extract text from image'''
+    segments, text_boxes = textbox_recognition(file_path)
+    column_lines = detect_column_lines(segments)
+
+    # if single column
+    if len(column_lines) &amp;lt; 3:
+        return &quot;&quot;
+
+    # align text boxes by column
+    # text boxes within columns
+    ordered_text_box = []
+    for i in range(len(column_lines)):
+        prev_line = column_lines[i-1] if ((i-1) &amp;gt;= 0) else 0
+        boxes = get_boxes_for_line(
+            text_boxes, column_lines[i], ordered_text_box, prev_line)
+        for b in boxes:
+            ordered_text_box.append(b)
+
+    # boxes that are not in any column
+    # text boxes not in any column
+    non_selected_boxes = []
+    for i in text_boxes:
+        if i not in ordered_text_box:
+            non_selected_boxes.append(i)
+
+    for i in non_selected_boxes:
+        y = i[1]
+        if y &amp;lt;= ordered_text_box[0][1]:
+            ordered_text_box.insert(0, i)
+        else:
+            ordered_text_box.append(i)
+
+    img = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
+    ret, thresh = cv2.threshold(img, 225, 255, 0)
+    img_shape = img.shape
+
+    pdf_shape = (0, 0)
+    page = None
+    if pdf_file_path != &quot;&quot;:
+        doc = fitz.open(pdf_file_path)
+        page = doc[0]
+        pdf_shape = (page.rect.width, page.rect.height)
+
+    resume_text = &quot;&quot;
+    for i in ordered_text_box:
+        if pdf_file_path != &quot;&quot;:
+            txt = clean_text(get_text_from_pdf(i, img_shape, pdf_shape, page))
+        else:
+            txt = clean_text(get_text(thresh, i))
+        resume_text += txt + &quot;\n&quot;
+
+    # clean text
+    txt = resume_text.split(&quot;\n&quot;)
+
+    res = []
+    for line in txt:
+        if len(line) == 0:
+            continue
+        res.append(line)
+
+    resume_text = ' \n '.join(res)
+    return resume_text
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&quot;dockerizing-the-application&quot;&gt;Dockerizing the Application&lt;/h2&gt;
+
+&lt;p&gt;To make deploying the application easy we will be &lt;code&gt;Dockerizing the Application&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Dockerfile&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# syntax=docker/dockerfile:1
+
+FROM python:3.9-buster
+
+WORKDIR /resume-parser-docker
+
+RUN mkdir input_files
+RUN pip3 install --upgrade pip
+
+COPY requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
+
+# download nltk required
+RUN python -m nltk.downloader punkt
+RUN python -m nltk.downloader averaged_perceptron_tagger
+RUN python -m nltk.downloader maxent_ne_chunker
+RUN python -m nltk.downloader words
+
+RUN apt-get update \
+  &amp;amp;&amp;amp; apt-get -y install tesseract-ocr
+
+RUN apt-get update &amp;amp;&amp;amp; apt-get install ffmpeg libsm6 libxext6  -y
+
+COPY . .
+
+EXPOSE 5000/tcp
+
+CMD [ &quot;python3&quot;, &quot;-u&quot; , &quot;main.py&quot;]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then run following commands to create image and run it.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Build Image
+    &lt;pre&gt;&lt;code&gt;docker build --tag jhamadhav/resume-parser-docker .
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Run Image at port 5000
+    &lt;pre&gt;&lt;code&gt;docker run -d -p 5000:5000 jhamadhav/resume-parser-docker
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Check images
+    &lt;pre&gt;&lt;code&gt;docker ps
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Stop once done
+    &lt;pre&gt;&lt;code&gt;docker stop jhamadhav/resume-parser-docker
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;hosting-on-aws&quot;&gt;Hosting on AWS&lt;/h2&gt;
+
+&lt;p&gt;Now that we have a docker image of our application.&lt;/p&gt;
+
+&lt;p&gt;We can publish it to dockerHub:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker push jhamadhav/resume-parser-docker
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then login to your EC2 instance and pull the image:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker pull jhamadhav/resume-parser-docker
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Run the image:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run -d -p 5000:5000 jhamadhav/resume-parser-docker
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;🎉🎉🎉 We have a fully functional Resume parser ready.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;future-work&quot;&gt;Future Work&lt;/h2&gt;
+
+&lt;p&gt;We can make use of &lt;code&gt;Large Language Models (LLM)&lt;/code&gt;, train on datasets and fine tune LLM model to make extraction of below fields more accurate:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;School/Institute name&lt;/li&gt;
+  &lt;li&gt;Degree&lt;/li&gt;
+  &lt;li&gt;Company name&lt;/li&gt;
+  &lt;li&gt;Role in a job&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;In conclusion, resume parsing using NLP techniques offers a streamlined approach to extract crucial information from resumes, enhancing the efficiency and accuracy of candidate screening.&lt;/li&gt;
+  &lt;li&gt;By leveraging OCR, named entity recognition, and line sweep algorithms, we can handle various resume formats, including multicolumn layouts.&lt;/li&gt;
+  &lt;li&gt;The power of NLP automates the parsing process, empowering recruiters to efficiently process resumes and make informed hiring decisions.&lt;/li&gt;
+  &lt;li&gt;Embracing resume parsing techniques ensures fair and objective evaluation of applicants, leading to successful recruitment outcomes.&lt;/li&gt;
+  &lt;li&gt;With this skillset, you can revolutionize resume processing and contribute to more efficient hiring practices.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;If you have any questions, doubts, or just want to say hi, feel free to reach out to me at &lt;code&gt;contact@jhamadhav.com&lt;/code&gt; ! I’m always ready to chat about this cool project and help you out. Don’t be shy, drop me a line and let’s geek out together!&lt;/p&gt;
+
+  
+  &lt;p&gt;&lt;a href=&quot;/technology/resume-parsing-insights-and-steps-to-create-your-own-parser/&quot;&gt;Resume Parsing: Insights and Steps to Create Your Own Parser&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on June 20, 2023.&lt;/p&gt;</content>
+</entry>
 
 
 <entry>
@@ -2263,72 +3160,6 @@ The same goes for files as well.&lt;/p&gt;
 
   
   &lt;p&gt;&lt;a href=&quot;/technology/custom-capacity-buffers-in-go/&quot;&gt;Custom Capacity Buffers In Go&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on March 31, 2015.&lt;/p&gt;</content>
-</entry>
-
-
-<entry>
-  <title type="html"><![CDATA[Making Airtel 3G dongle work on Mac OS 10.10 Yosemite]]></title>
-  <link rel="alternate" type="text/html" href="/technology/making-airtel-3g-dongle-work-on-mac-os-10-dot-10-yosemite/"/>
-  <id>/technology/making-airtel-3g-dongle-work-on-mac-os-10-dot-10-yosemite</id>
-  <updated>2014-12-03 09:29:33 +0530T00:00:00-00:00</updated>
-  <published>2014-12-03T00:00:00+05:30</published>
-  
-  <author>
-    <name>eLitmus.com</name>
-    <uri></uri>
-    <email>site-admin@elitmus.com</email>
-  </author>
-  <category scheme="/tags/#3G%20Dongle" term="3G Dongle" /><category scheme="/tags/#Yosemite" term="Yosemite" /><category scheme="/tags/#Airtel" term="Airtel" />
-  <content type="html">
-  
-    &lt;p&gt;If you use Airtel 3G Dongle (Mine is Huawei E173) on your Mac, and are having issue using the dongel after upgrading to Yosemite, airtel is of little help. They asked me to downgrade the OS to Mavericks!&lt;/p&gt;
-
-&lt;p&gt;The reason why the dialer software provided by airtel does not work is, that they internally use Apple USB Modem. According to &lt;a href=&quot;https://support.apple.com/en-in/HT201833&quot;&gt;this FAQ on apple support site&lt;/a&gt;, your Operating system should be running in &lt;code&gt;32 bit mode&lt;/code&gt; for the modem to work. Yosemite however, is &lt;code&gt;64 bit&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Anyway, I could find multiple ways to overcome the problem. Here I am writing about the most simple one&lt;/p&gt;
-
-&lt;p&gt;###Step 1: 
-Click on this link to download the new compitable driver from Huawei website &lt;a href=&quot;https://consumer.huawei.com/en/support/downloads/detail/index.htm?id=31322&quot;&gt;&lt;code&gt;Mac-V200R003B015D11SP00C983(for Mac10.10).rar&lt;/code&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/blog/images/airtel3g-yosemite/1-huawei-website.png&quot; alt=&quot;Huawei Website Screenshot&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;###Step 2: 
-Open the archive, you will find two files&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;1. Mobile Partner install user guide.docx
-2. Mobile Partner.zip
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The word document has detailed instructions with screenshots, on how to install.&lt;/p&gt;
-
-&lt;p&gt;###Step 3: 
-Open the zip file &lt;code&gt;Mobile Partner.zip&lt;/code&gt;, you will find &lt;code&gt;Mobile Partner.app&lt;/code&gt;. Double click on this file to install the app&lt;/p&gt;
-
-&lt;p&gt;###Step 4: 
-Once installed, start the app and go to Tools -&amp;gt; Options&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/blog/images/airtel3g-yosemite/2-options-menu.png&quot; alt=&quot;Tools -&amp;gt; Options Menu&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;###Step 5: 
-In the Options window, choose “Profile Management” from the left side menu&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/blog/images/airtel3g-yosemite/3-options-profile-management.png&quot; alt=&quot;Profile Management&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;###Step 6: 
-Click on “New” button to create a new profile. Give it a name, such as “airtel 3g”. Also, make sure the “Access Number” is set to &lt;code&gt;*99#&lt;/code&gt;. Click “Save”, then “Ok”.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/blog/images/airtel3g-yosemite/4-new-profile-and-access-number.png&quot; alt=&quot;Configuring a new profile&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;###Step 7: 
-Insert your Dongel into an USB port. You should see “Mobile Partner” application starting automatically. Choose the profile you created in Step 6 (“airtel 3g”) and “Connect”.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/blog/images/airtel3g-yosemite/5-dialer-screen.png&quot; alt=&quot;The Dialer Screen&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;That’s it.&lt;/p&gt;
-
-
-  
-  &lt;p&gt;&lt;a href=&quot;/technology/making-airtel-3g-dongle-work-on-mac-os-10-dot-10-yosemite/&quot;&gt;Making Airtel 3G dongle work on Mac OS 10.10 Yosemite&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on December 03, 2014.&lt;/p&gt;</content>
 </entry>
 
 </feed>
