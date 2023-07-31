@@ -80,7 +80,7 @@ Before starting the implementation of the frontend scoring engine project, exten
 
 ## **Application Flowchart**
 
-![Application Flowchart]({{site.baseurl}}/images/frontend-scoring-engine/frontend_scoring_engine_flowchart.png)
+![Application Architecture]({{site.baseurl}}/images/frontend-scoring-engine/frontend_scoring_engine_architecture.png)
 <br>
 
 ## **Test Script Generation**
