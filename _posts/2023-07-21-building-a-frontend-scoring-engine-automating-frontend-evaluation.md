@@ -5,7 +5,7 @@ tldr:
 modified: 2023-07-21 20:17:46 +0530
 category: technology
 tags: [frontend development, evaluation, automation, testing, coding]
-author:
+author: bhushan
 image:
   feature:
   credit:
@@ -37,51 +37,42 @@ Before starting the implementation of the frontend scoring engine project, exten
 1. **Evaluating Existing Systems** :
    To gain insights into the existing solutions available in the market, a comprehensive evaluation of similar systems was conducted. Various frontend scoring engines, online code editors were explored to understand their features, functionalities, strengths, and weaknesses. This evaluation provided valuable insights that influenced the design decisions and feature set of the new scoring engine. <br>
    Some similar existing systems:
-
-   - [Codier.io](https://codier.io/)
-   - [Frontend Mentor](https://www.frontendmentor.io/)
-   - [CSS Battle](https://cssbattle.dev/)
-   - [Algoexpert.io Frontend](https://www.algoexpert.io/frontend/product)<br>
+   - <a href="https://codier.io/" target="_blank" style="color: blue;">Codier.io</a>
+   - <a href="https://www.frontendmentor.io/" target="_blank" style="color: blue;">Frontend Mentor</a>
+   - <a href="https://cssbattle.dev" target="_blank" style="color: blue;">CSS Battle</a>
+   - <a href="https://www.algoexpert.io/frontend/product" target="_blank" style="color: blue;">Algoexpert.io Frontend</a><br><br>
 
 2. **Testing Tools and Technologies** :
    During our research, we explored various testing tools and technologies to find the perfect fit for executing test cases, assessing code quality, and evaluating frontend functionalities. The evaluation revolved around factors like capabilities, ease of use, and compatibility with our project requirements. Tools such as Selenium, Cypress, Jest, csslint, eslint were taken into consideration.<br>
    Read more about the tools:
-
-   - [Selenium](https://www.selenium.dev/documentation/)
-   - [Cypress](https://docs.cypress.io/guides/overview/why-cypress)
-   - [Jest](https://jestjs.io/docs/getting-started)<br>
+   - <a href="https://www.selenium.dev/documentation/" target="_blank" style="color: blue;">Selenium</a>
+   - <a href="https://docs.cypress.io/guides/overview/why-cypress" target="_blank" style="color: blue;">Cypress</a>
+   - <a href="https://jestjs.io/docs/getting-started" target="_blank" style="color: blue;">Jest</a><br><br>
 
 3. **Puppeteer** :
    Puppeteer was chosen over Selenium primarily due to its compatibility with Docker and its ability to control headless Chrome or Chromium instances. Docker provides an efficient and scalable environment for running tests, and Puppeteer seamlessly integrates with Docker containers. Additionally, Puppeteer offers a more modern and concise API, making it easier to write test scripts and perform browser automation tasks.
-
-   - [Puppeteer vs Selenium](https://oxylabs.io/blog/puppeteer-vs-selenium)
-   - [Puppeteer Docs](https://pptr.dev/)<br>
+   - <a href="https://oxylabs.io/blog/puppeteer-vs-selenium" target="_blank" style="color: blue;">Puppeteer vs Selenium</a>
+   - <a href="https://pptr.dev/" target="_blank" style="color: blue;">Puppeteer Docs</a><br><br>
 
 4. **Docker Integration** :
    We explored the benefits of Docker, a widely-used containerization platform, and discovered how it could greatly enhance our project. Docker allows us to create lightweight, portable, and isolated containers, which provide a consistent and reproducible environment. Leveraging Docker, we encapsulated and ran our scoring engine, testing tools, and other dependencies, ensuring seamless integration and efficient execution. <br>
    We pulled various Docker images from Docker Hub, enabling us to set up the required tools effortlessly.
-
-   - [eslint](https://hub.docker.com/r/eeacms/csslint)
-   - [csslint](https://hub.docker.com/r/cytopia/eslint)
-   - [jest](https://hub.docker.com/r/cfreak/jest)<br>
+   - <a href="https://hub.docker.com/r/eeacms/csslint" target="_blank" style="color: blue;">csslint</a>
+   - <a href="https://hub.docker.com/r/cytopia/eslint" target="_blank" style="color: blue;">eslint</a>
+   - <a href="https://hub.docker.com/r/cfreak/jest" target="_blank" style="color: blue;">jest</a><br><br>
 
 5. **Real-Time Code Editor** :
    To provide a user-friendly and real-time code editing experience, we started searching for frontend code editors and existing projects available on GitHub. Various code editor projects were evaluated, and their source code were studied to understand the implementation details. This research helped in selecting the most suitable code editor framework and implementing it within our frontend scoring engine. <br>
-
-   - [Codepen](https://codepen.io/)
-   - [Fronteditor](https://www.fronteditor.dev/)
-   - [CodeG](https://github.com/Prince-Codemon/Code-G-The-Coding-Playground-)<br>
+   - <a href="https://codepen.io/" target="_blank" style="color: blue;">Codepen</a>
+   - <a href="https://www.fronteditor.dev/" target="_blank" style="color: blue;">Fronteditor</a>
+   - <a href="https://github.com/Prince-Codemon/Code-G-The-Coding-Playground-" target="_blank" style="color: blue;">CodeG</a><br><br>
 
 6. **Problem Statement and Test Case Creation** :
    The goal was to design problem statements that accurately reflect real-world frontend development challenges and create test cases that thoroughly evaluate candidates' code. Puppeteer test scripts were written to simulate user interactions, perform assertions, and capture screenshots for image comparison using the PixelMatch JavaScript library.<br>
 
 7. **Cloud Deployment and Infrastructure** :
-   For our final Deployment and integrtion Amazon Web Services (AWS) was choosen. The research covered various AWS services, including EC2 instances for hosting the scoring engine, S3 for storage, and other relevant services for infrastructure setup. The deployment process, security considerations, and scaling options were thoroughly explored to ensure a robust and scalable deployment architecture.<br>
+   For our final Deployment and integration Amazon Web Services (AWS) was choosen. The research covered various AWS services, including EC2 instances for hosting the scoring engine, S3 for storage, and other relevant services for infrastructure setup. The deployment process, security considerations, and scaling options were thoroughly explored to ensure a robust and scalable deployment architecture.<br>
 
-## **Application Flowchart**
-
-![Application Architecture]({{site.baseurl}}/images/frontend-scoring-engine/frontend_scoring_engine_architecture.png)
-<br>
 
 ## **Test Script Generation**
 
@@ -112,60 +103,71 @@ In the frontend scoring engine, we ensure evaluation of user-submitted HTML, CSS
 
 #### Dockerfile:
 
-```Dockerfile
+{% highlight shell %}
+
 # Use the node:slim base image
+
 FROM node:slim
 
 # Set an environment variable to skip Puppeteer Chromium download during installation
+
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 RUN apt-get update && apt-get install gnupg wget -y && \
-    wget --quiet --output-document=- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor > /etc/apt/trusted.gpg.d/google-archive.gpg && \
-    sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' && \
-    apt-get update && \
-    apt-get install google-chrome-stable -y --no-install-recommends && \
-    rm -rf /var/lib/apt/lists/*
+ wget --quiet --output-document=- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor > /etc/apt/trusted.gpg.d/google-archive.gpg && \
+ sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' && \
+ apt-get update && \
+ apt-get install google-chrome-stable -y --no-install-recommends && \
+ rm -rf /var/lib/apt/lists/\*
 
 # Set the working directory inside the container
+
 WORKDIR /usr/src/app
 
 # Copy the package.json file to the working directory
+
 COPY package.json ./
 
 # Install project dependencies using npm
+
 RUN npm install
 
 # Expose port 3000 to allow access to the app outside the container
+
 EXPOSE 3000
 
 # Run the app using the "npm test" command when the container starts
+
 CMD ["npm", "test"]
-```
+{% endhighlight %}
 
 #### Build command:
 
-```
+{% highlight shell %}
 docker build -t bhushan21z/puppchrome .
-```
+{% endhighlight %}
 
 #### Publish it to Docker Hub:
 
-```
+{% highlight shell %}
 docker push bhushan21z/puppchrome:tagname
-```
+{% endhighlight %}
 
 #### Pull commnd:
 
-```
+{% highlight shell %}
 docker pull bhushan21z/puppchrome
-```
+{% endhighlight %}
 
 #### Run command:
 
-```
+{% highlight shell %}
 docker run -it --rm -v $(pwd)/files:usr/src/app/files puppeteerchrome
-```
+{% endhighlight %}
 
 ## **Features and Architecture**
+
+![Application Architecture]({{site.baseurl}}/images/frontend-scoring-engine/frontend_scoring_engine_architecture.png)
+<br>
 
 #### **Scoring Engine:**
 
@@ -200,23 +202,6 @@ docker run -it --rm -v $(pwd)/files:usr/src/app/files puppeteerchrome
 2. Code Editor: Users can write HTML, CSS, and JavaScript code for each problem, similar to the CodePen editor.
 3. Code Compilation: Users can compile their code and generate the output.
 4. Score Display: Users can view the scores generated by the scoring engine based on the performed test cases.<br>
-
-## **Screenshots**
-
-![Home Page]({{site.baseurl}}/images/frontend-scoring-engine/frontend_scoring_engine_home.png)<br><br>
-
----
-
-![Generate Testcases]({{site.baseurl}}/images/frontend-scoring-engine/frontend_scoring_engine_testcases.png)<br><br>
-
----
-
-![Explore Problem Statement]({{site.baseurl}}/images/frontend-scoring-engine/frontend_scoring_engine_explore.png)<br><br>
-
----
-
-![Editor Page]({{site.baseurl}}/images/frontend-scoring-engine/frontend_scoring_engine_submit.png)<br><br>
-<br>
 
 ## **Tools & Technologies**
 
