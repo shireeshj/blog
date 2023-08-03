@@ -150,15 +150,13 @@ Designing such an application involves three key aspects: architecture design, d
 
   I focused on refining the functionalities and user flow of the bots, particularly in the context of the Telegram channels. The FAQ bot is connected to the Telegram channel, and when a user posts a question in the channel's comment section, it gets stored in the database. The admin can then view and answer the question, which is sent back to the user personally through Telegram. Additionally, users can access the FAQ bot to view existing FAQs and request the addition of new ones.
 
-  **FAQ bot flow**
+  <h6>
+    <strong>
+      FAQ bot flow
+    </strong>
+  </h6>
   <table>
     <tr>
-      <td>
-      <img src="{{site.baseurl}}/images/telegram-bot/faqbot.png" width="425"/>
-      </td>
-      <td>
-        <img src="{{site.baseurl}}/images/telegram-bot/faqbot1.png" width="425"/> 
-      </td>
       <td>
       <img src="{{site.baseurl}}/images/telegram-bot/faqbot2.png" width="425"/>
       </td>
@@ -168,12 +166,13 @@ Designing such an application involves three key aspects: architecture design, d
     </tr>
   </table>
 
-  **Quiz bot flow**
+  <h6>
+    <strong>
+      Quiz bot flow
+    </strong>
+  </h6>
   <table>
     <tr>
-      <td>
-      <img src="{{site.baseurl}}/images/telegram-bot/quizbot.png" width="425"/>
-      </td>
       <td>
         <img src="{{site.baseurl}}/images/telegram-bot/quizbot1.png" width="425"/> 
       </td>
@@ -182,6 +181,7 @@ Designing such an application involves three key aspects: architecture design, d
       </td>
     </tr>
   </table>
+  
 
 * **Admin Panel**
 
@@ -203,7 +203,7 @@ Designing such an application involves three key aspects: architecture design, d
 
   **Admin Panel**
 
-  <img src="{{site.baseurl}}/images/telegram-bot/admin-panel.png"/>
+  <img src="{{site.baseurl}}/images/telegram-bot/admin-panel1.png"/>
 
 
   By incorporating these functionalities into the Admin panel, I ensured that the administrative tasks associated with managing the Telegram bots were streamlined and efficient. The panel provides comprehensive control and insights, empowering the admin to effectively manage user interactions, content, and analytics.
