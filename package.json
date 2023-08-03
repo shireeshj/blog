@@ -22,5 +22,8 @@
     "grunt-contrib-uglify": "^4.0.1",
     "grunt-contrib-watch": "^1.1.0",
     "grunt-svgmin": "^6.0.0"
+  },
+  "dependencies": {
+    "grunt-recess": "^1.0.1"
   }
 }

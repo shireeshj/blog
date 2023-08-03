@@ -14,62 +14,176 @@ comments:
 share: 
 ---
 
-# Introduction:
+
 
 As a summer intern at eLitmus, I had the opportunity to work on an exciting project that involved building a Telegram Bot. In today's digital era, effective communication channels play a crucial role in connecting businesses with their stakeholders. eLitmus, a talent-tech platform, identified the need for a two-way communication channel between the platform and candidates. To achieve this, Telegram bots were chosen as the ideal starting point. This blog post will delve into the Telegram Bot Integration project.
 
-# How it Began:
+## **How it Began**:
 
 The project started with the idea of leveraging the Telegram platform as a communication channel between eLitmus and its candidates. The goal was to create a two-way communication channel, enabling candidates to access information, receive updates, and engage in various activities through Telegram bots. This opened up possibilities for automating communication, collecting data, running quizzes, and providing valuable services to candidates.
 
-# Design:
+## **Design**:
 
 Before diving into development phase, thorough planning and design are crucial. I begin by defining the core functionalities of the Telegram bots. I discovered that creating a bot through Bot Father (Telegram's official bot) was the standard approach. As I was tasked with implementing the project using Ruby on Rails, I focused on two key aspects: developing the Telegram bot and designing the Admin panel.
 Designing such an application involves three key aspects: architecture design, database design, and UI/UX design. Let's dive into each of these parts in more detail:
 
-  *	**Architecture** : The Telegram bots interact with users through messages and commands. Users can access FAQs, participate in quizzes, and receive responses based on their interactions with the bots. The bots handle user inputs, validate quiz answers, and provide feedback and results accordingly. An intuitive admin panel is developed using Ruby on Rails to facilitate easy management of the bots' functionalities. The admin panel allows administrators to add, update, and delete FAQs, quizzes, and other content. It also provides insights and analytics related to user engagement and bot usage.
+  *	**Architecture** : The Telegram bots interact with users through messages and commands. Users can access FAQs, participate in quizzes, and receive responses based on their interactions with the bots. The bots handle user inputs, validate quiz answers, and provide feedback and results accordingly. An intuitive admin panel is developed using Ruby on Rails to facilitate easy management of the bot's functionalities. The admin panel allows administrators to add, update, and delete FAQs, quizzes, and other content. It also provides insights and analytics related to user engagement and bot usage.
+  <img src="{{site.baseurl}}/images/telegram-bot/architecture.png" width="425"/>
   *	**Database**: The project utilizes a MySQL database to store and manage data related to users, FAQs, quizzes, quiz attempts, analytics, and other relevant information. The database schema is designed to efficiently store and retrieve data, ensuring optimal performance.
 
-  *	**UI/UX**:  To ensure a visually appealing and user-friendly Telegram bot interface, I delved into various UI options and explored the best ways to present information and interact with users. This research helped me identify the most effective strategies for creating an engaging and intuitive bot interface. And for the Admin panel, I took the initiative to design the entire interface using Figma. By visualizing the layout, components, and functionalities, I was able to ensure a cohesive and user-friendly experience for administrators managing the bots' functionalities. Figma provided a powerful toolset for creating wireframes, mock-ups, and interactive prototypes, allowing me to iterate and refine the design before implementation.
+  *	**UI/UX**:  To ensure a visually appealing and user-friendly Telegram bot interface, I delved into various UI options and explored the best ways to present information and interact with users. This research helped me identify the most effective strategies for creating an engaging and intuitive bot interface. And for the Admin panel, I took the initiative to design the entire interface using Figma. By visualizing the layout, components, and functionalities, I was able to ensure a cohesive and user-friendly experience for administrators managing the bot's functionalities. Figma provided a powerful toolset for creating wireframes, mock-ups, and interactive prototypes, allowing me to iterate and refine the design before implementation.
 
-# Development:
+## **Development**:
 
   Before starting this project, I had experience developing mobile applications, and most of them followed the Model-View-Template (MVT) pattern for backend, such as Django. However, for this project, I needed to learn and work with Ruby on Rails, which follows the Model-View-Controller (MVC) architectural pattern. Fortunately, my previous experience with backend development made it easier for me to understand Rails, and within the first two weeks, I was able to develop the basic functionalities of both the FAQ and Quiz bots.
 
+  Integrating the telegram bot consists of 3 steps:
+
+  * Creating a bot using Bot Father ( Official bot of telegram for creating telegram bot) and get the token that was generated by the bot father.
+  
+      <img src="{{site.baseurl}}/images/telegram-bot/botfather.png" width="425"/>
+  * Initalizing the bot in the ruby file and declare a listening function that listens every messsage from the bot.
+      ```
+        require 'telegram/bot'
+        token = "xxxxxxxxxx:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+        Telegram::Bot::Client.run(token) do |bot|
+
+          bot.listen do |message|
+          end
+        end
+      ```
+      
+  * Writing the message specified functions that is called only when a specified message if recieved from the bot.
+      ```
+        def faq(message)
+          sendmessage(chat_id:message.from.id,text:"List of Faqs")
+        end
+
+        bot.listen do |message|
+          if message.text = "/faq"
+            faq(message)
+          end
+        end
+      ```
+
+  I have used Ruby on Rails for both front-end and back-end to develope admin panel. For database I have used mysql and for hosting purpose I have used AWS, EC2 to host admin panel using docker and telegram and RDS for database.
+
+  Using docker to host the bot and admin panel was another part of the development that gave me an idea of how to does docker used by most of the companies, it was my personal goal in the year to learn docker so it got done by this project. An to say using docker wasn't the difficult part I had to learn how to write a docker file and docker compose file, 
+
+  Dockerfile
+
+      
+      # Make sure it matches the Ruby version in .ruby-version and Gemfile
+      ARG RUBY_VERSION=3.1.4
+      FROM ruby:$RUBY_VERSION
+
+      # Install libvips for Active Storage preview support
+      RUN apt-get update -qq && \
+          apt-get install -y build-essential libvips && \
+          apt-get clean && \
+          rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man
+
+      # Rails app lives here
+      WORKDIR /rails
+
+      # Install dependencies
+      RUN apt-get update -qq && \
+          apt-get install -y build-essential libpq-dev nodejs
+      # Set production environment
+      ENV RAILS_LOG_TO_STDOUT="1" \
+          RAILS_SERVE_STATIC_FILES="true" \
+          RAILS_ENV="production" \
+          SECRET_KEY_BASE="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" \
+          BUNDLE_WITHOUT="development"
+
+      # ENV DISABLE_DATABASE_ENVIRONMENT_CHECK=1
+
+      # Install application gems
+      COPY Gemfile Gemfile.lock ./
+      RUN bundle install
+
+      # Copy application code
+      COPY . .
+
+      # Precompile bootsnap code for faster boot times
+      RUN bundle exec bootsnap precompile --gemfile app/ lib/
+
+      # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
+      RUN bundle exec rails assets:precompile
+
+      RUN ./bin/rails db:prepare
+      # RUN ./bin/rails db:drop:all 
+      #RUN ./bin/rails db:migrate:all
+      # Entrypoint prepares the database.
+      # ENTRYPOINT ["/rails/bin/docker-entrypoint"]
+
+      # Start the server by default, this can be overwritten at runtime
+      EXPOSE 3000
+      CMD ["foreman", "start"]
+
+  Docker-compose.yml
+
+      version: '3.8'
+
+      services:
+        # Rails application service
+        web:
+          build:
+            context: .
+            dockerfile: Dockerfile
+          restart: always
+          ports:
+            - 3000:3000
+          volumes:
+            - .:/app
+
+      volumes:
+        app-storage:
+
+
+
+
+## **Features Developed**
+  
+  * **User Flow**
+
   I focused on refining the functionalities and user flow of the bots, particularly in the context of the Telegram channels. The FAQ bot is connected to the Telegram channel, and when a user posts a question in the channel's comment section, it gets stored in the database. The admin can then view and answer the question, which is sent back to the user personally through Telegram. Additionally, users can access the FAQ bot to view existing FAQs and request the addition of new ones.
 
-  ## FAQ bot flow
+  **FAQ bot flow**
   <table>
     <tr>
       <td>
-      <img src="../images/telegram-bot/faqbot.png" width="425"/>
+      <img src="{{site.baseurl}}/images/telegram-bot/faqbot.png" width="425"/>
       </td>
       <td>
-        <img src="../images/telegram-bot/faqbot1.png" width="425"/> 
-      </td>
-    </tr>
-    <tr>
-      <td>
-      <img src="../images/telegram-bot/faqbot2.png" width="425"/>
+        <img src="{{site.baseurl}}/images/telegram-bot/faqbot1.png" width="425"/> 
       </td>
       <td>
-        <img src="../images/telegram-bot/faqbot3.png" width="425"/> 
+      <img src="{{site.baseurl}}/images/telegram-bot/faqbot2.png" width="425"/>
+      </td>
+      <td>
+        <img src="{{site.baseurl}}/images/telegram-bot/faqbot3.png" width="425"/> 
       </td>
     </tr>
   </table>
 
-  ## Quiz bot flow
+  **Quiz bot flow**
   <table>
     <tr>
       <td>
-      <img src="../images/telegram-bot/quizbot.png" width="425"/>
+      <img src="{{site.baseurl}}/images/telegram-bot/quizbot.png" width="425"/>
       </td>
       <td>
-        <img src="../images/telegram-bot/quizbot1.png" width="425"/> 
+        <img src="{{site.baseurl}}/images/telegram-bot/quizbot1.png" width="425"/> 
+      </td>
+      <td>
+        <img src="{{site.baseurl}}/images/telegram-bot/quizbot2.png" width="425" />
       </td>
     </tr>
   </table>
-      <img src="../images/telegram-bot/quizbot2.png" width="425"/>
+
+* **Admin Panel**
 
   On the other hand, the admin panel allows the admin to create quizzes and questions. These quizzes are then posted in the Telegram channel, with a button redirecting users to the Quiz bot. Users can access multiple quizzes and attempt them through the bot.
 
@@ -81,23 +195,24 @@ Designing such an application involves three key aspects: architecture design, d
 
   * **FAQ Management**: The Admin can view and manage the FAQs. They have the ability to add, edit, or remove FAQs as needed. Additionally, the Admin can track the number of reads by users, providing insights into the popularity and relevance of different FAQs.
 
-  *	**Quiz Management**: The Admin can create quizzes and manage them within the Admin panel. They can add questions, set options, and define correct answers. The Admin also has access to the responses of the quizzes, allowing them to analyze individual question analytics and gain insights into user performance.
+  *	**Quiz Management**: The Admin can create quizzes and manage them within the Admin panel. They can add questions, set multiple options, and define correct answers. The Admin also has access to the responses of the quizzes, allowing them to analyze individual question analytics and gain insights into user performance. This can also be used to host surveys on telegram channels.
 
   *	**Analytics**: The Admin panel provides analytics on user activities related to both the FAQ and Quiz bots. The Admin can view data such as the number of attempts per day, week, month, or year, as well as the number of FAQ reads per day, week, month, or year. These analytics help the Admin understand user engagement and make data-driven decisions.
 
-  *	**Post Management**: The Admin can utilize the post section in the Admin panel to create and publish posts in the Telegram channel directly from Telegram. This feature streamlines the process of sharing content and updates with users in the channel.
+  *	**Post Management**: The Admin can utilize the post section in the Admin panel to create and publish posts in the Telegram channel directly from Telegram and to make it effective I have created two phases of create and publishing the post so that post get reviewed before publishing the post. This feature streamlines the process of sharing content and updates with users in the channel.
 
-  ## Admin Panel
-  <img src="../images/telegram-bot/admin-panel.png"/>
+  **Admin Panel**
+
+  <img src="{{site.baseurl}}/images/telegram-bot/admin-panel.png"/>
 
 
   By incorporating these functionalities into the Admin panel, I ensured that the administrative tasks associated with managing the Telegram bots were streamlined and efficient. The panel provides comprehensive control and insights, empowering the admin to effectively manage user interactions, content, and analytics.
 
 
-# Challenges Faced:
+## **Challenges Faced**:
 
-  Working with 3rd party API's is one of the most challenging task and that is the challenging task of the project using telegram bot API. I could able to use telegram api to minimal amount of data of user, for example I couldn't able to get users contact details, and I have crossed this challenge by finidng a feature of telegram that is by using permissions to access user details and request user to send the mobile number and location, but I couldn't able to get location from the web or laptop. The biggest challenge I have faced is to setup graphs and charts to display analytics of the data collected throught the telegram. This literally took me a week long to set up and work on analytics.
+  Working with 3rd party API's is one of the most challenging task and that is the challenging task of the project using telegram bot API. I could able to use telegram api to minimal amount of data of user, for example I couldn't able to get users contact details, and I have crossed this challenge by finidng a feature of telegram that is by using permissions to access user details and request user to send the mobile number and location, but I couldn't able to get location from the web or laptop. The biggest challenge I have faced was setting up and displaying analytics using charts and graphs. Initially, I tried using gems like Chartkick and FusionCharts, but faced issues with rendering the graphs correctly. Despite spending considerable time troubleshooting, the graphs weren't displaying as expected. Eventually, I opted for Chart.js, which proved to be a more suitable solution for my needs. With Chart.js, I could create visually appealing and interactive charts to showcase the data collected through admin panel. The transition to Chart.js was smooth, and it enabled me to present data insights effectively, providing a valuable user experience.
 
-# Conclusion:
+## **Conclusion**:
 
-  In summary, working on this project presented its fair share of challenges. However, with perseverance and problem-solving skills, I was able to overcome these obstacles and achieve success. It was a valuable learning experience that helped me improve my abilities and reach my goals. By embracing challenges as opportunities for growth and staying committed to the project's vision, I was able to develop the Telegram bots and the Admin panel effectively. Overall, this project was a rewarding journey that expanded my knowledge and skills in web development.
+  In summary, working on this project presented its fair share of challenges. However, with perseverance and problem-solving skills, I was able to overcome these obstacles and achieve success. I was able to develop the Telegram bots and the Admin panel effectively. I am thrilled to share that my hard work did not go unnoticed, and my project was selected for use by the company. This recognition is truly gratifying, as it demonstrates the value my work brings to the organization and the impact it can have on the company operations. Overall, this project was a rewarding journey that expanded my knowledge and skills in web development.
