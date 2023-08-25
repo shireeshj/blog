@@ -7,13 +7,161 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="/" />
-<updated>2023-07-17T10:10:05+05:30</updated>
+<updated>2023-08-25T13:27:10+05:30</updated>
 <id>/</id>
 <author>
   <name>eLitmus.com</name>
   <uri>/</uri>
   <email>site-admin@elitmus.com</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[My Experience as a Summer Intern at eLitmus: Building a Telegram Bot]]></title>
+  <link rel="alternate" type="text/html" href="/technology/my-experience-as-a-summer-intern-at-elitmus-building-a-telegram-bot/"/>
+  <id>/technology/my-experience-as-a-summer-intern-at-elitmus-building-a-telegram-bot</id>
+  <updated>2023-07-14 15:18:53 +0530T00:00:00-00:00</updated>
+  <published>2023-07-19T00:00:00+05:30</published>
+  
+  <author>
+    <name>eLitmus.com</name>
+    <uri></uri>
+    <email>site-admin@elitmus.com</email>
+  </author>
+  <category scheme="/tags/#Rails" term="Rails" /><category scheme="/tags/#Telegram%20bot" term="Telegram bot" />
+  <content type="html">
+  
+    &lt;p&gt;As a summer intern at eLitmus, I had the opportunity to work on an exciting project that involved building a Telegram Bot. In today’s digital era, effective communication channels play a crucial role in connecting businesses with their stakeholders. eLitmus, a talent-tech platform, identified the need for a two-way communication channel between the platform and candidates. To achieve this, Telegram bots were chosen as the ideal starting point. This blog post will delve into the Telegram Bot Integration project.&lt;/p&gt;
+
+&lt;h2 id=&quot;how-it-began&quot;&gt;&lt;strong&gt;How it Began&lt;/strong&gt;:&lt;/h2&gt;
+
+&lt;p&gt;The project started with the idea of leveraging the Telegram platform as a communication channel between eLitmus and its candidates. The goal was to create a two-way communication channel, enabling candidates to access information, receive updates, and engage in various activities through Telegram bots. This opened up possibilities for automating communication, collecting data, running quizzes, and providing valuable services to candidates.&lt;/p&gt;
+
+&lt;h2 id=&quot;design&quot;&gt;&lt;strong&gt;Design&lt;/strong&gt;:&lt;/h2&gt;
+
+&lt;p&gt;Before diving into development phase, thorough planning and design are crucial. I begin by defining the core functionalities of the Telegram bots. I discovered that creating a bot through Bot Father (Telegram’s official bot) was the standard approach. As I was tasked with implementing the project using Ruby on Rails, I focused on two key aspects: developing the Telegram bot and designing the Admin panel.
+Designing such an application involves three key aspects: architecture design, database design, and UI/UX design. Let’s dive into each of these parts in more detail:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Architecture&lt;/strong&gt; : The Telegram bots interact with users through messages and commands. Users can access FAQs, participate in quizzes, and receive responses based on their interactions with the bots. The bots handle user inputs, validate quiz answers, and provide feedback and results accordingly. An intuitive admin panel is developed using Ruby on Rails to facilitate easy management of the bot’s functionalities. The admin panel allows administrators to add, update, and delete FAQs, quizzes, and other content. It also provides insights and analytics related to user engagement and bot usage.
+  &lt;img src=&quot;/blog/images/telegram-bot/architecture.png&quot; width=&quot;425&quot; /&gt;&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Database&lt;/strong&gt;: The project utilizes a MySQL database to store and manage data related to users, FAQs, quizzes, quiz attempts, analytics, and other relevant information. The database schema is designed to efficiently store and retrieve data, ensuring optimal performance.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;UI/UX&lt;/strong&gt;:  To ensure a visually appealing and user-friendly Telegram bot interface, I delved into various UI options and explored the best ways to present information and interact with users. This research helped me identify the most effective strategies for creating an engaging and intuitive bot interface. And for the Admin panel, I took the initiative to design the entire interface using Figma. By visualizing the layout, components, and functionalities, I was able to ensure a cohesive and user-friendly experience for administrators managing the bot’s functionalities. Figma provided a powerful toolset for creating wireframes, mock-ups, and interactive prototypes, allowing me to iterate and refine the design before implementation.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;development&quot;&gt;&lt;strong&gt;Development&lt;/strong&gt;:&lt;/h2&gt;
+
+&lt;p&gt;Before starting this project, I had experience developing mobile applications, and most of them followed the Model-View-Template (MVT) pattern for backend, such as Django. However, for this project, I needed to learn and work with Ruby on Rails, which follows the Model-View-Controller (MVC) architectural pattern. Fortunately, my previous experience with backend development made it easier for me to understand Rails, and within the first two weeks, I was able to develop the basic functionalities of both the FAQ and Quiz bots.&lt;/p&gt;
+
+&lt;p&gt;Integrating the telegram bot consists of 3 steps:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Creating a bot using Bot Father ( Official bot of telegram for creating telegram bot) and get the token that was generated by the bot father.&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;/blog/images/telegram-bot/botfather.png&quot; width=&quot;425&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Initalizing the bot in the ruby file and declare a listening function that listens every messsage from the bot.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Writing the message specified functions that is called only when a specified message if recieved from the bot.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I have used Ruby on Rails for both front-end and back-end to develope admin panel. For database I have used mysql and for hosting purpose I have used AWS, EC2 to host admin panel using docker and telegram and RDS for database.&lt;/p&gt;
+
+&lt;p&gt;Using docker to host the bot and admin panel was another part of the development that gave me an idea of how to does docker used by most of the companies, it was my personal goal in the year to learn docker so it got done by this project. And to say using docker wasn’t the difficult part. I had to learn how to write a docker file and docker compose file.&lt;/p&gt;
+
+&lt;h2 id=&quot;features-developed&quot;&gt;&lt;strong&gt;Features Developed&lt;/strong&gt;&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;User Flow&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;I focused on refining the functionalities and user flow of the bots, particularly in the context of the Telegram channels. The FAQ bot is connected to the Telegram channel, and when a user posts a question in the channel’s comment section, it gets stored in the database. The admin can then view and answer the question, which is sent back to the user personally through Telegram. Additionally, users can access the FAQ bot to view existing FAQs and request the addition of new ones.&lt;/p&gt;
+
+&lt;h6&gt;
+    &lt;strong&gt;
+      FAQ bot flow
+    &lt;/strong&gt;
+  &lt;/h6&gt;
+&lt;table&gt;
+    &lt;tr&gt;
+      &lt;td&gt;
+      &lt;img src=&quot;/blog/images/telegram-bot/faqbot2.png&quot; width=&quot;425&quot; /&gt;
+      &lt;/td&gt;
+      &lt;td&gt;
+        &lt;img src=&quot;/blog/images/telegram-bot/faqbot3.png&quot; width=&quot;425&quot; /&gt; 
+      &lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/table&gt;
+
+&lt;h6&gt;
+    &lt;strong&gt;
+      Quiz bot flow
+    &lt;/strong&gt;
+  &lt;/h6&gt;
+&lt;table&gt;
+    &lt;tr&gt;
+      &lt;td&gt;
+        &lt;img src=&quot;/blog/images/telegram-bot/quizbot1.png&quot; width=&quot;425&quot; /&gt; 
+      &lt;/td&gt;
+      &lt;td&gt;
+        &lt;img src=&quot;/blog/images/telegram-bot/quizbot2.png&quot; width=&quot;425&quot; /&gt;
+      &lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/table&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Admin Panel&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;On the other hand, the admin panel allows the admin to create quizzes and questions. These quizzes are then posted in the Telegram channel, with a button redirecting users to the Quiz bot. Users can access multiple quizzes and attempt them through the bot.&lt;/p&gt;
+
+    &lt;p&gt;By developing these functionalities, I was able to establish a seamless flow for users, ensuring they can interact with the bots and access relevant information easily. The admin panel provides the necessary tools for managing FAQs, quizzes, and user interactions, allowing for efficient administration and engagement with the users.&lt;/p&gt;
+
+    &lt;p&gt;In the Admin panel, I implemented the design that I had previously created using Figma. The Admin panel offers various functionalities to enhance the administration and management of the Telegram bots. Here are some key features of the Admin panel:&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;strong&gt;User Management&lt;/strong&gt;: The Admin panel allows the admin to view active users and access individual user data. This includes information about the user’s activities, quiz attempts, and questions asked through the bot.&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;strong&gt;FAQ Management&lt;/strong&gt;: The Admin can view and manage the FAQs. They have the ability to add, edit, or remove FAQs as needed. Additionally, the Admin can track the number of reads by users, providing insights into the popularity and relevance of different FAQs.&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;strong&gt;Quiz Management&lt;/strong&gt;: The Admin can create quizzes and manage them within the Admin panel. They can add questions, set multiple options, and define correct answers. The Admin also has access to the responses of the quizzes, allowing them to analyze individual question analytics and gain insights into user performance. This can also be used to host surveys on telegram channels.&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;strong&gt;Analytics&lt;/strong&gt;: The Admin panel provides analytics on user activities related to both the FAQ and Quiz bots. The Admin can view data such as the number of attempts per day, week, month, or year, as well as the number of FAQ reads per day, week, month, or year. These analytics help the Admin understand user engagement and make data-driven decisions.&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;strong&gt;Post Management&lt;/strong&gt;: The Admin can utilize the post section in the Admin panel to create and publish posts in the Telegram channel directly from Telegram and to make it effective I have created two phases of create and publishing the post so that post get reviewed before publishing the post. This feature streamlines the process of sharing content and updates with users in the channel.&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;strong&gt;Admin Panel&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;/blog/images/telegram-bot/admin-panel1.png&quot; /&gt;&lt;/p&gt;
+
+    &lt;p&gt;By incorporating these functionalities into the Admin panel, I ensured that the administrative tasks associated with managing the Telegram bots were streamlined and efficient. The panel provides comprehensive control and insights, empowering the admin to effectively manage user interactions, content, and analytics.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;challenges-faced&quot;&gt;&lt;strong&gt;Challenges Faced&lt;/strong&gt;:&lt;/h2&gt;
+
+&lt;p&gt;Working with 3rd party API’s is one of the most challenging task and that is the challenging task of the project using telegram bot API. I could able to use telegram api to minimal amount of data of user, for example I couldn’t able to get users contact details, and I have crossed this challenge by finidng a feature of telegram that is by using permissions to access user details and request user to send the mobile number and location, but I couldn’t able to get location from the web or laptop. The biggest challenge I have faced was setting up and displaying analytics using charts and graphs. Initially, I tried using gems like Chartkick and FusionCharts, but faced issues with rendering the graphs correctly. Despite spending considerable time troubleshooting, the graphs weren’t displaying as expected. Eventually, I opted for Chart.js, which proved to be a more suitable solution for my needs. With Chart.js, I could create visually appealing and interactive charts to showcase the data collected through admin panel. The transition to Chart.js was smooth, and it enabled me to present data insights effectively, providing a valuable user experience.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;&lt;strong&gt;Conclusion&lt;/strong&gt;:&lt;/h2&gt;
+
+&lt;p&gt;In summary, working on this project presented its fair share of challenges. However, with perseverance and problem-solving skills, I was able to overcome these obstacles and achieve success. I was able to develop the Telegram bots and the Admin panel effectively. I am thrilled to share that my hard work did not go unnoticed, and my project was selected for use by the company. This recognition is truly gratifying, as it demonstrates the value my work brings to the organization and the impact it can have on the company operations. Overall, this project was a rewarding journey that expanded my knowledge and skills in web development.&lt;/p&gt;
+
+  
+  &lt;p&gt;&lt;a href=&quot;/technology/my-experience-as-a-summer-intern-at-elitmus-building-a-telegram-bot/&quot;&gt;My Experience as a Summer Intern at eLitmus: Building a Telegram Bot&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on July 19, 2023.&lt;/p&gt;</content>
+</entry>
 
 
 <entry>
@@ -3064,102 +3212,6 @@ We went ahead with this choice. Using &lt;a href=&quot;https://docs.chef.io/chef
 
   
   &lt;p&gt;&lt;a href=&quot;/technology/setting-up-elb-plus-nginx-with-https-offloading/&quot;&gt;Setting up OAuth2 callbacks in Rails with HTTPS offloading on load balancers&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on March 08, 2017.&lt;/p&gt;</content>
-</entry>
-
-
-<entry>
-  <title type="html"><![CDATA[Custom Capacity Buffers In Go]]></title>
-  <link rel="alternate" type="text/html" href="/technology/custom-capacity-buffers-in-go/"/>
-  <id>/technology/custom-capacity-buffers-in-go</id>
-  <updated>2015-03-31 11:58:04 +0530T00:00:00-00:00</updated>
-  <published>2015-03-31T00:00:00+05:30</published>
-  
-  <author>
-    <name>eLitmus.com</name>
-    <uri></uri>
-    <email>site-admin@elitmus.com</email>
-  </author>
-  <category scheme="/tags/#go" term="go" /><category scheme="/tags/#ruby" term="ruby" /><category scheme="/tags/#buffer" term="buffer" />
-  <content type="html">
-  
-    &lt;p&gt;At elitmus we use ruby to create most of our tools and most of our applications  are also written in ruby. Recently I started exploring ways to build our tools especially the backend tools in languages other than ruby which have much lesser memory footprint and better efficiency. One such cases was to create a sandboxed environment for running  untrusted code on our servers. After evaluating multiple languages, I decided to use golang because of it’s excellent library support coupled with the fact the docker(a sandboxed env) was also written in go.&lt;/p&gt;
-
-&lt;p&gt;One of the many challenges we faced while creating our sandbox was  redirection of the standard output of untrusted code, as this simple code below will fill up the disk if redirected to file or use all system resources if redirected to a buffer.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;linenos&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;while&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;“&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;I&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;am&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;the&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;green&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;monster&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;”&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;So the problem is,how to limit the size of a file or buffer?, I  started with   buffers  as they are more easy to implement.  I assumed that the &lt;code&gt;Write&lt;/code&gt; method of the &lt;code&gt;Buffer&lt;/code&gt; struct which writes to the buffer, will panic with &lt;code&gt;ErrTooLarge&lt;/code&gt; error if buffer size is above it’s capacity, which i hoped to catch using &lt;code&gt;recover&lt;/code&gt; builtin function.&lt;/p&gt;
-
-&lt;p&gt;This is the code snippet below.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-go&quot; data-lang=&quot;go&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;linenos&quot;&gt; 1&lt;/span&gt;   &lt;span class=&quot;k&quot;&gt;defer&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 2&lt;/span&gt;      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;recover&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 3&lt;/span&gt;         &lt;span class=&quot;nx&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Should catch if anyone panics&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 4&lt;/span&gt;      &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 5&lt;/span&gt;   &lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 6&lt;/span&gt;  &lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;bytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;NewBuffer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;make&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 7&lt;/span&gt;  &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 8&lt;/span&gt;    &lt;span class=&quot;nx&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Write&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([]&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;create boom&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 9&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;10&lt;/span&gt;      &lt;span class=&quot;nx&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;11&lt;/span&gt;       &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;12&lt;/span&gt;    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;13&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;14&lt;/span&gt;  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;On running this code, my system was frozen and crashed a little later. This is not what i expected, On further investigation by looking to &lt;a href=&quot;https://golang.org/src/bytes/buffer.go?s=4155:4206#L115&quot;&gt;source code&lt;/a&gt; and reading the &lt;code&gt;bytes&lt;/code&gt; package documentation again, i found out that &lt;code&gt;Write&lt;/code&gt; method in the &lt;code&gt;bytes&lt;/code&gt; package is growing the capacity of the  buffer if the buffer capacity is not enough, which in turn is increasing the amount of memory and resources used by the system.&lt;/p&gt;
-
-&lt;p&gt;After some googling and with good help from the go community(thanks to &lt;a href=&quot;https://github.com/davecheney&quot;&gt;dave cheney&lt;/a&gt;), i decided  to create wrapper around the buffer struct and implement my own &lt;code&gt;io.Writer&lt;/code&gt; interface by implementing Write method for the wrapper which writes to the buffer.&lt;/p&gt;
-
-&lt;p&gt;My custom wrapper’s will take capacity as parameter when initializing and the &lt;code&gt;Write&lt;/code&gt; method will do the required action if there is a buffer overflow, instead of increasing the capacity like the &lt;code&gt;Write&lt;/code&gt; method from &lt;code&gt;bytes&lt;/code&gt; package. This is done by monitoring the size of the buffer before writing to the buffer.&lt;/p&gt;
-
-&lt;p&gt;This is code snippet of my custom wrapper.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-go&quot; data-lang=&quot;go&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;linenos&quot;&gt; 1&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;type&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;MyBuffer&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 2&lt;/span&gt;    &lt;span class=&quot;nx&quot;&gt;cap&lt;/span&gt;   &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 3&lt;/span&gt;    &lt;span class=&quot;nx&quot;&gt;mybuf&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;bytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Buffer&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 5&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 6&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;MyBuffer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Write&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;n&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 7&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;mybuf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;cap&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 8&lt;/span&gt;        &lt;span class=&quot;nx&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;mybuf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt; 9&lt;/span&gt;        &lt;span class=&quot;nb&quot;&gt;panic&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Buffer Overflow&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;10&lt;/span&gt;    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;11&lt;/span&gt;        &lt;span class=&quot;nx&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;mybuf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Write&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;12&lt;/span&gt;    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;13&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;p&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;nil&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;14&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;15&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;16&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;NewBuffer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;buf&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;cap&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;MyBuffer&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;17&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;MyBuffer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;mybuf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;bytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;NewBuffer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;buf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;cap&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;cap&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;18&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;19&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;21&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;22&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;defer&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;23&lt;/span&gt;        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;recover&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;24&lt;/span&gt;            &lt;span class=&quot;nx&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;recover in yes&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;25&lt;/span&gt;        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;26&lt;/span&gt;    &lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;27&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;28&lt;/span&gt;    &lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;NewBuffer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;make&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;200&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;29&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;30&lt;/span&gt;        &lt;span class=&quot;nx&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Write&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([]&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;Check for Buffer Overflow&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;31&lt;/span&gt;        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;32&lt;/span&gt;            &lt;span class=&quot;nx&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Println&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;Error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;())&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;33&lt;/span&gt;            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;34&lt;/span&gt;        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;35&lt;/span&gt;    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;linenos&quot;&gt;36&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;On running this code, it worked as expected, hopefully will be deployed in production.
-The same goes for files as well.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; useful links, &lt;a href=&quot;https://www.docker.com/&quot;&gt;on docker&lt;/a&gt;,&lt;a href=&quot;https://golang.org/pkg/bytes/&quot;&gt;on golang bytes package&lt;/a&gt;&lt;/p&gt;
-
-
-  
-  &lt;p&gt;&lt;a href=&quot;/technology/custom-capacity-buffers-in-go/&quot;&gt;Custom Capacity Buffers In Go&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on March 31, 2015.&lt;/p&gt;</content>
 </entry>
 
 </feed>

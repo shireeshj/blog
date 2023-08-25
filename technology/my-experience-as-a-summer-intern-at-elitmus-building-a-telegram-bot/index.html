@@ -1,0 +1,617 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>My Experience as a Summer Intern at eLitmus: Building a Telegram Bot &#8211; eLitmus Blog</title>
+<meta name="description" content="We learn new things everyday, and we document our learnings here...">
+
+<meta name="keywords" content="Rails, Telegram bot">
+
+<!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary">    
+<meta name="twitter:title" content="My Experience as a Summer Intern at eLitmus: Building a Telegram Bot">
+<meta name="twitter:description" content="<p>As a summer intern at eLitmus, I had the opportunity to work on an exciting project that involved building a Telegram Bot. In today’s digital era, effective communication channels play a crucial role in connecting businesses with their stakeholders. eLitmus, a talent-tech platform, identified the need for a two-way communication channel between the platform and candidates. To achieve this, Telegram bots were chosen as the ideal starting point. This blog post will delve into the Telegram Bot Integration project.</p>
+
+">
+<meta name="twitter:site" content="@elitmus">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        
+            <meta name="twitter:creator" content="@Maheshm85268053">
+        
+    
+
+
+
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="/blog/images/blog_logo_taglinedorange.png"/>
+<meta property="og:type" content="article">
+<meta property="og:title" content="My Experience as a Summer Intern at eLitmus: Building a Telegram Bot">
+<meta property="og:description" content="<p>As a summer intern at eLitmus, I had the opportunity to work on an exciting project that involved building a Telegram Bot. In today’s digital era, effective communication channels play a crucial role in connecting businesses with their stakeholders. eLitmus, a talent-tech platform, identified the need for a two-way communication channel between the platform and candidates. To achieve this, Telegram bots were chosen as the ideal starting point. This blog post will delve into the Telegram Bot Integration project.</p>
+
+">
+<meta property="og:url" content="/blog/technology/my-experience-as-a-summer-intern-at-elitmus-building-a-telegram-bot/">
+
+<meta property="og:site_name" content="eLitmus Blog">
+
+
+
+
+
+
+
+<link rel="canonical" href="https://www.elitmus.com/blog/technology/my-experience-as-a-summer-intern-at-elitmus-building-a-telegram-bot/">
+<link href="/blog/feed.xml" type="application/atom+xml" rel="alternate" title="eLitmus Blog Feed">
+
+
+	<link rel="author" href="https://plus.google.com/+eLitmus?rel=author">
+
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Icons -->
+<!-- apple touch icons -->
+<link rel="apple-touch-icon" sizes="57x57" href="/blog/images/apple-touch-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="114x114" href="/blog/images/apple-touch-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/blog/images/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/blog/images/apple-touch-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="60x60" href="/blog/images/apple-touch-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/blog/images/apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/blog/images/apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/blog/images/apple-touch-icon-152x152.png">
+<!-- Favicons default 16x16 -->
+<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="/blog/favicon.ico">
+
+<!-- Favicons others -->
+<link rel="icon" type="image/png" href="/blog/images/favicon-196x196.png" sizes="196x196">
+<link rel="icon" type="image/png" href="/blog/images/favicon-160x160.png" sizes="160x160">
+<link rel="icon" type="image/png" href="/blog/images/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/blog/images/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/blog/images/favicon-32x32.png" sizes="32x32">
+
+<!-- Icons for Windows 8 Tiles -->
+<meta name="msapplication-TileColor" content="#ffffff"/>
+<meta name="msapplication-TileImage" content="/blog/images/mstile-144x144.png">
+
+<!-- For all browsers -->
+
+
+<!-- Webfonts -->
+<link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:600,300,300italic|The+Girl+Next+Door" rel="stylesheet" type="text/css">
+<link href='//fonts.googleapis.com/css?family=Source+Code+Pro:300' rel='stylesheet' type='text/css'>
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- bootstrap 4 -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/bootstrap.min.css">
+
+<!-- below css file is used for navbar in individual blogposts -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/main.min.css">
+
+<!-- <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"> -->
+
+<!-- Optional theme -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/bootstrap-theme.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Font Awesome -->
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/font-elitmuslogo.css" />
+
+<link rel="stylesheet" href="/blog/assets/css/customize.css">
+<link rel="stylesheet" href="/blog/assets/css/forkit.css">
+</head>
+
+<body id="post">
+
+  <header class="headroom">
+
+  <nav class="navbar navbar-expand-md navbar-dark bg-black fixed-top" role="navigation">
+
+      <a class="navbar-brand" href="/blog/">
+        <img src="https://cdn0.elitmus.net/assets/elitmus-only-logo-6efc8a74032179afdb89829a093e05bd05d627dd4354bbd1ff7f4eb5db8a0af8.svg" class="img-logo">
+        <span><div class="blog-label">blog</div></span>
+      </a>
+
+      <!-- the toggle button -->
+      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="navbar-toggler-icon"></span>
+        <span class="sr-only">Toggle navigation</span><!-- only for screen readers -->
+      </button>
+
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav mr-auto">
+
+          <!-- first item = dropdown search -->
+          <li class="nav-item">
+            <div class="dropdown search-box-margin">
+
+            
+              <div class="form-inline">
+                 
+
+                <input data-toggle="dropdown" placeholder="Search..." id="search-box" class="form-control form-control-sm search-input dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+
+
+                <div class="dropdown-menu" id="search-dropdown">
+                  <a role='presentation' class='dropdown-item search-results'> Type more.... </a>
+                </div>
+
+              </div>
+
+
+
+            <!-- the below line will pass "search word" to search.html -->
+
+            <!--
+            <form class="form-inline" action="/blog/search" method="get">
+               
+
+
+              <label for="search_box">Search</label>
+              <input data-toggle="dropdown" type="text" name="query" placeholder="Search..." id="search-box" class="form-control form-control-sm search-input dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+
+              <div class="dropdown-menu" id="search-dropdown">
+                  <a role='presentation' class='dropdown-item search-results'> Type more.... </a>
+              </div>
+
+              <input type="submit" value="search">
+
+            </form>
+            -->
+
+            <!-- end of form -->
+
+
+            </div>
+          </li>
+        </ul>
+
+        
+
+        <!-- every link on the right side -->
+        <ul class="nav navbar-nav navbar-right nav-icon-size-reduce">
+          
+          <li class="nav-item">
+             
+              <a href="/blog/" class="nav-link">
+                <i class="fa fa-home"></i> Home
+              </a>
+            
+          </li>
+          
+          <li class="nav-item">
+             
+              <a href="/blog/posts/" class="nav-link">
+                <i class="fa fa-file-text-o"></i> Posts
+              </a>
+            
+          </li>
+          
+          <li class="nav-item">
+             
+              <a href="//www.elitmus.com/" class="nav-link">
+                <i class="el el-elitmuslogo"></i> eLitmus
+              </a>
+            
+          </li>
+          
+
+          <!-- feed is the last link -->
+          <li class="nav-item">
+            <a href="/blog/feed.xml" class="nav-link" title="Atom/RSS feed">
+              <i class="fa fa-rss"></i> Feed
+            </a>
+          </li>
+        </ul>
+
+
+
+      </div> <!-- /.navbar-collapse -->
+
+  </nav><!--[if lt IE 9]><div class="upgrade"><strong><a href="https://whatbrowser.org/">Your browser is quite old!</strong> Why not upgrade to a different browser to better enjoy this site?</a></div><![endif]-->
+</header>
+<!-- 
+
+  <div class="search-wrapper">
+    <div class="search-form">
+      <input type="text" class="search-field" placeholder="Search...">
+      <i class="icon-remove-sign icon-2x"></i>
+      <ul class="search-results post-list"></ul> -->
+<!-- /.search-results -->
+<!-- </div> -->
+<!-- /.search-form -->
+<!-- </div> -->
+<!-- ./search-wrapper -->
+<!--  -->
+
+  
+
+  <div class="container-fluid">
+
+  <div class="row">
+
+
+    <div class="col-md-2"></div>
+      <div class="col-md-8">
+        
+
+        <div id="main" role="main" class="marginal">
+          <article class="entry">
+
+            
+
+            <div>
+              <header>
+                <span class="entry-tags">
+                  
+                    <a href="/blog/tags/#Rails" title="Pages tagged Rails">Rails</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#Telegram bot" title="Pages tagged Telegram bot">Telegram bot</a>
+                    
+                  
+
+                  <div class=' social-sharing pull-right'>        
+     
+</div>
+
+                </span>
+              
+                
+                  <h1 class="no-padding">My Experience as a Summer Intern at eLitmus: Building a Telegram Bot</h1>
+                
+              </header>
+            </div>
+           
+            <div>
+              <div>
+                <span class='badge badge-warning'> <a href="/blog/categories/technology/index.html" > technology </a></span>
+              </div>
+
+              
+
+              <div class="post-content-justify">
+                <p>As a summer intern at eLitmus, I had the opportunity to work on an exciting project that involved building a Telegram Bot. In today’s digital era, effective communication channels play a crucial role in connecting businesses with their stakeholders. eLitmus, a talent-tech platform, identified the need for a two-way communication channel between the platform and candidates. To achieve this, Telegram bots were chosen as the ideal starting point. This blog post will delve into the Telegram Bot Integration project.</p>
+
+<h2 id="how-it-began"><strong>How it Began</strong>:</h2>
+
+<p>The project started with the idea of leveraging the Telegram platform as a communication channel between eLitmus and its candidates. The goal was to create a two-way communication channel, enabling candidates to access information, receive updates, and engage in various activities through Telegram bots. This opened up possibilities for automating communication, collecting data, running quizzes, and providing valuable services to candidates.</p>
+
+<h2 id="design"><strong>Design</strong>:</h2>
+
+<p>Before diving into development phase, thorough planning and design are crucial. I begin by defining the core functionalities of the Telegram bots. I discovered that creating a bot through Bot Father (Telegram’s official bot) was the standard approach. As I was tasked with implementing the project using Ruby on Rails, I focused on two key aspects: developing the Telegram bot and designing the Admin panel.
+Designing such an application involves three key aspects: architecture design, database design, and UI/UX design. Let’s dive into each of these parts in more detail:</p>
+
+<ul>
+  <li><strong>Architecture</strong> : The Telegram bots interact with users through messages and commands. Users can access FAQs, participate in quizzes, and receive responses based on their interactions with the bots. The bots handle user inputs, validate quiz answers, and provide feedback and results accordingly. An intuitive admin panel is developed using Ruby on Rails to facilitate easy management of the bot’s functionalities. The admin panel allows administrators to add, update, and delete FAQs, quizzes, and other content. It also provides insights and analytics related to user engagement and bot usage.
+  <img src="/blog/images/telegram-bot/architecture.png" width="425" /></li>
+  <li>
+    <p><strong>Database</strong>: The project utilizes a MySQL database to store and manage data related to users, FAQs, quizzes, quiz attempts, analytics, and other relevant information. The database schema is designed to efficiently store and retrieve data, ensuring optimal performance.</p>
+  </li>
+  <li><strong>UI/UX</strong>:  To ensure a visually appealing and user-friendly Telegram bot interface, I delved into various UI options and explored the best ways to present information and interact with users. This research helped me identify the most effective strategies for creating an engaging and intuitive bot interface. And for the Admin panel, I took the initiative to design the entire interface using Figma. By visualizing the layout, components, and functionalities, I was able to ensure a cohesive and user-friendly experience for administrators managing the bot’s functionalities. Figma provided a powerful toolset for creating wireframes, mock-ups, and interactive prototypes, allowing me to iterate and refine the design before implementation.</li>
+</ul>
+
+<h2 id="development"><strong>Development</strong>:</h2>
+
+<p>Before starting this project, I had experience developing mobile applications, and most of them followed the Model-View-Template (MVT) pattern for backend, such as Django. However, for this project, I needed to learn and work with Ruby on Rails, which follows the Model-View-Controller (MVC) architectural pattern. Fortunately, my previous experience with backend development made it easier for me to understand Rails, and within the first two weeks, I was able to develop the basic functionalities of both the FAQ and Quiz bots.</p>
+
+<p>Integrating the telegram bot consists of 3 steps:</p>
+
+<ul>
+  <li>
+    <p>Creating a bot using Bot Father ( Official bot of telegram for creating telegram bot) and get the token that was generated by the bot father.</p>
+
+    <p><img src="/blog/images/telegram-bot/botfather.png" width="425" /></p>
+  </li>
+  <li>
+    <p>Initalizing the bot in the ruby file and declare a listening function that listens every messsage from the bot.</p>
+  </li>
+  <li>
+    <p>Writing the message specified functions that is called only when a specified message if recieved from the bot.</p>
+  </li>
+</ul>
+
+<p>I have used Ruby on Rails for both front-end and back-end to develope admin panel. For database I have used mysql and for hosting purpose I have used AWS, EC2 to host admin panel using docker and telegram and RDS for database.</p>
+
+<p>Using docker to host the bot and admin panel was another part of the development that gave me an idea of how to does docker used by most of the companies, it was my personal goal in the year to learn docker so it got done by this project. And to say using docker wasn’t the difficult part. I had to learn how to write a docker file and docker compose file.</p>
+
+<h2 id="features-developed"><strong>Features Developed</strong></h2>
+
+<ul>
+  <li><strong>User Flow</strong></li>
+</ul>
+
+<p>I focused on refining the functionalities and user flow of the bots, particularly in the context of the Telegram channels. The FAQ bot is connected to the Telegram channel, and when a user posts a question in the channel’s comment section, it gets stored in the database. The admin can then view and answer the question, which is sent back to the user personally through Telegram. Additionally, users can access the FAQ bot to view existing FAQs and request the addition of new ones.</p>
+
+<h6>
+    <strong>
+      FAQ bot flow
+    </strong>
+  </h6>
+<table>
+    <tr>
+      <td>
+      <img src="/blog/images/telegram-bot/faqbot2.png" width="425" />
+      </td>
+      <td>
+        <img src="/blog/images/telegram-bot/faqbot3.png" width="425" /> 
+      </td>
+    </tr>
+  </table>
+
+<h6>
+    <strong>
+      Quiz bot flow
+    </strong>
+  </h6>
+<table>
+    <tr>
+      <td>
+        <img src="/blog/images/telegram-bot/quizbot1.png" width="425" /> 
+      </td>
+      <td>
+        <img src="/blog/images/telegram-bot/quizbot2.png" width="425" />
+      </td>
+    </tr>
+  </table>
+
+<ul>
+  <li>
+    <p><strong>Admin Panel</strong></p>
+
+    <p>On the other hand, the admin panel allows the admin to create quizzes and questions. These quizzes are then posted in the Telegram channel, with a button redirecting users to the Quiz bot. Users can access multiple quizzes and attempt them through the bot.</p>
+
+    <p>By developing these functionalities, I was able to establish a seamless flow for users, ensuring they can interact with the bots and access relevant information easily. The admin panel provides the necessary tools for managing FAQs, quizzes, and user interactions, allowing for efficient administration and engagement with the users.</p>
+
+    <p>In the Admin panel, I implemented the design that I had previously created using Figma. The Admin panel offers various functionalities to enhance the administration and management of the Telegram bots. Here are some key features of the Admin panel:</p>
+
+    <ul>
+      <li>
+        <p><strong>User Management</strong>: The Admin panel allows the admin to view active users and access individual user data. This includes information about the user’s activities, quiz attempts, and questions asked through the bot.</p>
+      </li>
+      <li>
+        <p><strong>FAQ Management</strong>: The Admin can view and manage the FAQs. They have the ability to add, edit, or remove FAQs as needed. Additionally, the Admin can track the number of reads by users, providing insights into the popularity and relevance of different FAQs.</p>
+      </li>
+      <li>
+        <p><strong>Quiz Management</strong>: The Admin can create quizzes and manage them within the Admin panel. They can add questions, set multiple options, and define correct answers. The Admin also has access to the responses of the quizzes, allowing them to analyze individual question analytics and gain insights into user performance. This can also be used to host surveys on telegram channels.</p>
+      </li>
+      <li>
+        <p><strong>Analytics</strong>: The Admin panel provides analytics on user activities related to both the FAQ and Quiz bots. The Admin can view data such as the number of attempts per day, week, month, or year, as well as the number of FAQ reads per day, week, month, or year. These analytics help the Admin understand user engagement and make data-driven decisions.</p>
+      </li>
+      <li>
+        <p><strong>Post Management</strong>: The Admin can utilize the post section in the Admin panel to create and publish posts in the Telegram channel directly from Telegram and to make it effective I have created two phases of create and publishing the post so that post get reviewed before publishing the post. This feature streamlines the process of sharing content and updates with users in the channel.</p>
+      </li>
+    </ul>
+
+    <p><strong>Admin Panel</strong></p>
+
+    <p><img src="/blog/images/telegram-bot/admin-panel1.png" /></p>
+
+    <p>By incorporating these functionalities into the Admin panel, I ensured that the administrative tasks associated with managing the Telegram bots were streamlined and efficient. The panel provides comprehensive control and insights, empowering the admin to effectively manage user interactions, content, and analytics.</p>
+  </li>
+</ul>
+
+<h2 id="challenges-faced"><strong>Challenges Faced</strong>:</h2>
+
+<p>Working with 3rd party API’s is one of the most challenging task and that is the challenging task of the project using telegram bot API. I could able to use telegram api to minimal amount of data of user, for example I couldn’t able to get users contact details, and I have crossed this challenge by finidng a feature of telegram that is by using permissions to access user details and request user to send the mobile number and location, but I couldn’t able to get location from the web or laptop. The biggest challenge I have faced was setting up and displaying analytics using charts and graphs. Initially, I tried using gems like Chartkick and FusionCharts, but faced issues with rendering the graphs correctly. Despite spending considerable time troubleshooting, the graphs weren’t displaying as expected. Eventually, I opted for Chart.js, which proved to be a more suitable solution for my needs. With Chart.js, I could create visually appealing and interactive charts to showcase the data collected through admin panel. The transition to Chart.js was smooth, and it enabled me to present data insights effectively, providing a valuable user experience.</p>
+
+<h2 id="conclusion"><strong>Conclusion</strong>:</h2>
+
+<p>In summary, working on this project presented its fair share of challenges. However, with perseverance and problem-solving skills, I was able to overcome these obstacles and achieve success. I was able to develop the Telegram bots and the Admin panel effectively. I am thrilled to share that my hard work did not go unnoticed, and my project was selected for use by the company. This recognition is truly gratifying, as it demonstrates the value my work brings to the organization and the impact it can have on the company operations. Overall, this project was a rewarding journey that expanded my knowledge and skills in web development.</p>
+
+              </div>
+              <div class="entry-tags">
+                <div class=' social-sharing pull-right'>        
+     
+</div>
+              </div>
+              <div class="clearfix"><br/></div>
+
+                <div class="panel panel-default">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+      <div class="panel-body">
+        <div class="container-fluid">
+
+          <div class="row">
+            <div class="col-sm-12 col-md-4">
+              <center>
+                <img src="/blog/images/mahesh.png" alt="Mahesh Alyana photo" class="author-photo img-circle img-responsive"/>
+                
+                <span class="author vcard">
+                  <span class="fn">Mahesh Alyana</span>
+                </span>
+
+                <div class="nav-icon-size-reduce social-icons">
+                  
+                    <a href="https://twitter.com/Maheshm85268053"  title="Mahesh Alyana on Twitter"  target="_blank"><i class="fa fa-twitter "></i></a>
+                  
+                  
+                  
+                  
+
+                  
+                    <a href="https://linkedin.com/in/mahesh-alyana" title="Mahesh Alyana on LinkedIn" target="_blank"><i class="fa fa-linkedin "></i></a>
+                  
+
+                  
+
+                  
+                    <a href="https://instagram.com/___mr____mahi" title="Mahesh Alyana on Instagram" target="_blank"><i class="fa fa-instagram "></i></a>
+                  
+
+                  
+
+                  
+                    <a href="https://github.com/Mahesh-Alyana" title="Mahesh Alyana on Github" target="_blank"><i class="fa fa-github "></i></a>
+                  
+
+                     
+                </div><!-- /.social-icons -->
+              </center>
+            </div>
+
+            <div class="col-sm-12 col-md-8">
+              
+                <span class="author-bio">Mahesh Alyana is a full-stack developer intern at eLitmus. He is an enthusiastic techie, interested in startups, and active in participating and winning innovation hackathons. Love towards music, movies and chess</span>
+              
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+  
+
+</div>
+                <div id='discourse-comments'></div>
+
+<script type="text/javascript">
+  DiscourseEmbed = { discourseUrl: 'https://adda.elitmus.com/',
+                     discourseEmbedUrl: 'https://www.elitmus.com/blog/technology/my-experience-as-a-summer-intern-at-elitmus-building-a-telegram-bot/'
+                   };
+
+  (function() {
+    var d = document.createElement('script'); 
+    d.type = 'text/javascript'; 
+    d.async = true;
+    d.src = DiscourseEmbed.discourseUrl + 'javascripts/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(d);
+  })();
+</script>
+
+
+                
+              </div><!-- /.entry-content -->
+            </div><!-- /.entry-wrapper -->
+
+          </article>
+
+          <nav class="navbar nav-justified" role="navigation">
+            <ul class="nav pager">
+              
+                <li class="previous showElem mr-auto"><a href="/blog/technology/resume-parsing-insights-and-steps-to-create-your-own-parser/" title="Resume Parsing: Insights and Steps to Create Your Own Parser">&larr;<span class="showPrevNex"> Previous </span> </a></li>
+              
+              
+            </ul>
+          </nav>
+        
+        </div><!-- /#main -->
+
+      <!--/col-md-2 -->
+      <div class="col-md-2">
+
+      </div>
+
+    </div><!-- /row -->
+    </div>
+    <div class="footer-color">
+      <footer role="contentinfo">
+        <center>
+            <span class='footer-text'>
+    &copy;  2005-<script> document.write(new Date().getFullYear()) </script>, eLitmus.com. | <a href="/terms_of_use/">Terms of Use</a> &middot; <a href="/privacy_policy/">Privacy Policy</a>
+
+  </span>
+        </center>
+      </footer>
+    </div><!-- /.footer-wrapper -->
+    
+
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-707704-1', 'elitmus.com');
+	  ga('send', 'pageview');
+	</script>
+
+
+
+<!-- Load Modernizr -->
+<script src="/blog/assets/js/vendor/modernizr-2.6.2.custom.min.js"></script>
+
+<!-- adding jquery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- end of jquery -->
+
+<script src="/blog/assets/js/scripts.min.js"></script>
+<script src="/blog/assets/js/lunr.min.js"></script>
+<script src="/blog/assets/js/lunr-search.js"></script>
+<script src="/blog/assets/js/plugins/headroom.min.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+<script src="/blog/assets/js/vendor/forkit.js"></script>
+  
+
+  </body>
+</html>
