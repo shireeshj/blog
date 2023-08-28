@@ -7,13 +7,397 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="/" />
-<updated>2023-08-25T13:27:10+05:30</updated>
+<updated>2023-08-28T21:09:00+05:30</updated>
 <id>/</id>
 <author>
   <name>eLitmus.com</name>
   <uri>/</uri>
   <email>site-admin@elitmus.com</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[Demystifying Rails 7 System Tests: Configuring CI Pipeline]]></title>
+  <link rel="alternate" type="text/html" href="/technology/demystifying-rails-7-system-tests-configuring-ci-pipeline/"/>
+  <id>/technology/demystifying-rails-7-system-tests-configuring-ci-pipeline</id>
+  <updated>2023-08-28 17:28:05 +0530T00:00:00-00:00</updated>
+  <published>2023-08-28T00:00:00+05:30</published>
+  
+  <author>
+    <name>eLitmus.com</name>
+    <uri></uri>
+    <email>site-admin@elitmus.com</email>
+  </author>
+  <category scheme="/tags/#Rails%207" term="Rails 7" /><category scheme="/tags/#System%20Tests" term="System Tests" /><category scheme="/tags/#Integration%20Tests" term="Integration Tests" /><category scheme="/tags/#CI-CD" term="CI-CD" /><category scheme="/tags/#Minitest" term="Minitest" /><category scheme="/tags/#Capybara" term="Capybara" /><category scheme="/tags/#Selenium" term="Selenium" /><category scheme="/tags/#Selenium-webdriver" term="Selenium-webdriver" /><category scheme="/tags/#webdriver" term="webdriver" /><category scheme="/tags/#webdrivers%20gem" term="webdrivers gem" /><category scheme="/tags/#chromedriver" term="chromedriver" /><category scheme="/tags/#arm64" term="arm64" /><category scheme="/tags/#amd64" term="amd64" /><category scheme="/tags/#linux" term="linux" /><category scheme="/tags/#docker" term="docker" /><category scheme="/tags/#gitlab-runner" term="gitlab-runner" />
+  <content type="html">
+  
+    &lt;p&gt;In Rails 5.1 and later versions, system tests were introduced as a new type of test to simulate a user interacting with a web application. These tests use a headless browser, typically powered by Capybara and a WebDriver, to mimic a user’s actions like clicking buttons, filling forms, and navigating through the application.&lt;/p&gt;
+
+&lt;h3 id=&quot;why-do-we-need-system-tests&quot;&gt;&lt;strong&gt;Why do we need System Tests?&lt;/strong&gt;&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://guides.rubyonrails.org/testing.html#system-testing&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;System tests&lt;/a&gt; let you test applications in the browser. Because system tests use a real browser experience, you can test all of your JavaScript easily from your test suite.&lt;/li&gt;
+  &lt;li&gt;Typically used for:
+    &lt;ul style=&quot;margin-left: 2rem&quot;&gt;
+&lt;li&gt;&lt;strong&gt;Acceptance testing:&lt;/strong&gt; verify that the app has implemented a specific feature&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Smoke testing:&lt;/strong&gt; verify that the app is functional on a fundamental level and doesn't have code issues.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Characterization testing:&lt;/strong&gt; is a type of software testing that involves examining and documenting the behavior of an existing system or application without making any modifications to its code&lt;/li&gt;
+&lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+&lt;div style=&quot;margin-top: 2rem&quot;&gt;&lt;/div&gt;
+&lt;h3 id=&quot;how-we-can-run-system-test&quot;&gt;&lt;strong&gt;How we can run System Test?&lt;/strong&gt;&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;System Test interacts with your app via an actual browser to run them.&lt;/li&gt;
+  &lt;li&gt;From a technical perspective, system tests aren’t necessarily required to interact with a real browser; they can be set up to utilize the &lt;a href=&quot;https://github.com/rack/rack-test&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;rack test&lt;/a&gt; backend, which emulates HTTP requests and processes the HTML responses. While system tests based on rack_test run faster and more dependable than front-end tests involving an actual browser, they have notable limitations in mimicking a genuine user experience as they are incapable of executing JavaScript.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div style=&quot;margin-top: 2rem&quot;&gt;&lt;/div&gt;
+&lt;h3 id=&quot;the-anatomy-of-a-system-test&quot;&gt;&lt;strong&gt;The Anatomy of a System Test?&lt;/strong&gt;&lt;/h3&gt;
+&lt;div style=&quot;margin-bottom: 2rem&quot;&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/images/system-test/flow-chart.png&quot; width=&quot;425&quot; /&gt;&lt;/p&gt;
+&lt;div style=&quot;margin-bottom: 2rem&quot;&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Minitest&lt;/strong&gt;
+    &lt;ul style=&quot;margin-left: 2rem&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/seattlerb/minitest&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Minitest&lt;/a&gt; is a small and incredibly fast unit testing framework.&lt;/li&gt;
+&lt;li&gt;It provides the base classes for test cases.
+  For Rails System Tests, Rails provides an ApplicationSystemTestCase base class which is in turn based on  &lt;i&gt;ActionDispatch::SystemTestCase:&lt;/i&gt;&lt;/li&gt;
+&lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;  &lt;span class=&quot;nb&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;test_helper&amp;quot;&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ApplicationSystemTestCase&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ActionDispatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;SystemTestCase&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;driven_by&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:selenium&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;using&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:chrome&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;screen_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1400&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1400&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul style=&quot;margin-left: 2rem&quot;&gt;
+  &lt;li&gt;In &lt;code&gt;ActionDispatch::SystemTestCase&lt;/code&gt; we require the &lt;code&gt;capybara/minitest&lt;/code&gt; library.&lt;/li&gt;
+  &lt;li&gt;It provides basics assertions like &lt;strong&gt;assert_equal, assert_nil, assert_same, assert_raises, assert_includes&lt;/strong&gt;.&lt;/li&gt;
+  &lt;li&gt;A runner to run the tests and report on their success and failure.&lt;/li&gt;
+  &lt;/ul&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Capybara&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;ul style=&quot;margin-left: 2rem&quot;&gt;
+
+  &lt;li&gt;&lt;a href=&quot;https://github.com/teamcapybara/capybara&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Capybara&lt;/a&gt; starts your app in a separate process before running the tests. This ensures that the tests are run against the correct version of your app.&lt;/li&gt;
+  &lt;li&gt;Capybara provides a high-level API that makes it easy to write tests in a natural way. For example, you can write a test that says &lt;code&gt;&quot;click the button&quot;&lt;/code&gt; instead of having to write code to find the button and click it.&lt;/li&gt;
+  &lt;li&gt;Here is an example of a test written with Capybara's DSL (Domain Specific Language):&lt;/li&gt;
+&lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;visit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;/login&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;fill_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;email&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;with&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;user@example.com&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;fill_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;password&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;with&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;password&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;click_button&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;Login&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Selenium-Webdriver&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;ul style=&quot;margin-left: 2rem&quot;&gt;
+&lt;li&gt;Capybara uses the &lt;a href=&quot;https://rubygems.org/gems/selenium-webdriver/versions/4.11.0&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Selenium Webdriver&lt;/a&gt; library to interact with real browsers. Selenium WebDriver is a cross-platform library that provides a way to control web browsers from code. Capybara uses Selenium WebDriver to translate its high-level DSL (Domain Specific Language) into low-level commands that the browser can understand.&lt;/li&gt;
+&lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;  &lt;span class=&quot;nb&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;selenium-webdriver&amp;quot;&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;driver&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Selenium&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;WebDriver&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:firefox&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;driver&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;navigate&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;http://google.com&amp;quot;&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;element&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;driver&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;find_element&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;q&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;element&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;send_keys&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Hello WebDriver!&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;element&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;submit&lt;/span&gt;
+
+  &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;driver&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;title&lt;/span&gt;
+
+  &lt;span class=&quot;no&quot;&gt;Driver&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;quit&lt;/span&gt;
+  &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul style=&quot;margin-left: 2rem&quot;&gt;
+  &lt;li&gt;You can see how it’s a bit lower-level than the Capybara example further up. The selenium-webdriver library translates these calls into WebDriver Protocol, which it speaks to a webdriver executable.&lt;/li&gt;
+  &lt;/ul&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Webdriver Protocol&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;ul style=&quot;margin-left: 2rem&quot;&gt;
+
+&lt;li&gt;The Selenium WebDriver library translates its calls into the &lt;a href=&quot;https://www.w3.org/TR/webdriver2/&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;WebDriver Protocol&lt;/a&gt;. The WebDriver Protocol is a HTTP-based wire protocol that is used to communicate between the Selenium WebDriver library and the web browser.&lt;/li&gt;
+&lt;li&gt;In order to start a chrome browser window and navigate to google.com. We need to startup geckodriver.&lt;/li&gt;
+&lt;li&gt;We send it a &lt;strong&gt;“new session”&lt;/strong&gt; command with a HTTP post request&lt;/li&gt;
+&lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;  curl -X POST &lt;span class=&quot;s1&quot;&gt;&amp;#39;http://127.0.0.1:9515/session&amp;#39;&lt;/span&gt; -d &lt;span class=&quot;s1&quot;&gt;&amp;#39;{&amp;quot;capabilities&amp;quot;:{&amp;quot;firstMatch&amp;quot;:[{&amp;quot;browserName&amp;quot;:&amp;quot;firefox&amp;quot;}]}}&amp;#39;&lt;/span&gt;
+  &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul style=&quot;margin-left: 2rem&quot;&gt;
+
+  &lt;li&gt;This return a session id along with data&lt;/li&gt;
+  &lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;  &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; ... &lt;span class=&quot;s2&quot;&gt;&amp;quot;sessionId&amp;quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&amp;quot;f1776ba558e28309299dc5f62864e977&amp;quot;&lt;/span&gt; ... &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+  &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul style=&quot;margin-left: 2rem&quot;&gt;
+
+  &lt;li&gt;Then we make another post request with a session id. And url in data parameters&lt;/li&gt;
+  &lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;  curl -X POST &lt;span class=&quot;s1&quot;&gt;&amp;#39;http://127.0.0.1:9515/session/f1776ba558e28309299dc5f62864e977/url&amp;#39;&lt;/span&gt; -d &lt;span class=&quot;s1&quot;&gt;&amp;#39;{&amp;quot;url&amp;quot;: &amp;quot;https://google.com&amp;quot;}&amp;#39;&lt;/span&gt;
+  &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Webdriver&lt;/strong&gt;
+    &lt;ul style=&quot;margin-left: 2rem&quot;&gt;
+
+&lt;li&gt;Webdriver is a tool that speaks &lt;strong&gt;“Webdriver protocol”&lt;/strong&gt; and controls the browser.&lt;/li&gt;
+&lt;li&gt;Every major browser there is an associated webdriver tool. Chrome has &lt;a href=&quot;https://sites.google.com/a/chromium.org/chromedriver/home&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;chromedriver&lt;/a&gt;. Firefox has a &lt;a href=&quot;https://github.com/mozilla/geckodriver&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;geckodriver&lt;/a&gt;. MS Edge has &lt;a href=&quot;https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;edgedriver&lt;/a&gt;. Safari has &lt;a href=&quot;https://developer.apple.com/documentation/webkit/testing_with_webdriver_in_safari&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;safaridriver&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;WebDriver tools act as servers: when you execute them, they start a persistent process that listens for HTTP requests until it is terminated.&lt;/li&gt;
+&lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+&lt;div style=&quot;margin-bottom: 1rem&quot;&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Webdrivers gem&lt;/strong&gt;
+    &lt;ul style=&quot;margin-left: 2rem&quot;&gt;
+
+&lt;li&gt;Before selenium-webdriver 4.11, &lt;a href=&quot;https://github.com/titusfortner/webdrivers&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;webdrivers&lt;/a&gt; gem automatically determines which WebDriver executable needs to be downloaded for your platform and selected browser, downloads it, and arranges for that executable to be used by selenium-webdriver.&lt;/li&gt;
+&lt;li&gt;From version 4.11, they have incorporated the functionality in selenium-webdriver gem using &lt;a href=&quot;https://www.selenium.dev/blog/2023/whats-new-in-selenium-manager-with-selenium-4.11.0/&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;selenium-manager&lt;/a&gt;.&lt;/li&gt;
+
+&lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;/blog/images/system-test/webdriver.png&quot; width=&quot;425&quot; /&gt;&lt;/p&gt;
+
+&lt;div style=&quot;margin-top: 2rem&quot;&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;running-rails-7-system-tests-with-docker-and-gitlab-runner-on-arm64-and-amd64-linux-machines&quot;&gt;&lt;strong&gt;Running Rails 7 System Tests with Docker and Gitlab Runner on Arm64 and Amd64 linux machines&lt;/strong&gt;&lt;/h3&gt;
+&lt;div style=&quot;margin-top: 2rem&quot;&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Step 1: Prepare the Rails 7 application for testing&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Run the command below to generate a very basic Ruby on Rails 7 app:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;rails new minitest-rails-app&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Go ahead and open up the project in your favourite editor and proceed to the Gemfile, specifically to the test block:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;group&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:test&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;gem&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;capybara&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;gem&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;selenium-webdriver&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;gem&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;webdrivers&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Next, let’s do a quick scaffold generation to have something to work with:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;  rails generate scaffold Blog title:string body:text
+  &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Usually, generating a scaffold will automatically generate the &lt;code&gt;application_system_test_case.rb&lt;/code&gt; and everything you need for the system tests&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;application_system_test_case&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rb&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;default&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; 
+  
+  &lt;span class=&quot;nb&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;test_helper&amp;quot;&lt;/span&gt;
+  
+  &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ApplicationSystemTestCase&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ActionDispatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;SystemTestCase&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;driven_by&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:selenium&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;using&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:chrome&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;screen_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1400&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1400&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Run the database commands&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;  rails db:setup
+  rails db:migrate
+  &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Running a Basic System For the First Time&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;  rails test:system
+  &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;strong&gt;Step 2: Exclude the gem webdrivers from the list of dependencies&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Before selenium-webdriver 4.11, webdrivers gem automatically download webdriver executable.&lt;/li&gt;
+  &lt;li&gt;From version 4.11, they have incorporated the functionality in selenium-webdriver gem using selenium-manager.&lt;/li&gt;
+  &lt;li&gt;We can comment out the webdrivers line from Gemfile.&lt;/li&gt;
+  &lt;li&gt;After change, &lt;code&gt;Gemfile&lt;/code&gt; looks like this&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;group&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:test&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;# Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;gem&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;capybara&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;gem&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;selenium-webdriver&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;~&amp;gt; 4.11&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;#gem &amp;quot;webdrivers&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;strong&gt;Step 3: Point the Selenium-webdriver to use the firefox browser&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;As chrome has not released binary compatible with &lt;code&gt;linux/arm64&lt;/code&gt; machine. So the test failed on the arm64 linux machine. I tried multiple approaches to make it work with headless_chrome, but didn’t work and commend the issue in details in this  &lt;a href=&quot;https://github.com/titusfortner/webdrivers/issues/213#issuecomment-1686094017&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;issue tracker&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;We need to change the browser to the firefox.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;#application_system_test_case.rb (change driver to Firefox)&lt;/span&gt;
+ 
+  &lt;span class=&quot;nb&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;test_helper&amp;quot;&lt;/span&gt;
+  
+  &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ApplicationSystemTestCase&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ActionDispatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;SystemTestCase&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;driven_by&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:selenium&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;using&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:firefox&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;screen_size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1400&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1400&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;strong&gt;Step 4: Prepare the docker image&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Create &lt;code&gt;Dockerfile&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;  FROM ruby:3.1.2-slim-buster
+
+  RUN apt-get update
+  RUN apt-get -y install gnupg curl wget xvfb unzip
+
+  ENV NODE_VERSION &lt;span class=&quot;m&quot;&gt;19&lt;/span&gt;
+
+  RUN curl -fsSL https://deb.nodesource.com/setup_&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;NODE_VERSION&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;.x &lt;span class=&quot;p&quot;&gt;|&lt;/span&gt; bash -  &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  apt-get install --yes nodejs &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  apt-get install --yes libxss1 libappindicator1 libindicator7 python2
+
+  RUN apt-get update &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+  apt-get install --yes software-properties-common build-essential libssl-dev sqlite3 libsqlite3-dev pkg-config ca-certificates firefox-esr
+
+  RUN apt-get install -y git-all
+  RUN npm install yarn -g
+  ADD . /data
+  &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;This Dockerfile sets up an image with Ruby 3.1.2 and Node.js 19 installed. It installs system dependencies like Git, Yarn, various libraries for sqlite and Firefox.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Build Docker image&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;  docker buildx build -t dockermanishelitmus/systemtest-rails-app:latest1.0 . --platform linux/amd64,linux/arm64 --push
+  &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Command is building a Docker image using the buildx extension, targeting two different platforms (Intel/AMD 64-bit and ARM 64-bit), tagging the image as latest1.0, and pushing the resulting image to a container registry.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Step 5: Prepare the gitlab-runner&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;In the project root directory create a file &lt;code&gt;.gitlab-ci.yml&lt;/code&gt; with content&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-yaml&quot; data-lang=&quot;yaml&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;image&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;dockermanishelitmus/systemtest-rails-app:latest1.0&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;services&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+ &lt;span class=&quot;p p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l l-Scalar l-Scalar-Plain&quot;&gt;redis:latest&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;variables&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+ &lt;span class=&quot;nt&quot;&gt;RAILS_ENV&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;test&amp;quot;&lt;/span&gt;
+
+&lt;span class=&quot;nt&quot;&gt;cache&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+ &lt;span class=&quot;nt&quot;&gt;paths&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+   &lt;span class=&quot;p p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l l-Scalar l-Scalar-Plain&quot;&gt;vendor/ruby&lt;/span&gt;
+   &lt;span class=&quot;p p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l l-Scalar l-Scalar-Plain&quot;&gt;node_modules/&lt;/span&gt;
+
+&lt;span class=&quot;nt&quot;&gt;before_script&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+ &lt;span class=&quot;p p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l l-Scalar l-Scalar-Plain&quot;&gt;gem install bundler  --no-document&lt;/span&gt;
+ &lt;span class=&quot;p p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l l-Scalar l-Scalar-Plain&quot;&gt;bundle config set force_ruby_platform true&lt;/span&gt;
+ &lt;span class=&quot;p p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l l-Scalar l-Scalar-Plain&quot;&gt;bundle install&lt;/span&gt;
+ &lt;span class=&quot;p p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l l-Scalar l-Scalar-Plain&quot;&gt;bin/rake db:drop&lt;/span&gt;
+ &lt;span class=&quot;p p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l l-Scalar l-Scalar-Plain&quot;&gt;bin/rake db:setup&lt;/span&gt;
+ &lt;span class=&quot;p p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l l-Scalar l-Scalar-Plain&quot;&gt;bin/rake db:migrate&lt;/span&gt;
+
+&lt;span class=&quot;nt&quot;&gt;stages&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+ &lt;span class=&quot;p p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l l-Scalar l-Scalar-Plain&quot;&gt;tests&lt;/span&gt;
+
+&lt;span class=&quot;nt&quot;&gt;SystemTests&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+ &lt;span class=&quot;nt&quot;&gt;stage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l l-Scalar l-Scalar-Plain&quot;&gt;tests&lt;/span&gt;
+ &lt;span class=&quot;nt&quot;&gt;script&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+   &lt;span class=&quot;p p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l l-Scalar l-Scalar-Plain&quot;&gt;yarn install&lt;/span&gt;
+   &lt;span class=&quot;p p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l l-Scalar l-Scalar-Plain&quot;&gt;bin/rake assets:precompile&lt;/span&gt;
+   &lt;span class=&quot;p p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l l-Scalar l-Scalar-Plain&quot;&gt;bin/rails test:system&lt;/span&gt;
+ &lt;span class=&quot;nt&quot;&gt;artifacts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+   &lt;span class=&quot;nt&quot;&gt;when&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l l-Scalar l-Scalar-Plain&quot;&gt;on_failure&lt;/span&gt;
+   &lt;span class=&quot;nt&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;$CI_JOB_NAME-$CI_COMMIT_REF_NAME&amp;quot;&lt;/span&gt;
+   &lt;span class=&quot;nt&quot;&gt;paths&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+     &lt;span class=&quot;p p-Indicator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;l l-Scalar l-Scalar-Plain&quot;&gt;coverage/&lt;/span&gt;
+   &lt;span class=&quot;nt&quot;&gt;expire_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;l l-Scalar l-Scalar-Plain&quot;&gt;1 day&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Finally run your test suite&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;gitlab-runner &lt;span class=&quot;nb&quot;&gt;exec&lt;/span&gt; docker SystemTests&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Output&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;  $ bin/rails test:system
+  Running &lt;span class=&quot;m&quot;&gt;4&lt;/span&gt; tests &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; a single process &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;parallelization threshold is &lt;span class=&quot;m&quot;&gt;50&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+  Run options: --seed &lt;span class=&quot;m&quot;&gt;13031&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;# Running:&lt;/span&gt;
+
+  Capybara starting Puma...
+  * Version &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;.6.7 , codename: Birdie&lt;span class=&quot;err&quot;&gt;&amp;#39;&lt;/span&gt;s Version
+  * Min threads: &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;, max threads: &lt;span class=&quot;m&quot;&gt;4&lt;/span&gt;
+  * Listening on http://127.0.0.1:33385
+  ....
+
+  Finished &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;7&lt;/span&gt;.865541s, &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;.5085 runs/s, &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;.5085 assertions/s.
+  &lt;span class=&quot;m&quot;&gt;4&lt;/span&gt; runs, &lt;span class=&quot;m&quot;&gt;4&lt;/span&gt; assertions, &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt; failures, &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt; errors, &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt; skips
+  Saving cache &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; successful job
+  Creating cache SystemTests/main...
+  WARNING: vendor/ruby: no matching files. Ensure that the artifact path is relative to the working directory
+  node_modules/: found &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt; matching files and directories
+  No URL provided, cache will not be uploaded to shared cache server. Cache will be stored only locally.
+  Created cache
+  Job succeeded&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h3 id=&quot;conclusion&quot;&gt;&lt;strong&gt;Conclusion&lt;/strong&gt;&lt;/h3&gt;
+
+&lt;p&gt;Now we have a setup that enables us to run system tests in both arm64 and amd64 linux machines with minimal customizations we may want to add. A few tips and tricks should help to get your first system tests up and running in CI pipeline.&lt;/p&gt;
+
+  
+  &lt;p&gt;&lt;a href=&quot;/technology/demystifying-rails-7-system-tests-configuring-ci-pipeline/&quot;&gt;Demystifying Rails 7 System Tests: Configuring CI Pipeline&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on August 28, 2023.&lt;/p&gt;</content>
+</entry>
 
 
 <entry>
@@ -3058,160 +3442,6 @@ Do her aspirations align with what you can offer her? And this is not just about
 
   
   &lt;p&gt;&lt;a href=&quot;/career/to-the-goth-kids/&quot;&gt;To the Goth Kids&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on July 28, 2017.&lt;/p&gt;</content>
-</entry>
-
-
-<entry>
-  <title type="html"><![CDATA[Setting up OAuth2 callbacks in Rails with HTTPS offloading on load balancers]]></title>
-  <link rel="alternate" type="text/html" href="/technology/setting-up-elb-plus-nginx-with-https-offloading/"/>
-  <id>/technology/setting-up-elb-plus-nginx-with-https-offloading</id>
-  <updated>2017-03-08 09:47:23 +0530T00:00:00-00:00</updated>
-  <published>2017-03-08T00:00:00+05:30</published>
-  
-  <author>
-    <name>eLitmus.com</name>
-    <uri></uri>
-    <email>site-admin@elitmus.com</email>
-  </author>
-  <category scheme="/tags/#ELB" term="ELB" /><category scheme="/tags/#NGINX" term="NGINX" /><category scheme="/tags/#https%20offloading" term="https offloading" /><category scheme="/tags/#OAuth" term="OAuth" /><category scheme="/tags/#Rails" term="Rails" />
-  <content type="html">
-  
-    &lt;p&gt;“HTTPS everywhere” is not a luxury anymore. It is a necessity. Thankfully, obtaining an SSL certificate has become easier too, with initiatives such as &lt;a href=&quot;https://letsencrypt.org/&quot;&gt;Let’s Encrypt&lt;/a&gt;, &lt;a href=&quot;https://www.geotrust.com/ssl/free-ssl-certificate/&quot;&gt;GeoTrust&lt;/a&gt;, &lt;a href=&quot;https://www.positivessl.com/&quot;&gt;Positive SSL&lt;/a&gt;, &lt;a href=&quot;https://www.startssl.com/&quot;&gt;StartSSL&lt;/a&gt;. Even cloud based services such as &lt;a href=&quot;https://www.cloudflare.com/&quot;&gt;Cloudflare&lt;/a&gt; and &lt;a href=&quot;https://aws.amazon.com/&quot;&gt;Amazon AWS&lt;/a&gt; provide free SSL certificates to their customers.&lt;/p&gt;
-
-&lt;p&gt;####&lt;strong&gt;Here is setting some context to help the reader appreciate the discussion&lt;/strong&gt;:
-We host our rails applications on &lt;a href=&quot;https://aws.amazon.com/&quot;&gt;Amazon AWS&lt;/a&gt;. We generally use three different environments - development, staging and production. Development environment is generally local to a developer while staging and production are hosted on the cloud. There is a minor difference in the way we configure our staging and production environments. Our staging environment typically contains a single machine instance hosting our application. This single instance is exposed to internet directly (has a public IP). On the other hand, our production environment typically contains a cluster of instances for the sake of horizontal scaling. These instances typically do not have a public IP and hence not exposed to internet directly. We put this cluster behind an internet-facing &lt;a href=&quot;https://aws.amazon.com/elasticloadbalancing/&quot;&gt;Elastic Load Balancer (ELB)&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;We use &lt;a href=&quot;https://docs.chef.io/chef_solo.html&quot;&gt;chef-solo&lt;/a&gt; to manage our cloud infrastructure as well as to deploy code to various environments.&lt;/p&gt;
-
-&lt;p&gt;#####&lt;strong&gt;The Problem Statement:&lt;/strong&gt;
-For the sake of this discussion, we shall limit ourselves to configuring SSL certificates obtained from the two free providers, namely &lt;a href=&quot;https://letsencrypt.org/&quot;&gt;Let’s Encrypt&lt;/a&gt; and &lt;a href=&quot;https://aws.amazon.com/&quot;&gt;Amazon AWS&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Using &lt;a href=&quot;https://letsencrypt.org/&quot;&gt;Let’s Encrypt&lt;/a&gt; in a clustered setup is tricky, since you need to make one of the instances stateful, in the sense, one instance needs to be given the responsibility of obtaining and renewing SSL certificate from &lt;a href=&quot;https://letsencrypt.org/&quot;&gt;Let’s Encrypt&lt;/a&gt;. All other instances need to copy this certificate every time its renewed. This requirement unnecessarily complicates the setup and also takes away some amount of flexibility. Also, &lt;a href=&quot;https://letsencrypt.org/&quot;&gt;Let’s Encrypt&lt;/a&gt; does not issue wildcard certificates and the validity of a certificate is just 90 days&lt;/p&gt;
-
-&lt;p&gt;The certificates provisioned from the other provider, &lt;a href=&quot;https://aws.amazon.com/&quot;&gt;Amazon AWS&lt;/a&gt;, can only be installed on an &lt;a href=&quot;https://aws.amazon.com/elasticloadbalancing/&quot;&gt;ELB&lt;/a&gt;. Hence is best suited for our clustered setup, namely production. An added advantage is that Amazon can issue wildcard certificates. We could always add an &lt;a href=&quot;https://aws.amazon.com/elasticloadbalancing/&quot;&gt;ELB&lt;/a&gt; to our staging environment (even though we will never have more than one instance), but that costs extra money for no reason.&lt;/p&gt;
-
-&lt;p&gt;This leaves us with these options&lt;/p&gt;
-
-&lt;table class=&quot;custom_table&quot;&gt;
-  &lt;tr&gt;
-    &lt;th class=&quot;custom-t&quot;&gt;Environment&lt;/th&gt;
-    &lt;th class=&quot;custom-t&quot;&gt;Best Option&lt;/th&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-    &lt;td class=&quot;custom-t&quot;&gt;Staging&lt;/td&gt;
-    &lt;td class=&quot;custom-t&quot;&gt;Let's Encrypt&lt;/td&gt;
-  &lt;/tr&gt;
-  &lt;tr&gt;
-    &lt;td class=&quot;custom-t&quot;&gt;Production&lt;/td&gt;
-    &lt;td class=&quot;custom-t&quot;&gt;Amazon AWS&lt;/td&gt;
-  &lt;/tr&gt;
-&lt;/table&gt;
-&lt;p&gt;&lt;br /&gt;
-We went ahead with this choice. Using &lt;a href=&quot;https://docs.chef.io/chef_solo.html&quot;&gt;chef&lt;/a&gt; to manage our setup came handy.&lt;/p&gt;
-
-&lt;p&gt;We first configured our Staging environment and everything worked as expected.&lt;/p&gt;
-
-&lt;p&gt;However, the same application, in production environment, started throwing &lt;code&gt;CSRF detected&lt;/code&gt; Error whenever an &lt;a href=&quot;https://oauth.net/2/&quot;&gt;OAuth2&lt;/a&gt; callback happened. This was really strange. Our application integrated with two different OAuth providers, and the problem was consistent with both these providers.&lt;/p&gt;
-
-&lt;p&gt;#####&lt;strong&gt;What’s the issue?&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;The only difference between our Staging and Production setups was the &lt;a href=&quot;https://aws.amazon.com/elasticloadbalancing/&quot;&gt;ELB&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;In production, we offloaded HTTPS at the &lt;a href=&quot;https://aws.amazon.com/elasticloadbalancing/&quot;&gt;ELB&lt;/a&gt;. Plain HTTP request would hit the &lt;a href=&quot;https://www.nginx.com/resources/wiki/&quot;&gt;NGINX&lt;/a&gt; web server, which in turn would reverse-proxy it to unicorn and rails.&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;CSRF detected&lt;/code&gt; was clearly an error emitting from the rails application. Not from &lt;a href=&quot;https://www.nginx.com/resources/wiki/&quot;&gt;NGINX&lt;/a&gt;, and not from the &lt;a href=&quot;https://aws.amazon.com/elasticloadbalancing/&quot;&gt;ELB&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;A closer look would reveal that the rails application had no way to know if the callback was made on a http:// URL or a https:// URL, because it sees only HTTP (due to offloading).  Was this the reason rails was unhappy?&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://oauth.net/2/&quot;&gt;OAuth2&lt;/a&gt;, by design, does not accept plain HTTP callbacks (unless it is to localhost).&lt;/p&gt;
-
-&lt;p&gt;####&lt;strong&gt;How do we move forward?&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;#####&lt;strong&gt;PoC to prove the theory&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Just to confirm what we think is the cause, we &lt;b&gt;enabled HTTPS&lt;/b&gt; on &lt;a href=&quot;https://www.nginx.com/resources/wiki/&quot;&gt;NGINX&lt;/a&gt; (like we did in our staging environment). This was in addition to HTTPS on the Load balancer. We reconfigured the Load Balancer to NOT offload HTTPS but forward the request as-is to &lt;a href=&quot;https://www.nginx.com/resources/wiki/&quot;&gt;NGINX&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;What do we have now? The &lt;code&gt;CSRF detected&lt;/code&gt; errors are gone. Application behaves just like it should.&lt;/p&gt;
-
-&lt;p&gt;This confirmed our theory.&lt;/p&gt;
-
-&lt;p&gt;But the question now is, how do we achieve our desired configuration of offloading HTTPS at the &lt;a href=&quot;https://aws.amazon.com/elasticloadbalancing/&quot;&gt;ELB&lt;/a&gt; ? Is it just not possible ?&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;The Solution&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;We have been using &lt;b&gt;X-Forwarded-For&lt;/b&gt; header while reverse proxying to unicorn so that our rails application knows the client IP address (rather than the IP address of the Load Balancer). We need this for logging and tracking.&lt;/p&gt;
-
-&lt;p&gt;Could there be something on similar lines to tell the rails application that the request was not on HTTP but on HTTPS?&lt;/p&gt;
-
-&lt;p&gt;Sure there is. We had to set a header in our reverse proxy configuration:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;X-Forwarded-Proto  to  https
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;For &lt;a href=&quot;https://www.nginx.com/resources/wiki/&quot;&gt;NGINX&lt;/a&gt;, we do it like this:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-nginx&quot; data-lang=&quot;nginx&quot;&gt;&lt;span&gt;&lt;/span&gt;  &lt;span class=&quot;k&quot;&gt;proxy_set_header&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;X-Forwarded-Proto&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;https&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Voila, Rails is happy and things are back to normal!&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;&lt;u&gt;Details:&lt;/u&gt;&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Csrf detected!&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Rails bothers about SSL only at two places, 
-&lt;br /&gt;&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;At environment config, force_ssl.
-&lt;br /&gt;&lt;/li&gt;
-  &lt;li&gt;At external included Gem like &lt;a href=&quot;https://github.com/omniauth/omniauth&quot;&gt;Omniauth&lt;/a&gt;. 
-&lt;br /&gt;&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;In &lt;strong&gt;&lt;em&gt;Rails environment config&lt;/em&gt;&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;force_ssl&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;true&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;This does the trick, but doesn’t seem like a good idea to enable this option in Rails because, we offload https at &lt;a href=&quot;https://www.nginx.com/resources/wiki/&quot;&gt;NGINX&lt;/a&gt;. For Rails, request came in http, so it does a permanent redirect to https, which ends in a infinite loop.&lt;/p&gt;
-
-&lt;p&gt;Our stack trace gave a clue that error might be inside &lt;q&gt;&lt;strong&gt;&lt;em&gt;omniauth&lt;/em&gt;&lt;/strong&gt;&lt;/q&gt; gem.&lt;/p&gt;
-
-&lt;div class=&quot;back-trace-div&quot;&gt;
-    &lt;span class=&quot;back-trace-row&quot;&gt;&lt;b&gt;actionpack-4.2.7.1&lt;/b&gt;/lib/abstract_controller/&lt;b&gt;base.rb&lt;/b&gt;:132 → process&lt;/span&gt;&lt;br /&gt;
-    &lt;span class=&quot;back-trace-row&quot;&gt;&lt;b&gt;actionview-4.2.7.1&lt;/b&gt;/lib/action_view/&lt;b&gt;rendering.rb&lt;/b&gt;:30 → process&lt;/span&gt;&lt;br /&gt;
-    &lt;span class=&quot;back-trace-row&quot;&gt;&lt;b&gt;actionpack-4.2.7.1&lt;/b&gt;/lib/action_controller/&lt;b&gt;metal.rb&lt;/b&gt;:196 → dispatch&lt;/span&gt;&lt;br /&gt;
-    &lt;span class=&quot;back-trace-row&quot;&gt;&lt;b&gt;actionpack-4.2.7.1&lt;/b&gt;/lib/action_controller/metal/&lt;b&gt;rack_delegation.rb&lt;/b&gt;:13 → dispatch&lt;/span&gt;&lt;br /&gt;
-    &lt;span class=&quot;back-trace-row&quot;&gt;&lt;b&gt;actionpack-4.2.7.1&lt;/b&gt;/lib/action_controller/&lt;b&gt;metal.rb&lt;/b&gt;:237 → block in action&lt;/span&gt;&lt;br /&gt;
-    &lt;span class=&quot;back-trace-row&quot;&gt;&lt;b&gt;actionpack-4.2.7.1&lt;/b&gt;/lib/action_dispatch/routing/&lt;b&gt;route_set.rb&lt;/b&gt;:74 → dispatch&lt;/span&gt;&lt;br /&gt;
-    &lt;span class=&quot;back-trace-row&quot;&gt;&lt;b&gt;actionpack-4.2.7.1&lt;/b&gt;/lib/action_dispatch/routing/&lt;b&gt;route_set.rb&lt;/b&gt;:43 → serve&lt;/span&gt;&lt;br /&gt;
-    &lt;span class=&quot;back-trace-row&quot;&gt;&lt;b&gt;actionpack-4.2.7.1&lt;/b&gt;/lib/action_dispatch/journey/&lt;b&gt;router.rb&lt;/b&gt;:43 → block in serve&lt;/span&gt;&lt;br /&gt;
-    &lt;span class=&quot;back-trace-row&quot;&gt;&lt;b&gt;actionpack-4.2.7.1&lt;/b&gt;/lib/action_dispatch/journey/&lt;b&gt;router.rb&lt;/b&gt;:30 → each&lt;/span&gt;&lt;br /&gt;
-    &lt;span class=&quot;back-trace-row&quot;&gt;&lt;b&gt;actionpack-4.2.7.1&lt;/b&gt;/lib/action_dispatch/journey/&lt;b&gt;router.rb&lt;/b&gt;:30 → serve&lt;/span&gt;&lt;br /&gt;
-    &lt;span class=&quot;back-trace-row&quot;&gt;&lt;b&gt;actionpack-4.2.7.1&lt;/b&gt;/lib/action_dispatch/routing/&lt;b&gt;route_set.rb&lt;/b&gt;:817 → call&lt;/span&gt;&lt;br /&gt;
-    &lt;span class=&quot;back-trace-row&quot;&gt;&lt;b&gt;omniauth-1.3.1/lib&lt;/b&gt;/omniauth/&lt;b&gt;strategy.rb&lt;/b&gt;:186 → call!&lt;/span&gt;&lt;br /&gt;
-    &lt;span class=&quot;back-trace-row&quot;&gt;&lt;b&gt;omniauth-1.3.1/lib&lt;/b&gt;/omniauth/&lt;b&gt;strategy.rb&lt;/b&gt;:164 → call&lt;/span&gt;&lt;br /&gt;
-&lt;/div&gt;
-
-&lt;p&gt;As we dug inside the Gem and found out that &lt;a href=&quot;https://github.com/omniauth/omniauth&quot;&gt;Omniauth&lt;/a&gt; looks at these headers&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://github.com/intridea/omniauth/blob/ed1f9a8994e6b660e2eed3f85bb87c81229480fa/lib/omniauth/strategy.rb#L493-L499&quot; target=&quot;_blank&quot;&gt;lib/omniauth/strategy.rb#L493-L499&lt;/a&gt;&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ssl?&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;env&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;HTTPS&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;on&amp;#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;env&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;HTTP_X_FORWARDED_SSL&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;on&amp;#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;env&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;HTTP_X_FORWARDED_SCHEME&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;https&amp;#39;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt;
-  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;env&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;HTTP_X_FORWARDED_PROTO&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;env&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;HTTP_X_FORWARDED_PROTO&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;split&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;,&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;https&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;env&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;rack.url_scheme&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;https&amp;#39;&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;This is where we found that setting up &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Proto&quot;&gt;X_FORWARDED_PROTO&lt;/a&gt; to https should fix our problems.&lt;/p&gt;
-
-&lt;p&gt;Initially, this &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Proto&quot;&gt;X_FORWARDED_PROTO&lt;/a&gt; was set to $scheme. Which will be http for production as https is offloaded at ELB.&lt;/p&gt;
-
-&lt;p&gt;Now, by setting &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Proto&quot;&gt;X_FORWARDED_PROTO&lt;/a&gt; to https, we are making sure that redirects are happening on https.&lt;/p&gt;
-
-
-  
-  &lt;p&gt;&lt;a href=&quot;/technology/setting-up-elb-plus-nginx-with-https-offloading/&quot;&gt;Setting up OAuth2 callbacks in Rails with HTTPS offloading on load balancers&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on March 08, 2017.&lt;/p&gt;</content>
 </entry>
 
 </feed>
