@@ -1,0 +1,739 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Building a Frontend Scoring Engine: Automating Frontend Evaluation &#8211; eLitmus Blog</title>
+<meta name="description" content="We learn new things everyday, and we document our learnings here...">
+
+<meta name="keywords" content="frontend development, evaluation, automation, testing, coding">
+
+<!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary">    
+<meta name="twitter:title" content="Building a Frontend Scoring Engine: Automating Frontend Evaluation">
+<meta name="twitter:description" content="<p>The frontend scoring engine is a powerful tool designed to assess the frontend skills of candidates based on code quality, responsiveness, and functionality. It aims to streamline the evaluation process for frontend development by automating the assessment of code quality, best practices, and functionality.</p>
+
+">
+<meta name="twitter:site" content="@elitmus">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        
+            <meta name="twitter:creator" content="@BHUSHANWANJARI9">
+        
+    
+
+
+
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="/blog/images/blog_logo_taglinedorange.png"/>
+<meta property="og:type" content="article">
+<meta property="og:title" content="Building a Frontend Scoring Engine: Automating Frontend Evaluation">
+<meta property="og:description" content="<p>The frontend scoring engine is a powerful tool designed to assess the frontend skills of candidates based on code quality, responsiveness, and functionality. It aims to streamline the evaluation process for frontend development by automating the assessment of code quality, best practices, and functionality.</p>
+
+">
+<meta property="og:url" content="/blog/technology/building-a-frontend-scoring-engine-automating-frontend-evaluation/">
+
+<meta property="og:site_name" content="eLitmus Blog">
+
+
+
+
+
+
+
+<link rel="canonical" href="https://www.elitmus.com/blog/technology/building-a-frontend-scoring-engine-automating-frontend-evaluation/">
+<link href="/blog/feed.xml" type="application/atom+xml" rel="alternate" title="eLitmus Blog Feed">
+
+
+	<link rel="author" href="https://plus.google.com/+eLitmus?rel=author">
+
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Icons -->
+<!-- apple touch icons -->
+<link rel="apple-touch-icon" sizes="57x57" href="/blog/images/apple-touch-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="114x114" href="/blog/images/apple-touch-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/blog/images/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/blog/images/apple-touch-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="60x60" href="/blog/images/apple-touch-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/blog/images/apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/blog/images/apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/blog/images/apple-touch-icon-152x152.png">
+<!-- Favicons default 16x16 -->
+<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="/blog/favicon.ico">
+
+<!-- Favicons others -->
+<link rel="icon" type="image/png" href="/blog/images/favicon-196x196.png" sizes="196x196">
+<link rel="icon" type="image/png" href="/blog/images/favicon-160x160.png" sizes="160x160">
+<link rel="icon" type="image/png" href="/blog/images/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/blog/images/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/blog/images/favicon-32x32.png" sizes="32x32">
+
+<!-- Icons for Windows 8 Tiles -->
+<meta name="msapplication-TileColor" content="#ffffff"/>
+<meta name="msapplication-TileImage" content="/blog/images/mstile-144x144.png">
+
+<!-- For all browsers -->
+
+
+<!-- Webfonts -->
+<link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:600,300,300italic|The+Girl+Next+Door" rel="stylesheet" type="text/css">
+<link href='//fonts.googleapis.com/css?family=Source+Code+Pro:300' rel='stylesheet' type='text/css'>
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- bootstrap 4 -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/bootstrap.min.css">
+
+<!-- below css file is used for navbar in individual blogposts -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/main.min.css">
+
+<!-- <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"> -->
+
+<!-- Optional theme -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/bootstrap-theme.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Font Awesome -->
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/font-elitmuslogo.css" />
+
+<link rel="stylesheet" href="/blog/assets/css/customize.css">
+<link rel="stylesheet" href="/blog/assets/css/forkit.css">
+</head>
+
+<body id="post">
+
+  <header class="headroom">
+
+  <nav class="navbar navbar-expand-md navbar-dark bg-black fixed-top" role="navigation">
+
+      <a class="navbar-brand" href="/blog/">
+        <img src="https://cdn0.elitmus.net/assets/elitmus-only-logo-6efc8a74032179afdb89829a093e05bd05d627dd4354bbd1ff7f4eb5db8a0af8.svg" class="img-logo">
+        <span><div class="blog-label">blog</div></span>
+      </a>
+
+      <!-- the toggle button -->
+      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="navbar-toggler-icon"></span>
+        <span class="sr-only">Toggle navigation</span><!-- only for screen readers -->
+      </button>
+
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav mr-auto">
+
+          <!-- first item = dropdown search -->
+          <li class="nav-item">
+            <div class="dropdown search-box-margin">
+
+            
+              <div class="form-inline">
+                 
+
+                <input data-toggle="dropdown" placeholder="Search..." id="search-box" class="form-control form-control-sm search-input dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+
+
+                <div class="dropdown-menu" id="search-dropdown">
+                  <a role='presentation' class='dropdown-item search-results'> Type more.... </a>
+                </div>
+
+              </div>
+
+
+
+            <!-- the below line will pass "search word" to search.html -->
+
+            <!--
+            <form class="form-inline" action="/blog/search" method="get">
+               
+
+
+              <label for="search_box">Search</label>
+              <input data-toggle="dropdown" type="text" name="query" placeholder="Search..." id="search-box" class="form-control form-control-sm search-input dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+
+              <div class="dropdown-menu" id="search-dropdown">
+                  <a role='presentation' class='dropdown-item search-results'> Type more.... </a>
+              </div>
+
+              <input type="submit" value="search">
+
+            </form>
+            -->
+
+            <!-- end of form -->
+
+
+            </div>
+          </li>
+        </ul>
+
+        
+
+        <!-- every link on the right side -->
+        <ul class="nav navbar-nav navbar-right nav-icon-size-reduce">
+          
+          <li class="nav-item">
+             
+              <a href="/blog/" class="nav-link">
+                <i class="fa fa-home"></i> Home
+              </a>
+            
+          </li>
+          
+          <li class="nav-item">
+             
+              <a href="/blog/posts/" class="nav-link">
+                <i class="fa fa-file-text-o"></i> Posts
+              </a>
+            
+          </li>
+          
+          <li class="nav-item">
+             
+              <a href="//www.elitmus.com/" class="nav-link">
+                <i class="el el-elitmuslogo"></i> eLitmus
+              </a>
+            
+          </li>
+          
+
+          <!-- feed is the last link -->
+          <li class="nav-item">
+            <a href="/blog/feed.xml" class="nav-link" title="Atom/RSS feed">
+              <i class="fa fa-rss"></i> Feed
+            </a>
+          </li>
+        </ul>
+
+
+
+      </div> <!-- /.navbar-collapse -->
+
+  </nav><!--[if lt IE 9]><div class="upgrade"><strong><a href="https://whatbrowser.org/">Your browser is quite old!</strong> Why not upgrade to a different browser to better enjoy this site?</a></div><![endif]-->
+</header>
+<!-- 
+
+  <div class="search-wrapper">
+    <div class="search-form">
+      <input type="text" class="search-field" placeholder="Search...">
+      <i class="icon-remove-sign icon-2x"></i>
+      <ul class="search-results post-list"></ul> -->
+<!-- /.search-results -->
+<!-- </div> -->
+<!-- /.search-form -->
+<!-- </div> -->
+<!-- ./search-wrapper -->
+<!--  -->
+
+  
+
+  <div class="container-fluid">
+
+  <div class="row">
+
+
+    <div class="col-md-2"></div>
+      <div class="col-md-8">
+        
+
+        <div id="main" role="main" class="marginal">
+          <article class="entry">
+
+            
+
+            <div>
+              <header>
+                <span class="entry-tags">
+                  
+                    <a href="/blog/tags/#frontend development" title="Pages tagged frontend development">frontend development</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#evaluation" title="Pages tagged evaluation">evaluation</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#automation" title="Pages tagged automation">automation</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#testing" title="Pages tagged testing">testing</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#coding" title="Pages tagged coding">coding</a>
+                    
+                  
+
+                  <div class=' social-sharing pull-right'>        
+     
+</div>
+
+                </span>
+              
+                
+                  <h1 class="no-padding">Building a Frontend Scoring Engine: Automating Frontend Evaluation</h1>
+                
+              </header>
+            </div>
+           
+            <div>
+              <div>
+                <span class='badge badge-warning'> <a href="/blog/categories/technology/index.html" > technology </a></span>
+              </div>
+
+              
+
+              <div class="post-content-justify">
+                <p>The frontend scoring engine is a powerful tool designed to assess the frontend skills of candidates based on code quality, responsiveness, and functionality. It aims to streamline the evaluation process for frontend development by automating the assessment of code quality, best practices, and functionality.</p>
+
+<h2 id="what-youll-learn-from-this-blog"><strong>What you’ll learn from this blog</strong></h2>
+
+<p>In this blog, we will dive into the technical aspects of building a frontend scoring engine.</p>
+
+<ul>
+  <li>The need for frontend scoring engine in today’s technology landscape.</li>
+  <li>The technical requirements gathering and Research phase involved.</li>
+  <li>Generation of Test script for Test automation using Puppeteer.</li>
+  <li>Dockerizing the Application.</li>
+  <li>Features and Process of building the application.</li>
+</ul>
+
+<h2 id="need-for-the-frontend-scoring-engine"><strong>Need for the Frontend Scoring Engine</strong></h2>
+
+<p>In today’s technology-driven world, the demand for skilled frontend developers is at an all-time high. With the rapid evolution of web applications and user interfaces, companies are constantly seeking talented individuals who can create visually appealing, intuitive, and responsive frontend experiences. However, evaluating frontend development skills can be a complex and time-consuming task. This is where a frontend scoring engine comes into play Automating the Evaluation Process, Measurement of Code Quality and Ensuring Mobile Responsiveness. By allowing users to input HTML, CSS and JavaScript code, and generating scores based on predefined test cases, the scoring engine provides a comprehensive evaluation of candidates’ frontend skills.</p>
+
+<h2 id="research-work"><strong>Research Work</strong></h2>
+
+<p>Before starting the implementation of the frontend scoring engine project, extensive research was conducted to understand the need for such a system, evaluate existing systems, explore testing tools, and plan the evaluation process. This research phase played a crucial role in shaping the project and ensuring its successful execution. Let’s take a brief look on highlight and the key areas of research conducted during the project’s inception.</p>
+
+<ol>
+  <li><strong>Evaluating Existing Systems</strong> :
+To gain insights into the existing solutions available in the market, a comprehensive evaluation of similar systems was conducted. Various frontend scoring engines, online code editors were explored to understand their features, functionalities, strengths, and weaknesses. This evaluation provided valuable insights that influenced the design decisions and feature set of the new scoring engine. <br />
+Some similar existing systems:
+    <ul>
+      <li><a href="https://codier.io/" target="_blank" style="color: blue;">Codier.io</a></li>
+      <li><a href="https://www.frontendmentor.io/" target="_blank" style="color: blue;">Frontend Mentor</a></li>
+      <li><a href="https://cssbattle.dev" target="_blank" style="color: blue;">CSS Battle</a></li>
+      <li><a href="https://www.algoexpert.io/frontend/product" target="_blank" style="color: blue;">Algoexpert.io Frontend</a><br /><br /></li>
+    </ul>
+  </li>
+  <li><strong>Testing Tools and Technologies</strong> :
+During our research, we explored various testing tools and technologies to find the perfect fit for executing test cases, assessing code quality, and evaluating frontend functionalities. The evaluation revolved around factors like capabilities, ease of use, and compatibility with our project requirements. Tools such as Selenium, Cypress, Jest, csslint, eslint were taken into consideration.<br />
+Read more about the tools:
+    <ul>
+      <li><a href="https://www.selenium.dev/documentation/" target="_blank" style="color: blue;">Selenium</a></li>
+      <li><a href="https://docs.cypress.io/guides/overview/why-cypress" target="_blank" style="color: blue;">Cypress</a></li>
+      <li><a href="https://jestjs.io/docs/getting-started" target="_blank" style="color: blue;">Jest</a><br /><br /></li>
+    </ul>
+  </li>
+  <li><strong>Puppeteer</strong> :
+Puppeteer was chosen over Selenium primarily due to its compatibility with Docker and its ability to control headless Chrome or Chromium instances. Docker provides an efficient and scalable environment for running tests, and Puppeteer seamlessly integrates with Docker containers. Additionally, Puppeteer offers a more modern and concise API, making it easier to write test scripts and perform browser automation tasks.
+    <ul>
+      <li><a href="https://oxylabs.io/blog/puppeteer-vs-selenium" target="_blank" style="color: blue;">Puppeteer vs Selenium</a></li>
+      <li><a href="https://pptr.dev/" target="_blank" style="color: blue;">Puppeteer Docs</a><br /><br /></li>
+    </ul>
+  </li>
+  <li><strong>Docker Integration</strong> :
+We explored the benefits of Docker, a widely-used containerization platform, and discovered how it could greatly enhance our project. Docker allows us to create lightweight, portable, and isolated containers, which provide a consistent and reproducible environment. Leveraging Docker, we encapsulated and ran our scoring engine, testing tools, and other dependencies, ensuring seamless integration and efficient execution. <br />
+We pulled various Docker images from Docker Hub, enabling us to set up the required tools effortlessly.
+    <ul>
+      <li><a href="https://hub.docker.com/r/eeacms/csslint" target="_blank" style="color: blue;">csslint</a></li>
+      <li><a href="https://hub.docker.com/r/cytopia/eslint" target="_blank" style="color: blue;">eslint</a></li>
+      <li><a href="https://hub.docker.com/r/cfreak/jest" target="_blank" style="color: blue;">jest</a><br /><br /></li>
+    </ul>
+  </li>
+  <li><strong>Real-Time Code Editor</strong> :
+To provide a user-friendly and real-time code editing experience, we started searching for frontend code editors and existing projects available on GitHub. Various code editor projects were evaluated, and their source code were studied to understand the implementation details. This research helped in selecting the most suitable code editor framework and implementing it within our frontend scoring engine. <br />
+    <ul>
+      <li><a href="https://codepen.io/" target="_blank" style="color: blue;">Codepen</a></li>
+      <li><a href="https://www.fronteditor.dev/" target="_blank" style="color: blue;">Fronteditor</a></li>
+      <li><a href="https://github.com/Prince-Codemon/Code-G-The-Coding-Playground-" target="_blank" style="color: blue;">CodeG</a><br /><br /></li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>Problem Statement and Test Case Creation</strong> :
+The goal was to design problem statements that accurately reflect real-world frontend development challenges and create test cases that thoroughly evaluate candidates’ code. Puppeteer test scripts were written to simulate user interactions, perform assertions, and capture screenshots for image comparison using the PixelMatch JavaScript library.<br /></p>
+  </li>
+  <li><strong>Cloud Deployment and Infrastructure</strong> :
+For our final Deployment and integration Amazon Web Services (AWS) was choosen. The research covered various AWS services, including EC2 instances for hosting the scoring engine, S3 for storage, and other relevant services for infrastructure setup. The deployment process, security considerations, and scaling options were thoroughly explored to ensure a robust and scalable deployment architecture.<br /></li>
+</ol>
+
+<h2 id="test-script-generation"><strong>Test Script Generation</strong></h2>
+
+<p>In the frontend scoring engine, we ensure evaluation of user-submitted HTML, CSS, and JavaScript code by subjecting it to comprehensive testing against predefined test cases. These tests are designed to assess the code quality, functionality, and adherence to best practices, providing a total assessment of candidates’ frontend development skills. By conducting these thorough evaluations, we can accurately determine the proficiency of developers in creating efficient and reliable frontend solutions. Throughout this section, you’ll get an overview of the various types of tests performed, explaining their significance in evaluating code quality and functionality.</p>
+
+<ul>
+  <li>
+    <p><strong>Heading/Element Testing</strong>
+This test focuses on ensuring the presence and correctness of specific HTML elements within the user’s code. Test cases are designed to check if required headings, such as h1, h2, p or specific elements identified by ID or class, are present. The purpose of this test is to assess the structure and semantic correctness of the user’s HTML code.</p>
+  </li>
+  <li>
+    <p><strong>CSS Properties Testing</strong>
+This test aims to verify the correct usage of CSS properties in the user’s code. It includes checking for the presence of essential CSS properties, such as margin, padding, font-size, or specific properties required for a particular problem statement. This test ensures that the user’s code adheres to the defined CSS requirements and best practices.</p>
+  </li>
+  <li>
+    <p><strong>Form Validation Testing</strong>
+Form validation testing focuses on assessing the user’s code for proper form validation techniques. Test cases can include checking for required fields, validating email formats, enforcing password complexity, or implementing custom validation logic. This test ensures that the user’s code handles form validation correctly and provides appropriate error messages.</p>
+  </li>
+  <li>
+    <p><strong>Function Testing</strong>
+This test evaluates the functionality and correctness of JavaScript functions implemented by the user. Test cases are designed to cover different scenarios and edge cases to ensure that the functions perform as expected. This test assesses the user’s ability to write functional and efficient JavaScript code.</p>
+  </li>
+  <li>
+    <p><strong>API Testing</strong>
+API testing involves verifying the integration of API calls in the user’s code. Test cases may include checking if an API request is made, handling the API response correctly, and displaying the data from the API on the page. This test ensures that the user’s code effectively interacts with external APIs.</p>
+  </li>
+  <li>
+    <p><strong>Button Testing</strong>
+Button testing focuses on evaluating the behavior and interactivity of buttons implemented by the user. Test cases may include checking if a button triggers a specific action, updates the UI, or performs a navigation action. This test ensures the proper functionality of user-defined buttons.</p>
+  </li>
+  <li>
+    <p><strong>Redirection Testing</strong>
+This test aims to assess the behavior of navigation and redirection implemented by the user’s code. Test cases may include checking if clicking a link or a button redirects the user to the correct page or if the page refreshes as intended. This test ensures that the user’s code correctly handles navigation and redirection scenarios.</p>
+  </li>
+</ul>
+
+<h2 id="dockerizing-the-puppeteer-with-chrome-browser-support"><strong>Dockerizing the Puppeteer with Chrome Browser Support</strong></h2>
+
+<h4 id="dockerfile">Dockerfile:</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="c1"># Use the node:slim base image</span>
+
+FROM node:slim
+
+<span class="c1"># Set an environment variable to skip Puppeteer Chromium download during installation</span>
+
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD <span class="nb">true</span>
+RUN apt-get update <span class="o">&amp;&amp;</span> apt-get install gnupg wget -y <span class="o">&amp;&amp;</span> <span class="se">\</span>
+ wget --quiet --output-document<span class="o">=</span>- https://dl-ssl.google.com/linux/linux_signing_key.pub <span class="p">|</span> gpg --dearmor &gt; /etc/apt/trusted.gpg.d/google-archive.gpg <span class="o">&amp;&amp;</span> <span class="se">\</span>
+ sh -c <span class="s1">&#39;echo &quot;deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main&quot; &gt;&gt; /etc/apt/sources.list.d/google.list&#39;</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
+ apt-get update <span class="o">&amp;&amp;</span> <span class="se">\</span>
+ apt-get install google-chrome-stable -y --no-install-recommends <span class="o">&amp;&amp;</span> <span class="se">\</span>
+ rm -rf /var/lib/apt/lists/<span class="se">\*</span>
+
+<span class="c1"># Set the working directory inside the container</span>
+
+WORKDIR /usr/src/app
+
+<span class="c1"># Copy the package.json file to the working directory</span>
+
+COPY package.json ./
+
+<span class="c1"># Install project dependencies using npm</span>
+
+RUN npm install
+
+<span class="c1"># Expose port 3000 to allow access to the app outside the container</span>
+
+EXPOSE <span class="m">3000</span>
+
+<span class="c1"># Run the app using the &quot;npm test&quot; command when the container starts</span>
+
+CMD <span class="o">[</span><span class="s2">&quot;npm&quot;</span>, <span class="s2">&quot;test&quot;</span><span class="o">]</span></code></pre></figure>
+
+<h4 id="build-command">Build command:</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>docker build -t bhushan21z/puppchrome .</code></pre></figure>
+
+<h4 id="publish-it-to-docker-hub">Publish it to Docker Hub:</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>docker push bhushan21z/puppchrome:tagname</code></pre></figure>
+
+<h4 id="pull-commnd">Pull commnd:</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>docker pull bhushan21z/puppchrome</code></pre></figure>
+
+<h4 id="run-command">Run command:</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>docker run -it --rm -v <span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/files:usr/src/app/files puppeteerchrome</code></pre></figure>
+
+<h2 id="features-and-architecture"><strong>Features and Architecture</strong></h2>
+
+<p><img src="/blog/images/frontend-scoring-engine/frontend_scoring_engine_architecture.png" alt="Application Architecture" />
+<br /></p>
+
+<h4 id="scoring-engine"><strong>Scoring Engine:</strong></h4>
+
+<ol>
+  <li>Inputs: The scoring engine takes HTML, CSS, and JavaScript files created by users on the client side, as well as the test cases file generated on the backend.</li>
+  <li>Code Quality Assessment: The engine assesses code quality using ESLint CSSlint and similar tools.</li>
+  <li>Scoring: The engine generates a score based on code quality, along with the results of the test cases executed on the client-side code.</li>
+  <li>Modular Architecture: The scoring engine is a separate entity, independent of the frontend and backend code.</li>
+  <li>Technology Stack: Python Flask framework is used to implement the scoring engine.</li>
+  <li>Working: Flask runs various Docker run commands to execute test script.</li>
+</ol>
+
+<h4 id="backend"><strong>Backend:</strong></h4>
+
+<ol>
+  <li>MySql Database: Schema Created with various tables such as users, questions, testcases and submissions.</li>
+  <li>Node JS: Express framework is used to implement Rest APIs.</li>
+  <li>User auth: Contains user register and login APIs.</li>
+  <li>Questions: Questions create/get APIs.</li>
+  <li>Test Cases: Testcases create/get APIs and joining it with Questions table with question id as foreign key.</li>
+  <li>Scoring Engine: POST request to get user data and sending it to scoring engine and returning scoring engine response to frontend.</li>
+  <li>Submissions: User Submissions create/get APIs and joing it with users table and questions table.</li>
+</ol>
+
+<h4 id="frontend-admin-side"><strong>Frontend (Admin Side):</strong></h4>
+
+<ol>
+  <li>Problem Creation: Admins can create problem statements, describing the problem to be solved.</li>
+  <li>Problem Settings: Problems can include various settings such as score weightage, best practices to check, and mobile responsiveness evaluation.</li>
+  <li>Test Cases: Admins can add multiple test cases related to each problem statement.</li>
+  <li>Test Case Visibility: Some test case outputs will be visible to users, while others will be hidden, showing only whether the score passed or failed.</li>
+  <li>User-Friendly Test Case Creation: Adding test cases are straightforward, even for users with limited programming knowledge.</li>
+</ol>
+
+<h4 id="frontend-client-side"><strong>Frontend (Client Side):</strong></h4>
+
+<ol>
+  <li>Problem List: Users can view a list of problems on their screen.</li>
+  <li>Code Editor: Users can write HTML, CSS, and JavaScript code for each problem, similar to the CodePen editor.</li>
+  <li>Code Compilation: Users can compile their code and generate the output.</li>
+  <li>Score Display: Users can view the scores generated by the scoring engine based on the performed test cases.<br /></li>
+</ol>
+
+<h2 id="tools--technologies"><strong>Tools &amp; Technologies</strong></h2>
+
+<h4 id="frontend"><strong>Frontend:</strong></h4>
+
+<ul>
+  <li>ReactJS is used develop the frontend of the scoring engine.</li>
+</ul>
+
+<h4 id="backend-1"><strong>Backend:</strong></h4>
+
+<ul>
+  <li>Node.js is employed for building the backend of the scoring engine.</li>
+  <li>MySQL is used as the database management system.</li>
+</ul>
+
+<h4 id="scoring-engine-1"><strong>Scoring Engine</strong></h4>
+
+<ul>
+  <li>Puppeteer is used for implementing testcases and browser testing.</li>
+  <li>Docker containers are utilized for testing code quality and running test cases.</li>
+  <li>Flask is used to make scoring engine server which takes data and interacts with docker.</li>
+</ul>
+
+<h2 id="conclusion"><strong>Conclusion</strong></h2>
+
+<p>By implementing a frontend scoring engine, we can automate frontend development evaluation, resulting in a streamlined and efficient assessment process. This blog has explored the goals, research, features, technical requirements, and tools and technologies involved in developing a frontend scoring engine. The automation of code assessment, real-time editing, and integration of testing tools have resulted in an efficient and comprehensive evaluation platform. The challenges we faced during development have strengthened our understanding of frontend development and inspired innovative solutions. As we move forward, we remain committed to enhancing the scoring engine to meet the evolving needs of the tech industry. <br />
+If you have any questions, doubts or suggestions feel free to reach out to me on <a href="https://www.linkedin.com/in/bhushan-wanjari-952042213/" target="_blank" style="color: blue;">LinkedIn</a></p>
+
+              </div>
+              <div class="entry-tags">
+                <div class=' social-sharing pull-right'>        
+     
+</div>
+              </div>
+              <div class="clearfix"><br/></div>
+
+                <div class="panel panel-default">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+      <div class="panel-body">
+        <div class="container-fluid">
+
+          <div class="row">
+            <div class="col-sm-12 col-md-4">
+              <center>
+                <img src="/blog/images/bhushan.jpg" alt="Bhushan Wanjari photo" class="author-photo img-circle img-responsive"/>
+                
+                <span class="author vcard">
+                  <span class="fn">Bhushan Wanjari</span>
+                </span>
+
+                <div class="nav-icon-size-reduce social-icons">
+                  
+                    <a href="https://twitter.com/BHUSHANWANJARI9"  title="Bhushan Wanjari on Twitter"  target="_blank"><i class="fa fa-twitter "></i></a>
+                  
+                  
+                  
+                  
+
+                  
+                    <a href="https://linkedin.com/in/bhushan-wanjari-952042213" title="Bhushan Wanjari on LinkedIn" target="_blank"><i class="fa fa-linkedin "></i></a>
+                  
+
+                  
+
+                  
+
+                  
+
+                  
+                    <a href="https://github.com/bhushan21z" title="Bhushan Wanjari on Github" target="_blank"><i class="fa fa-github "></i></a>
+                  
+
+                     
+                </div><!-- /.social-icons -->
+              </center>
+            </div>
+
+            <div class="col-sm-12 col-md-8">
+              
+                <span class="author-bio">Bhushan Wanjari is an intern at eLitmus. He is passionate about competitive programming and Web development. Loves to watch anime and Movies.</span>
+              
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+  
+
+</div>
+                <div id='discourse-comments'></div>
+
+<script type="text/javascript">
+  DiscourseEmbed = { discourseUrl: 'https://adda.elitmus.com/',
+                     discourseEmbedUrl: 'https://www.elitmus.com/blog/technology/building-a-frontend-scoring-engine-automating-frontend-evaluation/'
+                   };
+
+  (function() {
+    var d = document.createElement('script'); 
+    d.type = 'text/javascript'; 
+    d.async = true;
+    d.src = DiscourseEmbed.discourseUrl + 'javascripts/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(d);
+  })();
+</script>
+
+
+                
+              </div><!-- /.entry-content -->
+            </div><!-- /.entry-wrapper -->
+
+          </article>
+
+          <nav class="navbar nav-justified" role="navigation">
+            <ul class="nav pager">
+              
+                <li class="previous showElem mr-auto"><a href="/blog/technology/my-experience-as-a-summer-intern-at-elitmus-building-a-telegram-bot/" title="My Experience as a Summer Intern at eLitmus: Building a Telegram Bot">&larr;<span class="showPrevNex"> Previous </span> </a></li>
+              
+              
+                <li class="next showElem ml-auto"><a href="/blog/technology/demystifying-rails-7-system-tests-configuring-ci-pipeline/" title="Demystifying Rails 7 System Tests: Configuring CI Pipeline"> <span class='showPrevNex'> Next </span> &rarr; </a></li>
+              
+            </ul>
+          </nav>
+        
+        </div><!-- /#main -->
+
+      <!--/col-md-2 -->
+      <div class="col-md-2">
+
+      </div>
+
+    </div><!-- /row -->
+    </div>
+    <div class="footer-color">
+      <footer role="contentinfo">
+        <center>
+            <span class='footer-text'>
+    &copy;  2005-<script> document.write(new Date().getFullYear()) </script>, eLitmus.com. | <a href="/terms_of_use/">Terms of Use</a> &middot; <a href="/privacy_policy/">Privacy Policy</a>
+
+  </span>
+        </center>
+      </footer>
+    </div><!-- /.footer-wrapper -->
+    
+
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-CB7H9KN61P"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+
+		gtag('config', 'G-CB7H9KN61P');
+	</script>
+
+
+
+<!-- Load Modernizr -->
+<script src="/blog/assets/js/vendor/modernizr-2.6.2.custom.min.js"></script>
+
+<!-- adding jquery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- end of jquery -->
+
+<script src="/blog/assets/js/scripts.min.js"></script>
+<script src="/blog/assets/js/lunr.min.js"></script>
+<script src="/blog/assets/js/lunr-search.js"></script>
+<script src="/blog/assets/js/plugins/headroom.min.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+<script src="/blog/assets/js/vendor/forkit.js"></script>
+  
+
+  </body>
+</html>
