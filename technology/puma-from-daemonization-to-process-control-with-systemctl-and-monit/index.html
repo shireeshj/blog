@@ -329,7 +329,7 @@ daemonize</code></pre></figure>
 <p>However, in recent versions, attempting to use the <code>daemonize</code> code will result in an error, as this functionality has been removed from the  codebase.</p>
 
 <h4 id="why-daemonization-should-not-be-part-of-gem"><strong>Why daemonization should not be part of gem?</strong></h4>
-<p>Incorporating daemonization directly within a gem can lead to undesirable consequences: as explained by Mike Parham in a <a href="https://www.mikeperham.com/2014/09/22/dont-daemonize-your-daemons/" target="_blank" style="color: blue;">Blog Post</a>. Here are some key points that should be considered -</p>
+<p>Incorporating daemonization directly within a gem can lead to undesirable consequences: as explained by Mike Perham in a <a href="https://www.mikeperham.com/2014/09/22/dont-daemonize-your-daemons/" target="_blank" style="color: blue;">Blog Post</a>. Here are some key points that should be considered -</p>
 <ol>
   <li><strong>Complexity</strong>: Adding daemonization features to a gem can make its code more complex and challenging.</li>
   <li><strong>Maintenance</strong>: The responsibility of maintaining daemonization, automatic restart, and similar core features becomes an additional burden.</li>
