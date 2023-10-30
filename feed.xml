@@ -7,7 +7,7 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="/" />
-<updated>2023-10-25T15:19:00+05:30</updated>
+<updated>2023-10-30T20:57:44+05:30</updated>
 <id>/</id>
 <author>
   <name>eLitmus.com</name>
@@ -768,6 +768,303 @@ If you have any questions, doubts or suggestions feel free to reach out to me on
 
   
   &lt;p&gt;&lt;a href=&quot;/technology/building-a-frontend-scoring-engine-automating-frontend-evaluation/&quot;&gt;Building a Frontend Scoring Engine: Automating Frontend Evaluation&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on July 21, 2023.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[Revamping eLitmus.com | Stand-Alone Front-end Module]]></title>
+  <link rel="alternate" type="text/html" href="/technology/revamping-elitmus-dot-com-stand-alone-front-end-module/"/>
+  <id>/technology/revamping-elitmus-dot-com-stand-alone-front-end-module</id>
+  <updated>2023-07-20 04:10:15 +0530T00:00:00-00:00</updated>
+  <published>2023-07-20T00:00:00+05:30</published>
+  
+  <author>
+    <name>eLitmus.com</name>
+    <uri></uri>
+    <email>site-admin@elitmus.com</email>
+  </author>
+  <category scheme="/tags/#elitmus" term="elitmus" /><category scheme="/tags/#revamp" term="revamp" /><category scheme="/tags/#upgrade" term="upgrade" /><category scheme="/tags/#distributed%20system" term="distributed system" />
+  <content type="html">
+  
+    &lt;p&gt;The current elitmus.com is a web application built with Ruby on Rails Framework, and the views are sent directly from the backend server whenever requested. This was quite good before, but in present scenario of internet and web technologies, these seem to lack some very basic requirements. And Hence, an upgradation is required.&lt;/p&gt;
+
+&lt;p&gt;Formally, current &lt;a href=&quot;http://elitmus.com&quot;&gt;elitmus.com&lt;/a&gt; has a monolithic structure i.e. the front-end and the back-end are tightly coupled together. As a result of this, it is not possible to divide the project’s logic and team for front-end and back-end. Only Full Stack Developers having knowledge of both the domains are required in order to work in this project. This somehow limits the people who are more expertised in one of the domains.&lt;/p&gt;
+
+&lt;p&gt;Also, the present &lt;a href=&quot;http://elitmus.com&quot;&gt;elitmus.com&lt;/a&gt; is not using the latest web technologies available. This greatly impacts the user experience.&lt;/p&gt;
+
+&lt;p&gt;So, What’s the solution for this ?&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/images/revamping-elitmus-dot-com-stand-alone-front-end-module/monolithic-distributed.png&quot; alt=&quot;Monolithic and Distributed Systems&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Well, we can separate the front-end and back-end. This will solve all the problems faced by the developers who work or tends to work in this project. This solves some of the major issues faced today by developers.&lt;/p&gt;
+
+&lt;p&gt;Now, we can have a distributed system, with the views ( front-end ) in one place and the Models and Controllers in the other. The Front-end we plan to build can be built using the latest and efficient web technologies currently available. This helps to improve the User Experience as well.&lt;/p&gt;
+
+&lt;h2 id=&quot;what-benefits-&quot;&gt;What Benefits ?&lt;/h2&gt;
+&lt;hr /&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Developer Experience&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Team Separation → We can have Dedicated teams for front-end and back-end, each expertised in their own domains&lt;/li&gt;
+      &lt;li&gt;Logic Separation → We can separate the Logic of course for the frontend and backend&lt;/li&gt;
+      &lt;li&gt;Easy to Manage&lt;/li&gt;
+      &lt;li&gt;Easy to Scale&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;User Experience&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Latest Web Tech like React can be used to Build Views&lt;/li&gt;
+      &lt;li&gt;Improved Speed&lt;/li&gt;
+      &lt;li&gt;Improved Performance&lt;/li&gt;
+      &lt;li&gt;Consistency in design&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;how-do-we-do-it&quot;&gt;How do we do it?&lt;/h2&gt;
+&lt;hr /&gt;
+&lt;p&gt;Well, now that we know what we have to do. We are halfway there already ( Just Kidding ). Let’s discuss some of the things we can use to make the front-end efficient and reliable.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;React JS&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Its component architecture , helps us building a consistent design across the site.&lt;/li&gt;
+      &lt;li&gt;It’s fast and performant.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Tailwind CSS&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;This is a light-weight CSS framework which is highly reliable and easy to use.&lt;/li&gt;
+      &lt;li&gt;This has a good community, which can help to borrow UI components rather than making it from scratch.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Redux Toolkit&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Redux Toolkit is a light version of Redux, which extracts away a lot of boilerplate codes and provides us easy to use APIs to manage state.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Jest&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Jest is the most popular library for writing tests in a react application. Infact, Create-React-App provides support for this out of the box when we initiate a new react project.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;So, that’s all the core technologies we can use to build an efficient and reliable front-end. But, here is the catch: we can even improve more by following certain practices, which will be fruitful in the long run.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;what-else-can-we-improve-&quot;&gt;What else can we Improve ?&lt;/h2&gt;
+&lt;hr /&gt;
+&lt;p&gt;Following are some of the best practices that we can use to further improve the frontend application.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;ES Lint&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Enforcing a code style guide is important to maintain the source code of the application. It helps to maintain consistency across the application.&lt;/li&gt;
+      &lt;li&gt;More Particularly, we can use the AirBNB Style Guide. This is the most popular style guide for React Application.&lt;/li&gt;
+      &lt;li&gt;We can add rules as per our need and requirements in the .eslintrc.js&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Nested Routes&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;This is one of the features of react. We can nest the routes under other routes to maintain a route intuition.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;  &amp;lt;Route &lt;span class=&quot;nv&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;/jobs&amp;quot;&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;element&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;&amp;lt;JobsAndInterviews /&amp;gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&amp;gt;
+    &amp;lt;Route index &lt;span class=&quot;nv&quot;&gt;element&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;&amp;lt;AllJobs /&amp;gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; /&amp;gt;
+    &amp;lt;Route &lt;span class=&quot;nv&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;my_jobs&amp;quot;&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;element&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;&amp;lt;MyJobs /&amp;gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&amp;gt;
+      &amp;lt;Route index &lt;span class=&quot;nv&quot;&gt;element&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;&amp;lt;ActiveJobs /&amp;gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; /&amp;gt;
+      &amp;lt;Route &lt;span class=&quot;nv&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;active&amp;quot;&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;element&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;&amp;lt;ActiveJobs /&amp;gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; /&amp;gt;
+      &amp;lt;Route &lt;span class=&quot;nv&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;inactive&amp;quot;&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;element&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;&amp;lt;InActiveJobs /&amp;gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; /&amp;gt;
+      &amp;lt;Route &lt;span class=&quot;nv&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;interviews&amp;quot;&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;element&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;&amp;lt;Interviews /&amp;gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; /&amp;gt;
+    &amp;lt;/Route&amp;gt;
+    &amp;lt;Route &lt;span class=&quot;nv&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;all_jobs&amp;quot;&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;element&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;&amp;lt;AllJobs /&amp;gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; /&amp;gt;
+  &amp;lt;/Route&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Like in this example snippet, we have a parent route for job and under that my_jobs and inside that we have active, inactive, interviews.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;/jobs/my_jobs/active → this route path is really gives a lot of information of the pages.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Dynamic Routes&lt;/strong&gt;&lt;/p&gt;
+    &lt;ul&gt;
+      &lt;li&gt;This is another feature of React Itself. This allows us to only load the pages that are requested by the user and not all.&lt;/li&gt;
+      &lt;li&gt;Just imagine, our site has hundreds of pages. When the user wants to visit the homepage, we are trying to send him all the hundred pages. This doesn’t make any sense right ?&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;  // Jobs Page Routes
+  &lt;span class=&quot;nb&quot;&gt;export&lt;/span&gt; const &lt;span class=&quot;nv&quot;&gt;JobsAndInterviews&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; lazy&lt;span class=&quot;o&quot;&gt;(()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;gt; import&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;../pages/Jobs&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;export&lt;/span&gt; const &lt;span class=&quot;nv&quot;&gt;AllJobs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; lazy&lt;span class=&quot;o&quot;&gt;(()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;gt; import&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;../pages/Jobs/AllJobs&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;export&lt;/span&gt; const &lt;span class=&quot;nv&quot;&gt;ApplyJob&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; lazy&lt;span class=&quot;o&quot;&gt;(()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;gt; import&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;../pages/Jobs/ApplyJob&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;export&lt;/span&gt; const &lt;span class=&quot;nv&quot;&gt;JobDetails&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; lazy&lt;span class=&quot;o&quot;&gt;(()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;gt; import&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;../pages/Jobs/JobDetails&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;export&lt;/span&gt; const &lt;span class=&quot;nv&quot;&gt;MyJobs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; lazy&lt;span class=&quot;o&quot;&gt;(()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;gt; import&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;../pages/Jobs/MyJobs&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;export&lt;/span&gt; const &lt;span class=&quot;nv&quot;&gt;ActiveJobs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; lazy&lt;span class=&quot;o&quot;&gt;(()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;gt; import&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;../pages/Jobs/MyJobs/Active&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;export&lt;/span&gt; const &lt;span class=&quot;nv&quot;&gt;InActiveJobs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; lazy&lt;span class=&quot;o&quot;&gt;(()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;gt; import&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;../pages/Jobs/MyJobs/Inactive&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;export&lt;/span&gt; const &lt;span class=&quot;nv&quot;&gt;Interviews&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; lazy&lt;span class=&quot;o&quot;&gt;(()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;gt; import&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;../pages/Jobs/MyJobs/Interviews&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This above snippet shows how to import the components dynamically. But for this thing to work, we need to wrap the Routes in a Suspense Component which takes fallback.
+  The component given inside the fallback is rendered in between the dynamic loads. So, we can put our page loader here. Below is the snippet showing how to do it.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;  import jobsRoutes from &lt;span class=&quot;s1&quot;&gt;&amp;#39;./routes/jobsRoutes&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  const &lt;span class=&quot;nv&quot;&gt;App&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
+  &amp;lt;Router&amp;gt;
+    &amp;lt;Provider &lt;span class=&quot;nv&quot;&gt;store&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;store&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&amp;gt;
+      &amp;lt;Layout&amp;gt;
+        &amp;lt;Suspense &lt;span class=&quot;nv&quot;&gt;fallback&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;={()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;gt; &amp;lt;Loader /&amp;gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&amp;gt;
+          &amp;lt;Routes&amp;gt;
+            &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;jobsRoutes&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+          &amp;lt;/Routes&amp;gt;
+        &amp;lt;/Suspense&amp;gt;
+      &amp;lt;/Layout&amp;gt;
+    &amp;lt;/Provider&amp;gt;
+  &amp;lt;/Router&amp;gt;
+  &lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Now, this makes the website immensely faster than before.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Intuitive File and Folder Organization&lt;/strong&gt; -&amp;gt; Organizing the files and folders properly is a very important task because it significantly helps the new developers. It lowers the learning curve for the new fellas.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;  /src
+    /__tests__
+      /categoryA
+        /page1.test.js
+        /page2.test.js
+      /categoryB
+        /page1.test.js
+        /page2.test.js
+    /assets
+    /components
+      /customElements
+      /Layout
+    /features
+      /redux_slices.js
+    /pages
+      /categoryA
+        /page1.jsx
+        /page2.jsx
+      /categoryB
+        /page1.jsx
+        /page2.jsx
+    /routes
+    /store
+      /redux_store.js
+    /styles&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;That’s how we can improve our codebase even more.&lt;/p&gt;
+
+&lt;p&gt;Then, we have to make sure if our application runs the same on every device, OS, and system specs. For that we can dockerize the react app.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;dockerization-and-deployment&quot;&gt;Dockerization and Deployment&lt;/h2&gt;
+&lt;hr /&gt;
+&lt;p&gt;Dockerizing the react app gives us the following benefits:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;Consistency:&lt;/strong&gt; Docker ensures the app runs consistently across different environments.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Dependency Management:&lt;/strong&gt; Docker encapsulates app dependencies, preventing conflicts.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Easy Deployment:&lt;/strong&gt; Docker simplifies deployment to various environments.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Scalability:&lt;/strong&gt; Docker facilitates easy scaling to handle increased traffic.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Versioning and Rollbacks:&lt;/strong&gt; Docker images can be versioned, enabling controlled updates and rollbacks.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Development and Testing:&lt;/strong&gt; Docker streamlines development and testing in a consistent environment.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Infrastructure Agnostic:&lt;/strong&gt; Docker allows running the app on various infrastructures.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Resource Efficiency:&lt;/strong&gt; Docker containers are lightweight and efficient in resource utilization.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Easy Collaboration:&lt;/strong&gt; Docker promotes seamless collaboration among developers and teams.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Security:&lt;/strong&gt; Docker provides isolation, adding an extra layer of security to the app.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;We can dockerize the react app by adding docker files i.e.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Dockerfile&lt;/strong&gt; → contains environment and installation instructions for the app.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;  FROM node:18 as builder
+  WORKDIR /app
+  COPY package.json .
+  RUN npm install
+  COPY . .
+  RUN npm run build
+  FROM nginx
+  EXPOSE &lt;span class=&quot;m&quot;&gt;80&lt;/span&gt;
+  COPY --from&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;builder /app/build /usr/share/nginx/html&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;docker-compose.yml&lt;/strong&gt; → contain commands to run our docker container.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;  version: &lt;span class=&quot;s1&quot;&gt;&amp;#39;3&amp;#39;&lt;/span&gt;
+  services:
+    web:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      ports:
+        - &lt;span class=&quot;s1&quot;&gt;&amp;#39;80:80&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Now, we have successfully containerized our react application. Finally, we need to deploy it to some cloud services such as AWS.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;We can first push our docker image to docker hub&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;  docker push iamsmruti/elitmus-frontend&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Then we can login to EC2 instance and then pull the docker image&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;  docker pull iamsmruti/elitmus-frontend&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Finally, we can run the docker image&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;  docker run -d -p &lt;span class=&quot;m&quot;&gt;5000&lt;/span&gt;:5000 iamsmruti/elitmus-frontend&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;That wraps up our frontend application which can now be live. It is fully capable of consuming the APIs from the backend. Now, the business logic is in the backend and doesn’t put much load on the frontend and hence it is performant and reliable.&lt;/p&gt;
+
+&lt;p&gt;If you have any questions, doubts, you can ping me at &lt;code&gt;smrutiranjanbadatya2@gmail.com&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;I would definitely get back to you.&lt;/p&gt;
+
+&lt;p&gt;I Hope this was a helpful and insightful guide for making a better frontend application with all the necessary good practices to maintain sustainability of the project.&lt;/p&gt;
+
+&lt;p&gt;See Ya 👋🏻 … Peace ✌🏻&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;References&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;React Docs - &lt;a href=&quot;https://react.dev/&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Here&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Tailwind Docs - &lt;a href=&quot;https://tailwindcss.com/docs/installation&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Here&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Redux Toolkit Docs - &lt;a href=&quot;https://redux-toolkit.js.org/&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Here&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Jest Docs - &lt;a href=&quot;https://jestjs.io/docs/getting-started&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Here&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;ES Lint Docs - &lt;a href=&quot;https://eslint.org/docs/latest/&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Here&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Docker Docs - &lt;a href=&quot;https://docs.docker.com&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Here&lt;/a&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+  
+  &lt;p&gt;&lt;a href=&quot;/technology/revamping-elitmus-dot-com-stand-alone-front-end-module/&quot;&gt;Revamping eLitmus.com | Stand-Alone Front-end Module&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on July 20, 2023.&lt;/p&gt;</content>
 </entry>
 
 
@@ -3664,61 +3961,6 @@ Manish was a star in college. He excelled in academics and was popular among stu
 
   
   &lt;p&gt;&lt;a href=&quot;/the-other-side/fishing-in-troubled-waters/&quot;&gt;Fishing in Troubled Waters&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on December 19, 2017.&lt;/p&gt;</content>
-</entry>
-
-
-<entry>
-  <title type="html"><![CDATA[Hiring may be Rocket Science, but its Tenets are Basic]]></title>
-  <link rel="alternate" type="text/html" href="/the-other-side/hiring-may-be-rocket-science-but-its-tenets-are-basic/"/>
-  <id>/the-other-side/hiring-may-be-rocket-science-but-its-tenets-are-basic</id>
-  <updated>2017-10-24 10:24:42 +0530T00:00:00-00:00</updated>
-  <published>2017-10-24T00:00:00+05:30</published>
-  
-  <author>
-    <name>eLitmus.com</name>
-    <uri></uri>
-    <email>site-admin@elitmus.com</email>
-  </author>
-  <category scheme="/tags/#the%20other%20side" term="the other side" />
-  <content type="html">
-  
-    &lt;p&gt;&lt;em&gt;Hiring is as old as employment itself. We are talking about a time period of a few thousand years – not a fact to be trifled with. The methods, tools and approaches may have changed and evolved with time, but I believe that it’s safe to say that the underlying principles would not have changed much.&lt;/em&gt;
-&lt;!--more--&gt;&lt;/p&gt;
-
-&lt;p&gt;Recall instances where you were evaluating a potential candidate - and it does not matter whether you were looking for someone to help out at home, or someone to drive your vehicle, or someone to join your team at work. Consciously or subconsciously you would be ticking checkboxes against these basic principles… Not convinced? Okay, allow me to lay them out for you – I’ll stick my neck out on this one.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Tenet 1&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Notwithstanding his ability with the bat, fitness levels and mental strength, would MS Dhoni have been successful as an opener in Test Cricket? Most likely not!&lt;/p&gt;
-
-&lt;p&gt;&lt;u&gt;What are you assessing?&lt;/u&gt;&lt;br /&gt;
-Does she have an aptitude for this job? In other words, does she have a natural ability to perform this job?&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Tenet 2&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;An ex-colleague of mine, a product of India’s best t-school, was undoubtedly brilliant. However, he consistently failed to meet his goals. Reason: either lost interest in the last mile, or buckled under deadline pressures. Sounds familiar?&lt;/p&gt;
-
-&lt;p&gt;&lt;u&gt;What are you assessing?&lt;/u&gt;&lt;br /&gt;
-Does she have the right mindset? How often have we seen – and heart wrenchingly so – that aptitude alone cannot and does not guarantee success on the job?&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Tenet 3&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Ever wondered why a majority of software developers are engineers?&lt;/p&gt;
-
-&lt;p&gt;&lt;u&gt;What are you assessing?&lt;/u&gt;&lt;br /&gt;
-Does she have the necessary skills? Skills could be knowledge, experience or even academic qualification? Even if you have a top class training facility at your disposal, your fresh hires will need a minimum set of pre-existing skills that are critical to succeed.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Tenet 4&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;A high performing and reliable colleague decided to put in his papers because he wanted to migrate to the US.&lt;/p&gt;
-
-&lt;p&gt;&lt;u&gt;What are you assessing?&lt;/u&gt;&lt;br /&gt;
-Do her aspirations align with what you can offer her? And this is not just about compensation and benefits. But more importantly, a match between career aspirations and available growth paths in your organization.&lt;/p&gt;
-
-&lt;p&gt;Would love to hear your views, especially if you disagree or have a contrarian opinion. Keep them coming…&lt;/p&gt;
-
-  
-  &lt;p&gt;&lt;a href=&quot;/the-other-side/hiring-may-be-rocket-science-but-its-tenets-are-basic/&quot;&gt;Hiring may be Rocket Science, but its Tenets are Basic&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on October 24, 2017.&lt;/p&gt;</content>
 </entry>
 
 </feed>
