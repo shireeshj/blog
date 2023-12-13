@@ -379,7 +379,7 @@ CREATE INDEX
 		<br>
 		In contrast, with a Bitmap Scan, instead of loading rows into memory, we set a bit to 1 in an array of bits corresponding to heap page numbers. The operation then works on top of this bitmap.
 		<br>
-		<img src="{{site.baseurl}}/images/database-indexing/bitmap-example.png" width="425" style="margin-top: 2rem; margin-bottom: 2rem"/>
+		<img src="{{site.baseurl}}/images/database-indexing/bitmap-or-example.png" width="425" style="margin-top: 2rem; margin-bottom: 2rem"/>
 
 		Here's a simplified breakdown of above image:
 		<ul style="margin-left: 2rem">
