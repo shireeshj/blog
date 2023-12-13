@@ -7,7 +7,7 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="/" />
-<updated>2023-12-13T08:38:50+05:30</updated>
+<updated>2023-12-13T09:37:24+05:30</updated>
 <id>/</id>
 <author>
   <name>eLitmus.com</name>
@@ -391,7 +391,7 @@ Let’s delve into two scenarios:&lt;/p&gt;
 		&lt;br /&gt;
 		In contrast, with a Bitmap Scan, instead of loading rows into memory, we set a bit to 1 in an array of bits corresponding to heap page numbers. The operation then works on top of this bitmap.
 		&lt;br /&gt;
-		&lt;img src=&quot;/blog/images/database-indexing/bitmap-example.png&quot; width=&quot;425&quot; style=&quot;margin-top: 2rem; margin-bottom: 2rem&quot; /&gt;
+		&lt;img src=&quot;/blog/images/database-indexing/bitmap-or-example.png&quot; width=&quot;425&quot; style=&quot;margin-top: 2rem; margin-bottom: 2rem&quot; /&gt;
 
 		Here's a simplified breakdown of above image:
 		&lt;ul style=&quot;margin-left: 2rem&quot;&gt;
