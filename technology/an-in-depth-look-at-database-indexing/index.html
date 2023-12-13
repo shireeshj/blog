@@ -1,0 +1,1147 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>An in-depth look at Database Indexing &#8211; eLitmus Blog</title>
+<meta name="description" content="We learn new things everyday, and we document our learnings here...">
+
+<meta name="keywords" content="database, indexing, postgres, mysql, relational database, clustered index, primary key index, explain, analyze, postgres indexing">
+
+<!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary">    
+<meta name="twitter:title" content="An in-depth look at Database Indexing">
+<meta name="twitter:description" content="<p>In this article, we will explore Database Indexing. We will begin by installing the Docker &amp; running a Postgres container on it. Subsequently, to execute queries and comprehend how the database uses various indexing strategies, we will insert millions of rows into a Postgres table.</p>
+
+">
+<meta name="twitter:site" content="@elitmus">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        
+            <meta name="twitter:creator" content="@ManishS77291587">
+        
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+
+
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="/blog/images/blog_logo_taglinedorange.png"/>
+<meta property="og:type" content="article">
+<meta property="og:title" content="An in-depth look at Database Indexing">
+<meta property="og:description" content="<p>In this article, we will explore Database Indexing. We will begin by installing the Docker &amp; running a Postgres container on it. Subsequently, to execute queries and comprehend how the database uses various indexing strategies, we will insert millions of rows into a Postgres table.</p>
+
+">
+<meta property="og:url" content="/blog/technology/an-in-depth-look-at-database-indexing/">
+
+<meta property="og:site_name" content="eLitmus Blog">
+
+
+
+
+
+
+
+<link rel="canonical" href="https://www.elitmus.com/blog/technology/an-in-depth-look-at-database-indexing/">
+<link href="/blog/feed.xml" type="application/atom+xml" rel="alternate" title="eLitmus Blog Feed">
+
+
+	<link rel="author" href="https://plus.google.com/+eLitmus?rel=author">
+
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Icons -->
+<!-- apple touch icons -->
+<link rel="apple-touch-icon" sizes="57x57" href="/blog/images/apple-touch-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="114x114" href="/blog/images/apple-touch-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/blog/images/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/blog/images/apple-touch-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="60x60" href="/blog/images/apple-touch-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/blog/images/apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/blog/images/apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/blog/images/apple-touch-icon-152x152.png">
+<!-- Favicons default 16x16 -->
+<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="/blog/favicon.ico">
+
+<!-- Favicons others -->
+<link rel="icon" type="image/png" href="/blog/images/favicon-196x196.png" sizes="196x196">
+<link rel="icon" type="image/png" href="/blog/images/favicon-160x160.png" sizes="160x160">
+<link rel="icon" type="image/png" href="/blog/images/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/blog/images/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/blog/images/favicon-32x32.png" sizes="32x32">
+
+<!-- Icons for Windows 8 Tiles -->
+<meta name="msapplication-TileColor" content="#ffffff"/>
+<meta name="msapplication-TileImage" content="/blog/images/mstile-144x144.png">
+
+<!-- For all browsers -->
+
+
+<!-- Webfonts -->
+<link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:600,300,300italic|The+Girl+Next+Door" rel="stylesheet" type="text/css">
+<link href='//fonts.googleapis.com/css?family=Source+Code+Pro:300' rel='stylesheet' type='text/css'>
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- bootstrap 4 -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/bootstrap.min.css">
+
+<!-- below css file is used for navbar in individual blogposts -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/main.min.css">
+
+<!-- <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"> -->
+
+<!-- Optional theme -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/bootstrap-theme.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Font Awesome -->
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/font-elitmuslogo.css" />
+
+<link rel="stylesheet" href="/blog/assets/css/customize.css">
+<link rel="stylesheet" href="/blog/assets/css/forkit.css">
+</head>
+
+<body id="post">
+
+  <header class="headroom">
+
+  <nav class="navbar navbar-expand-md navbar-dark bg-black fixed-top" role="navigation">
+
+      <a class="navbar-brand" href="/blog/">
+        <img src="https://cdn0.elitmus.net/assets/elitmus-only-logo-6efc8a74032179afdb89829a093e05bd05d627dd4354bbd1ff7f4eb5db8a0af8.svg" class="img-logo">
+        <span><div class="blog-label">blog</div></span>
+      </a>
+
+      <!-- the toggle button -->
+      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="navbar-toggler-icon"></span>
+        <span class="sr-only">Toggle navigation</span><!-- only for screen readers -->
+      </button>
+
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav mr-auto">
+
+          <!-- first item = dropdown search -->
+          <li class="nav-item">
+            <div class="dropdown search-box-margin">
+
+            
+              <div class="form-inline">
+                 
+
+                <input data-toggle="dropdown" placeholder="Search..." id="search-box" class="form-control form-control-sm search-input dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+
+
+                <div class="dropdown-menu" id="search-dropdown">
+                  <a role='presentation' class='dropdown-item search-results'> Type more.... </a>
+                </div>
+
+              </div>
+
+
+
+            <!-- the below line will pass "search word" to search.html -->
+
+            <!--
+            <form class="form-inline" action="/blog/search" method="get">
+               
+
+
+              <label for="search_box">Search</label>
+              <input data-toggle="dropdown" type="text" name="query" placeholder="Search..." id="search-box" class="form-control form-control-sm search-input dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+
+              <div class="dropdown-menu" id="search-dropdown">
+                  <a role='presentation' class='dropdown-item search-results'> Type more.... </a>
+              </div>
+
+              <input type="submit" value="search">
+
+            </form>
+            -->
+
+            <!-- end of form -->
+
+
+            </div>
+          </li>
+        </ul>
+
+        
+
+        <!-- every link on the right side -->
+        <ul class="nav navbar-nav navbar-right nav-icon-size-reduce">
+          
+          <li class="nav-item">
+             
+              <a href="/blog/" class="nav-link">
+                <i class="fa fa-home"></i> Home
+              </a>
+            
+          </li>
+          
+          <li class="nav-item">
+             
+              <a href="/blog/posts/" class="nav-link">
+                <i class="fa fa-file-text-o"></i> Posts
+              </a>
+            
+          </li>
+          
+          <li class="nav-item">
+             
+              <a href="//www.elitmus.com/" class="nav-link">
+                <i class="el el-elitmuslogo"></i> eLitmus
+              </a>
+            
+          </li>
+          
+
+          <!-- feed is the last link -->
+          <li class="nav-item">
+            <a href="/blog/feed.xml" class="nav-link" title="Atom/RSS feed">
+              <i class="fa fa-rss"></i> Feed
+            </a>
+          </li>
+        </ul>
+
+
+
+      </div> <!-- /.navbar-collapse -->
+
+  </nav><!--[if lt IE 9]><div class="upgrade"><strong><a href="https://whatbrowser.org/">Your browser is quite old!</strong> Why not upgrade to a different browser to better enjoy this site?</a></div><![endif]-->
+</header>
+<!-- 
+
+  <div class="search-wrapper">
+    <div class="search-form">
+      <input type="text" class="search-field" placeholder="Search...">
+      <i class="icon-remove-sign icon-2x"></i>
+      <ul class="search-results post-list"></ul> -->
+<!-- /.search-results -->
+<!-- </div> -->
+<!-- /.search-form -->
+<!-- </div> -->
+<!-- ./search-wrapper -->
+<!--  -->
+
+  
+
+  <div class="container-fluid">
+
+  <div class="row">
+
+
+    <div class="col-md-2"></div>
+      <div class="col-md-8">
+        
+
+        <div id="main" role="main" class="marginal">
+          <article class="entry">
+
+            
+
+            <div>
+              <header>
+                <span class="entry-tags">
+                  
+                    <a href="/blog/tags/#database" title="Pages tagged database">database</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#indexing" title="Pages tagged indexing">indexing</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#postgres" title="Pages tagged postgres">postgres</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#mysql" title="Pages tagged mysql">mysql</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#relational database" title="Pages tagged relational database">relational database</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#clustered index" title="Pages tagged clustered index">clustered index</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#primary key index" title="Pages tagged primary key index">primary key index</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#explain" title="Pages tagged explain">explain</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#analyze" title="Pages tagged analyze">analyze</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#postgres indexing" title="Pages tagged postgres indexing">postgres indexing</a>
+                    
+                  
+
+                  <div class=' social-sharing pull-right'>        
+     
+</div>
+
+                </span>
+              
+                
+                  <h1 class="no-padding">An in-depth look at Database Indexing</h1>
+                
+              </header>
+            </div>
+           
+            <div>
+              <div>
+                <span class='badge badge-warning'> <a href="/blog/categories/technology/index.html" > technology </a></span>
+              </div>
+
+              
+
+              <div class="post-content-justify">
+                <p>In this article, we will explore Database Indexing. We will begin by installing the Docker &amp; running a Postgres container on it. Subsequently, to execute queries and comprehend how the database uses various indexing strategies, we will insert millions of rows into a Postgres table.</p>
+
+<p>Following that, we will explore different tools to gaining insights into the SQL query planner and optimizers. After that, we will delve into understanding database indexing, examining how various types of indexing works with examples, and do a comparison between different types of database scan strategies.</p>
+
+<p>Finally, we will then demystify how database indexes operates for the WHERE clause with the AND and OR operators.</p>
+
+<h4 id="prerequisite"><strong>Prerequisite</strong></h4>
+
+<ol style="margin-left: 2rem">
+	<li>
+		<b>Installing Docker &amp; Running a Postgres Container:</b>
+		<ol style="margin-left: 2rem">
+			<li>
+				Install Docker by following the instructions provided in the <a href="https://www.docker.com/get-started/" target="_blank" style="color: blue;">getting started</a> guide on the official Docker website.
+			</li>
+			<li>
+				Verify that Docker is installed by running the command <code>docker --version</code>
+			</li>
+		</ol>
+	</li>
+	<li>
+		<b>
+			Running a PostgresSQL Container:
+		</b>
+			<ol style="margin-left: 2rem">
+			<li>
+				Spin up the Docker container by using the official Postgres <a href="https://hub.docker.com/_/postgres" target="_blank" style="color: blue;">image</a>.
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>docker run -e <span class="nv">POSTGRES_PASSWORD</span><span class="o">=</span>secret --name pg postgres</code></pre></figure>
+
+			</li>
+			<li>
+				Start the Postgres command shell:
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>docker <span class="nb">exec</span> -it pg psql -U postgres</code></pre></figure>
+
+			</li>
+		</ol>
+	</li>
+	<li>
+		<b>
+			Inserting a Million Rows into a Postgres Table:
+		</b>
+		<ol style="margin-left: 2rem">
+			<li>
+				Create a table named <code>employees</code>:
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="k">create</span> <span class="k">table</span> <span class="n">employees</span><span class="p">(</span><span class="n">id</span> <span class="nb">serial</span> <span class="k">primary</span> <span class="k">key</span><span class="p">,</span> <span class="n">employeeid</span> <span class="nb">integer</span><span class="p">,</span> <span class="n">name</span> <span class="nb">TEXT</span><span class="p">);</span></code></pre></figure>
+
+			</li>
+			<li>
+				Insert into the <code>employees</code> table using the <a href="https://www.postgresql.org/docs/current/functions-srf.html" target="_blank" style="color: blue;">generate_series</a> function:
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="k">create</span> <span class="k">or</span> <span class="k">replace</span> <span class="k">function</span> <span class="n">gen_random_string</span><span class="p">(</span><span class="k">length</span> <span class="nb">integer</span><span class="p">)</span>
+<span class="k">RETURNS</span> <span class="nb">VARCHAR</span> <span class="k">as</span>
+<span class="err">$$</span>
+<span class="k">DECLARE</span>
+<span class="k">result</span> <span class="nb">VARCHAR</span> <span class="p">:</span><span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+<span class="k">BEGIN</span>
+<span class="k">FOR</span> <span class="n">i</span> <span class="k">IN</span> <span class="mi">1</span><span class="p">..</span><span class="k">length</span> <span class="n">LOOP</span>
+	<span class="k">result</span> <span class="p">:</span><span class="o">=</span> <span class="k">result</span> <span class="o">||</span> <span class="n">chr</span><span class="p">((</span><span class="n">floor</span><span class="p">(</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">26</span><span class="p">)</span> <span class="o">+</span> <span class="mi">65</span><span class="p">)::</span><span class="nb">integer</span><span class="p">);</span>
+<span class="k">END</span> <span class="n">LOOP</span><span class="p">;</span>
+<span class="k">RETURN</span> <span class="k">result</span><span class="p">;</span>
+<span class="k">END</span><span class="p">;</span>
+<span class="err">$$</span> <span class="k">language</span> <span class="n">plpgsql</span><span class="p">;</span>
+
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">EMPLOYEES</span><span class="p">(</span><span class="n">employeeid</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+<span class="k">SELECT</span> <span class="o">*</span><span class="p">,</span> <span class="n">gen_random_string</span><span class="p">((</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)::</span><span class="nb">integer</span><span class="p">)</span>
+<span class="k">FROM</span> <span class="n">generate_series</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000000</span><span class="p">);</span></code></pre></figure>
+
+			</li>
+			<li>
+				Confirm the result by executing the <code>count</code> query:
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="k">select</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">from</span> <span class="n">employees</span><span class="p">;</span>
+<span class="k">count</span>
+<span class="c1">--------</span>
+	<span class="mi">1000001</span>
+<span class="p">(</span><span class="mi">1</span> <span class="k">row</span><span class="p">)</span></code></pre></figure>
+
+			</li>
+		</ol>
+		This sequence of steps creates a table named <code>employees</code> and inserts one million rows into it, generating random values for the <code>employeeid</code> and <code>name</code> columns. The final count query verifies the successful insertion of the specified number of rows.
+	</li>
+
+
+	<li>
+		<b>The SQL Query Planner and Optimizer:</b>
+		<ul style="margin-left: 2rem">
+			<li>
+				<b>Explanation:</b>
+					The <code>explain</code> command displays the execution plan generated by the PostgresSQL planner for the provided statement. This plan illustrates how the table(s) referenced in the statement will be scanned, whether through plain sequential scans, index scans, etc.
+			</li>
+			<li>
+				<b>Examples:</b>
+				<ol style="margin-left: 2rem">
+					<li>
+						<b>Select All Query:</b>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span> <span class="k">explain</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">employees</span><span class="p">;</span>
+<span class="n">QUERY</span> <span class="n">PLAN</span>
+<span class="c1">-------------------------------------------------------------</span>
+<span class="n">Seq</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">employees</span> <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">16139</span><span class="p">.</span><span class="mi">01</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1000001</span> <span class="n">width</span><span class="o">=</span><span class="mi">19</span><span class="p">)</span></code></pre></figure>
+
+						<ul style="margin-left: 2rem">
+							<li>
+								<code>Seq Scan</code>: Directly goes to the heap and fetches everything, similar to a Full Table Scan in other databases. In Postgres, with multiple threads, it's called <code>Parallel Seq Scan</code>.
+							</li>
+
+							<li>
+								<code>Cost=0.00..16139.01</code>: The first number represents work before fetching (e.g., aggregating, ordering), and the second number is the total estimated execution time.
+							</li>
+							<li>
+								<code>rows=1000001</code>: An approximate number of rows to be fetched.
+							</li>
+							<li>
+								<code>width=19</code>: The sum of bytes for all columns.
+							</li>						
+						</ul>
+					</li>
+					<br />
+					<li>
+      			<b>Select All Query with Order By (Indexed Column):</b>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span> <span class="k">create</span> <span class="k">index</span> <span class="n">employees_employeeid_idx</span> <span class="k">ON</span> <span class="n">employees</span><span class="p">(</span><span class="n">employeeid</span><span class="p">);</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span>
+<span class="n">postgres</span><span class="o">=#</span> <span class="k">explain</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">employees</span> <span class="k">order</span> <span class="k">by</span> <span class="n">employeeid</span><span class="p">;</span>
+<span class="n">QUERY</span> <span class="n">PLAN</span>
+<span class="c1">-----------------------------------------------------------------</span>
+<span class="k">Index</span> <span class="n">Scan</span> <span class="k">using</span> <span class="n">employees_employeeid_idx</span> <span class="k">on</span> <span class="n">employees</span> <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">42</span><span class="p">..</span><span class="mi">32122</span><span class="p">.</span><span class="mi">44</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1000001</span> <span class="n">width</span><span class="o">=</span><span class="mi">19</span><span class="p">)</span></code></pre></figure>
+
+						<ul style="margin-left: 2rem">
+							<li>
+         				<code>cost=0.42</code>: Postgres performs work, ordering by <code>employeeid</code>. An index on <code>employeeid</code> leads to an <code>Index Scan</code>.
+							</li>
+						</ul>
+					</li>
+					<br />
+					<li>
+						<b>Select All Query with Order By (Non-Indexed Column):</b>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span> <span class="k">explain</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">employees</span> <span class="k">order</span> <span class="k">by</span> <span class="n">name</span><span class="p">;</span>
+<span class="n">QUERY</span> <span class="n">PLAN</span>
+<span class="c1">--------------------------------------------------------------</span>
+<span class="n">Sort</span> <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">136306</span><span class="p">.</span><span class="mi">96</span><span class="p">..</span><span class="mi">138806</span><span class="p">.</span><span class="mi">96</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1000001</span> <span class="n">width</span><span class="o">=</span><span class="mi">19</span><span class="p">)</span>
+	<span class="n">Sort</span> <span class="k">Key</span><span class="p">:</span> <span class="n">name</span>
+	<span class="o">-&gt;</span> <span class="n">Seq</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">employees</span> <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">16139</span><span class="p">.</span><span class="mi">01</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1000001</span> <span class="n">width</span><span class="o">=</span><span class="mi">19</span><span class="p">)</span></code></pre></figure>
+
+						<ul style="margin-left: 2rem">
+							<li>
+								<code>Seq Scan &amp; Sort</code>:  Seq Scan on the table, followed by sorting. Sorting cost is critical.
+							</li>
+						</ul>
+					</li>
+					<br />
+					<li>
+						<b>Select Only ID:</b>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span> <span class="k">explain</span> <span class="k">select</span> <span class="n">id</span> <span class="k">from</span> <span class="n">employees</span><span class="p">;</span>
+<span class="n">QUERY</span> <span class="n">PLAN</span>
+<span class="c1">---------------------------------------------------</span>
+<span class="n">Seq</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">employees</span> <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">16139</span><span class="p">.</span><span class="mi">01</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1000001</span> <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></code></pre></figure>
+
+						<ul style="margin-left: 2rem">
+							<li>
+								<code>width=4</code>: Fetching only <code>id</code>, resulting in a smaller <code>width</code> of 4 bytes (integer).
+							</li>
+						</ul>
+					</li>
+					<br />
+					<li>
+						<b>Select All Query for a Particular ID:</b>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span> <span class="k">explain</span> <span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">employees</span> <span class="k">where</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+<span class="n">QUERY</span> <span class="n">PLAN</span>
+<span class="c1">-------------------------------------------------------------------</span>
+<span class="k">Index</span> <span class="n">Scan</span> <span class="k">using</span> <span class="n">employees_pkey</span> <span class="k">on</span> <span class="n">employees</span> <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">42</span><span class="p">..</span><span class="mi">8</span><span class="p">.</span><span class="mi">44</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1</span> <span class="n">width</span><span class="o">=</span><span class="mi">19</span><span class="p">)</span>
+	<span class="k">Index</span> <span class="n">Cond</span><span class="p">:</span> <span class="p">(</span><span class="n">id</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span></code></pre></figure>
+
+						<ul style="margin-left: 2rem">
+							<li>
+							<code>rows=1</code>: Fetching only 1 record using the primary key index.
+							</li>
+						</ul>
+					</li>
+				</ol>
+			</li>
+		</ul>
+	</li>
+</ol>
+
+<h4 id="what-is-database-indexing"><strong>What is Database indexing?</strong></h4>
+
+<p>An index is a data structure that speeds up data retrieval without needing to scan every row present in the table. Index improves lookup performance but decreases write performance because every time a new row is created, indexes need to be updated.</p>
+
+<p>Indexes are typically stored on the disk. An index is typically a small table with two columns: a primary/candidate key and address. Keys are made from one or more columns.</p>
+
+<p>The data structure used for storing the index is B+ Trees. In the simplest form, an index is a stored table of key-value pairs that allows searches to be conducted in <code>O(logn)</code> time using binary search on sorted data.</p>
+
+<p>Types of Indexes:</p>
+
+<ul style="margin-left: 2rem">
+	<li>
+		Clustered Index
+		<ul style="margin-left: 2rem">
+			<li>Index and data reside together and are ordered by the key. A Clustered Index is basically a tree-organized table. Instead of storing the records in an unsorted Heap table space, the clustered index is actually B+Tree index having the Leaf Nodes, which are ordered by the clusters key column value, store the actual table records, as illustrated by the following diagram.</li>
+		</ul>
+		<img src="/blog/images/database-indexing/clustered-index.png" width="425" />
+	</li>
+		<li>
+		Nonclustered Index
+		<ul style="margin-left: 2rem">
+			<li>A nonclustered index contains the key values and each key value entry has a pointer to the data row that contains the key value. Since the Clustered Index is usually built using the Primary Key column values, if you want to speed up queries that use some other column, then you'll have to add a Secondary Non-Clustered Index.
+
+			The Secondary Index is going to store the Primary Key value in its Leaf Nodes, as illustrated by the following diagram
+			</li>
+		</ul>
+		<img src="/blog/images/database-indexing/nonclustered-index.png" width="425" />
+	</li>
+</ul>
+
+<h4 id="how-database-indexes-works-under-the-hood"><strong>How database indexes works under the hood?</strong></h4>
+
+<p>We have already created a database index on the <code>employeeid</code> column in our employees table using the <code>CREATE INDEX</code> statement. Behind the scenes, Postgres creates a new pseudo-table in the database with two columns: a value for <code>employeeid</code> and a pointer to the corresponding record in the <code>employees</code> table. This pseudo-table is organized and stored as a binary tree with ordered values for the <code>employeeid</code> column. Consequently, the query operates with O(logn) efficiency and typically executes in a second or less.</p>
+
+<p><img src="/blog/images/database-indexing/indexing-structure.png" width="425" />
+Let’s delve into two scenarios:</p>
+
+<ol style="margin-left: 2rem">
+	<li>
+		<b><code>SELECT * FROM employees WHERE employeeid = 4;</code></b>
+		<br />
+		Here, with an index on the <code>employeeid</code> column, the query initiates an <code>Index Scan</code>. The process begins by accessing the Index table, retrieving the reference for the Page number, and obtaining the row number for the specific record on that page. Subsequently, it navigates to the corresponding page in the heap and fetches the entire row. This method, known as an <code>Index Scan</code>.
+	</li>
+	<li>
+		<b><code>SELECT employeeid FROM employees WHERE employeeid = 4;</code></b><br />
+		In this instance, there is no need to access the heap to retrieve the complete record. Since the required value for <code>employeeid</code> is already present in the index table, the operation is streamlined, and it directly performs an <code>Index Only Scan</code>. This approach allows the system to retrieve the specific <code>employeeid</code> directly from the index table without the additional step of fetching the complete row from the heap. This can lead to improved performance, particularly when the index includes all the columns needed for the query, minimizing the amount of data that needs to be processed.
+	</li>
+</ol>
+
+<h4 id="what-are-different-type-of-database-scan-strategies"><strong>What are different type of database scan strategies?</strong></h4>
+
+<ol style="margin-left: 2rem">
+	<li>
+		<b>Index Only Scan</b>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span> <span class="k">EXPLAIN</span> <span class="k">ANALYZE</span> <span class="k">select</span> <span class="n">id</span> <span class="k">from</span> <span class="n">employees</span> <span class="k">where</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">100</span><span class="p">;</span>
+							<span class="n">QUERY</span> <span class="n">PLAN</span>
+<span class="c1">-----------------------------------------------------------------------------</span>
+ <span class="k">Index</span> <span class="k">Only</span> <span class="n">Scan</span> <span class="k">using</span> <span class="n">employees_pkey</span> <span class="k">on</span> <span class="n">employees</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">42</span><span class="p">..</span><span class="mi">4</span><span class="p">.</span><span class="mi">44</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1</span> <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">2</span><span class="p">.</span><span class="mi">529</span><span class="p">..</span><span class="mi">2</span><span class="p">.</span><span class="mi">542</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+   <span class="k">Index</span> <span class="n">Cond</span><span class="p">:</span> <span class="p">(</span><span class="n">id</span> <span class="o">=</span> <span class="mi">100</span><span class="p">)</span>
+   <span class="n">Heap</span> <span class="n">Fetches</span><span class="p">:</span> <span class="mi">0</span>
+ <span class="n">Planning</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">0</span><span class="p">.</span><span class="mi">510</span> <span class="n">ms</span>
+ <span class="n">Execution</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">2</span><span class="p">.</span><span class="mi">708</span> <span class="n">ms</span></code></pre></figure>
+
+		If we examine the given query, we retrieve the ID using a filter on the ID column, which serves as the primary key and has an index on it.
+
+		<img src="/blog/images/database-indexing/index-only-scan.png" width="425" />
+
+		Let's break down the query output:
+		<ol style="margin-left: 2rem">
+			<li>
+				<b><code>Index Only Scan:</code></b> In the case of an <code>Index Only Scan</code>, Postgres scans the index table, resulting in faster performance as the Index table is significantly smaller than the actual table. With <code>Index Only Scan</code>, results are directly fetched from the Index table when querying columns for which indexes have been created.
+			</li>
+			<li>
+				<b><code>Heap Fetches: 0:</code></b> This indicates that the queried ID value did not necessitate accessing the heap table to retrieve information. The information was obtained inline, and this is referred to as an Inline query.
+			</li>
+			<li>
+				<b><code>Planning Time: 0.510 ms:</code></b> This represents the time taken by Postgres to determine whether to use the index or perform a full table scan.
+			</li>
+			<li>
+				<b><code>Execution Time: 2.708 ms:</code></b> This is the time taken by Postgres to actually fetch the records from the table.
+			</li>
+		</ol>
+	</li>
+	<li>
+		<b>Index Scan</b>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span> <span class="k">EXPLAIN</span> <span class="k">ANALYZE</span> <span class="k">select</span> <span class="n">name</span> <span class="k">from</span> <span class="n">employees</span> <span class="k">where</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">;</span>
+								<span class="n">QUERY</span> <span class="n">PLAN</span>
+<span class="c1">----------------------------------------------------------------------------</span>
+ <span class="k">Index</span> <span class="n">Scan</span> <span class="k">using</span> <span class="n">employees_pkey</span> <span class="k">on</span> <span class="n">employees</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">42</span><span class="p">..</span><span class="mi">8</span><span class="p">.</span><span class="mi">44</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1</span> <span class="n">width</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">1</span><span class="p">.</span><span class="mi">250</span><span class="p">..</span><span class="mi">1</span><span class="p">.</span><span class="mi">260</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+   <span class="k">Index</span> <span class="n">Cond</span><span class="p">:</span> <span class="p">(</span><span class="n">id</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">)</span>
+ <span class="n">Planning</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">0</span><span class="p">.</span><span class="mi">703</span> <span class="n">ms</span>
+ <span class="n">Execution</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">1</span><span class="p">.</span><span class="mi">655</span> <span class="n">ms</span></code></pre></figure>
+
+
+		If we examine the given query, we are retrieving the <code>name</code> using a filter on the ID column, which serves as the primary key and has an index on it.
+
+		In this case, the process begins with an index scan on the Index table to retrieve information about the Page number and row number on the Heap. Since the <code>name</code> is not available in the Index table, we must go to the heap to fetch the <code>name</code>. This type of scan is referred to as an <code>Index Scan</code>.
+		<img src="/blog/images/database-indexing/index-scan.png" width="425" />	
+
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span> <span class="k">EXPLAIN</span> <span class="k">ANALYZE</span> <span class="k">select</span> <span class="n">name</span> <span class="k">from</span> <span class="n">employees</span> <span class="k">where</span> <span class="n">id</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">;</span>
+                      <span class="n">QUERY</span> <span class="n">PLAN</span>
+<span class="c1">----------------------------------------------------------------------------------------------------------</span>
+ <span class="k">Index</span> <span class="n">Scan</span> <span class="k">using</span> <span class="n">employees_pkey</span> <span class="k">on</span> <span class="n">employees</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">42</span><span class="p">..</span><span class="mi">40</span><span class="p">.</span><span class="mi">75</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1047</span> <span class="n">width</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">062</span><span class="p">..</span><span class="mi">1</span><span class="p">.</span><span class="mi">139</span> <span class="k">rows</span><span class="o">=</span><span class="mi">999</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+   <span class="k">Index</span> <span class="n">Cond</span><span class="p">:</span> <span class="p">(</span><span class="n">id</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">)</span>
+ <span class="n">Planning</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">4</span><span class="p">.</span><span class="mi">948</span> <span class="n">ms</span>
+ <span class="n">Execution</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">1</span><span class="p">.</span><span class="mi">215</span> <span class="n">ms</span>
+<span class="p">(</span><span class="mi">4</span> <span class="k">rows</span><span class="p">)</span></code></pre></figure>
+
+
+		In this case, we are filtering the record using the filter on the id with '&lt;' operator and filtering out record which have id less than 1000. So the process begins with an Index scanning on the Index table then fetching the rows from the heap. Same as in case of fetching single id.
+		<img src="/blog/images/database-indexing/index-scan.png" width="425" />	
+
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span> <span class="k">EXPLAIN</span> <span class="k">ANALYZE</span> <span class="k">select</span> <span class="n">name</span> <span class="k">from</span> <span class="n">employees</span> <span class="k">where</span> <span class="n">id</span> <span class="o">&gt;</span> <span class="mi">1000</span><span class="p">;</span>
+                    <span class="n">QUERY</span> <span class="n">PLAN</span>
+<span class="c1">---------------------------------------------------------------------------</span>
+ <span class="n">Seq</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">employees</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">18639</span><span class="p">.</span><span class="mi">01</span> <span class="k">rows</span><span class="o">=</span><span class="mi">998953</span> <span class="n">width</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">104</span><span class="p">..</span><span class="mi">168</span><span class="p">.</span><span class="mi">884</span> <span class="k">rows</span><span class="o">=</span><span class="mi">999001</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+   <span class="n">Filter</span><span class="p">:</span> <span class="p">(</span><span class="n">id</span> <span class="o">&gt;</span> <span class="mi">1000</span><span class="p">)</span>
+   <span class="k">Rows</span> <span class="n">Removed</span> <span class="k">by</span> <span class="n">Filter</span><span class="p">:</span> <span class="mi">1000</span>
+ <span class="n">Planning</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">0</span><span class="p">.</span><span class="mi">158</span> <span class="n">ms</span>
+ <span class="n">Execution</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">198</span><span class="p">.</span><span class="mi">259</span> <span class="n">ms</span>
+<span class="p">(</span><span class="mi">5</span> <span class="k">rows</span><span class="p">)</span></code></pre></figure>
+
+
+		In this case, we are filtering the record using the filter on the id with '&gt;' operator and filtering out records which have id greater than 1000. So, in this case, as Postgres knows it has to fetch 99% of the data anyway, it prefers to use the Seq Scan on the heap table. Rather than going to the Index table to filter out the records and then again going to the heap to filter those Index-scanned rows.
+
+		<img src="/blog/images/database-indexing/seq-scan.png" width="425" />	
+	</li>
+	<li>
+		<b>Parallel Seq Scan</b>
+
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span> <span class="k">EXPLAIN</span> <span class="k">ANALYZE</span> <span class="k">select</span> <span class="n">id</span> <span class="k">from</span> <span class="n">employees</span> <span class="k">where</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;WABOY&#39;</span><span class="p">;</span>
+								<span class="n">QUERY</span> <span class="n">PLAN</span>
+<span class="c1">----------------------------------------------------------------------------</span>
+ <span class="n">Gather</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">1000</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">12347</span><span class="p">.</span><span class="mi">44</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1</span> <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">3</span><span class="p">.</span><span class="mi">970</span><span class="p">..</span><span class="mi">120</span><span class="p">.</span><span class="mi">383</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+   <span class="n">Workers</span> <span class="n">Planned</span><span class="p">:</span> <span class="mi">2</span>
+   <span class="n">Workers</span> <span class="n">Launched</span><span class="p">:</span> <span class="mi">2</span>
+   <span class="o">-&gt;</span>  <span class="n">Parallel</span> <span class="n">Seq</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">employees</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">11347</span><span class="p">.</span><span class="mi">34</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1</span> <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">64</span><span class="p">.</span><span class="mi">894</span><span class="p">..</span><span class="mi">102</span><span class="p">.</span><span class="mi">448</span> <span class="k">rows</span><span class="o">=</span><span class="mi">0</span> <span class="n">loops</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+		 <span class="n">Filter</span><span class="p">:</span> <span class="p">((</span><span class="n">name</span><span class="p">)::</span><span class="nb">text</span> <span class="o">=</span> <span class="s1">&#39;WABOY&#39;</span><span class="p">::</span><span class="nb">text</span><span class="p">)</span>
+		 <span class="k">Rows</span> <span class="n">Removed</span> <span class="k">by</span> <span class="n">Filter</span><span class="p">:</span> <span class="mi">333333</span>
+ <span class="n">Planning</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">0</span><span class="p">.</span><span class="mi">898</span> <span class="n">ms</span>
+ <span class="n">Execution</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">120</span><span class="p">.</span><span class="mi">850</span> <span class="n">ms</span>
+<span class="p">(</span><span class="mi">8</span> <span class="k">rows</span><span class="p">)</span></code></pre></figure>
+
+
+		If we examine the given query, we are retrieving the <code>id</code> using a filter on the name column, which doesn't have an index on it.
+
+		As we don't have an index on the name column, that means we have to actually search for the name <code>WABOY</code> one by one and perform a sequential scan on the employees table. Postgres efficiently addresses this by executing multiple worker threads and conducting a parallel sequential scan.
+		<img src="/blog/images/database-indexing/parallel-seq-scan.png" width="425" />
+	</li>
+	<li>
+		<b>Bitmap Scan</b>
+		<br />
+		Let's create a Bitmap Index on the name column to get started.
+
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span> <span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">employees_name_idx</span> <span class="k">ON</span> <span class="n">employees</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span></code></pre></figure>
+
+		Let's explore how Bitmap Scan works in PostgreSQL.
+		<br /><br />
+		Heap pages are stored on disk, and loading a page into memory can be expensive. When using an Index Scan, if the query yields a large number of rows, the query's performance may suffer because each row's retrieval involves loading a page into memory.
+		<br />
+		In contrast, with a Bitmap Scan, instead of loading rows into memory, we set a bit to 1 in an array of bits corresponding to heap page numbers. The operation then works on top of this bitmap.
+		<br />
+		<img src="/blog/images/database-indexing/bitmap-example.png" width="425" style="margin-top: 2rem; margin-bottom: 2rem" />
+
+		Here's a simplified breakdown of above image:
+		<ul style="margin-left: 2rem">
+			<li>
+				In a bitmap index scan, rows are not loaded into memory. PostgreSQL sets the bit to 1 for page number 1 when the name is 'CD' and 0 for other pages.
+			</li>
+			<li>
+				When the name is 'BC', page number 2 is set to 1, and others are set to 0.
+			</li>
+			<li>
+				Subsequently, a new bitmap is created by performing an OR operation on both bitmaps.
+			</li>
+			<li>
+				Finally, PostgreSQL executes a Bitmap Heap Scan where it fully scans each heap page and rechecks the conditions.
+			</li>
+		</ul>
+		<br />
+		This approach minimizes the need to load entire pages into memory for individual rows, improving the efficiency of the query. If the query results in a lot of rows located in only a limited number of heap pages then this strategy will be very efficient.
+		<br />
+		<br />
+		Now let's filter out the id, name by the name
+
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span> <span class="k">EXPLAIN</span> <span class="k">ANALYZE</span> <span class="k">select</span> <span class="n">id</span><span class="p">,</span> <span class="n">name</span> <span class="k">from</span> <span class="n">employees</span> <span class="k">where</span> <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;WABOY&#39;</span><span class="p">;</span>
+                  <span class="n">QUERY</span> <span class="n">PLAN</span>
+<span class="c1">--------------------------------------------------------------------------------</span>
+ <span class="n">Bitmap</span> <span class="n">Heap</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">employees</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">111</span><span class="p">.</span><span class="mi">17</span><span class="p">..</span><span class="mi">6277</span><span class="p">.</span><span class="mi">29</span> <span class="k">rows</span><span class="o">=</span><span class="mi">5000</span> <span class="n">width</span><span class="o">=</span><span class="mi">36</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">348</span><span class="p">..</span><span class="mi">0</span><span class="p">.</span><span class="mi">369</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+   <span class="k">Recheck</span> <span class="n">Cond</span><span class="p">:</span> <span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;WABOY&#39;</span><span class="p">::</span><span class="nb">text</span><span class="p">)</span>
+   <span class="n">Heap</span> <span class="n">Blocks</span><span class="p">:</span> <span class="n">exact</span><span class="o">=</span><span class="mi">1</span>
+   <span class="o">-&gt;</span>  <span class="n">Bitmap</span> <span class="k">Index</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">employees_name_idx</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">109</span><span class="p">.</span><span class="mi">92</span> <span class="k">rows</span><span class="o">=</span><span class="mi">5000</span> <span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">274</span><span class="p">..</span><span class="mi">0</span><span class="p">.</span><span class="mi">274</span> <span class="k">rows</span><span class="o">=</span><span class="mi">1</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+         <span class="k">Index</span> <span class="n">Cond</span><span class="p">:</span> <span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;WABOY&#39;</span><span class="p">::</span><span class="nb">text</span><span class="p">)</span>
+ <span class="n">Planning</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">0</span><span class="p">.</span><span class="mi">905</span> <span class="n">ms</span>
+ <span class="n">Execution</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">0</span><span class="p">.</span><span class="mi">734</span> <span class="n">ms</span></code></pre></figure>
+
+		Upon analyzing the provided query, we extract the <code>id</code> and <code>name</code> by applying a filter on the <code>name</code> column, which has an index.
+		<img src="/blog/images/database-indexing/bitmap-scan.png" width="425" />
+		Let's clarify the process:
+		<ol style="margin-left: 2rem">
+			<li>
+				<code>Bitmap Index Scan</code>: This step involves scanning the index table for the <code>name</code> column since an index exists on it. It retrieves the page number and row number to obtain references to the corresponding records in the heap.
+			</li>
+			<li>
+			<code>Bitmap Heap Scan</code>: Since we are filtering based on both <code>id</code> and <code>name</code>, this step is necessary to visit the heap and retrieve the values for both attributes for a specific record. The reference to the record is obtained from the preceding <code>Bitmap Index Scan</code>.
+			</li>
+		</ol>	
+	</li>
+</ol>
+
+<h4 id="combining-database-indexes"><strong>Combining Database Indexes</strong></h4>
+
+<ul style="margin-left: 2rem">
+	<li>
+		Prerequisite: Let's create a table to learn how to combine indexes.
+
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">NUMBERS</span><span class="p">(</span><span class="n">id</span> <span class="nb">serial</span> <span class="k">primary</span> <span class="k">key</span><span class="p">,</span> <span class="n">a</span> <span class="nb">integer</span><span class="p">,</span> <span class="n">b</span> <span class="nb">integer</span><span class="p">,</span> <span class="k">c</span> <span class="nb">integer</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">NUMBERS</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="k">c</span><span class="p">)</span> <span class="k">select</span> <span class="p">(</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)::</span><span class="nb">integer</span><span class="p">,</span> <span class="p">(</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)::</span><span class="nb">integer</span><span class="p">,</span> <span class="p">(</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">2000</span><span class="p">)::</span><span class="nb">integer</span> <span class="k">from</span> <span class="n">generate_series</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10000000</span><span class="p">);</span></code></pre></figure>
+
+	</li>
+	<li>
+		Now let's create index on the columns <code>A</code> and <code>B</code>.
+
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">numbers_a_idx</span> <span class="k">on</span> <span class="n">numbers</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">numbers_b_idx</span> <span class="k">on</span> <span class="n">numbers</span><span class="p">(</span><span class="n">b</span><span class="p">);</span></code></pre></figure>
+
+	</li>
+</ul>
+
+<ol style="margin-left: 2rem">
+	<li>
+	<b>Select column <code>c</code> for a particular value of column <code>a</code></b>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span> <span class="k">EXPLAIN</span> <span class="k">ANALYZE</span> <span class="k">SELECT</span> <span class="k">c</span> <span class="k">FROM</span> <span class="n">numbers</span> <span class="k">WHERE</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">88</span><span class="p">;</span>
+                  <span class="n">QUERY</span> <span class="n">PLAN</span>
+
+<span class="c1">---------------------------------------------------------------------------------</span>
+ <span class="n">Bitmap</span> <span class="n">Heap</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">numbers</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">1101</span><span class="p">.</span><span class="mi">09</span><span class="p">..</span><span class="mi">57496</span><span class="p">.</span><span class="mi">05</span> <span class="k">rows</span><span class="o">=</span><span class="mi">98665</span> <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">41</span><span class="p">.</span><span class="mi">110</span><span class="p">..</span><span class="mi">683</span><span class="p">.</span><span class="mi">631</span> <span class="k">rows</span><span class="o">=</span><span class="mi">99888</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+   <span class="k">Recheck</span> <span class="n">Cond</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="o">=</span> <span class="mi">88</span><span class="p">)</span>
+   <span class="n">Heap</span> <span class="n">Blocks</span><span class="p">:</span> <span class="n">exact</span><span class="o">=</span><span class="mi">45619</span>
+   <span class="o">-&gt;</span>  <span class="n">Bitmap</span> <span class="k">Index</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">numbers_a_idx</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">1076</span><span class="p">.</span><span class="mi">42</span> <span class="k">rows</span><span class="o">=</span><span class="mi">98665</span> <span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">29</span><span class="p">.</span><span class="mi">403</span><span class="p">..</span><span class="mi">29</span><span class="p">.</span><span class="mi">403</span> <span class="k">rows</span><span class="o">=</span><span class="mi">99888</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+         <span class="k">Index</span> <span class="n">Cond</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="o">=</span> <span class="mi">88</span><span class="p">)</span>
+ <span class="n">Planning</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">1</span><span class="p">.</span><span class="mi">569</span> <span class="n">ms</span>
+ <span class="n">Execution</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">687</span><span class="p">.</span><span class="mi">152</span> <span class="n">ms</span></code></pre></figure>
+
+
+		Here, we can analyze that since we have an index only on column <code>a</code>, a bitmap index scan is performed on column <code>a</code>. To retrieve column <code>c</code>, it jumps to the heap and performs a bitmap heap scan.
+	</li>
+	<br />
+	<li>
+		<b>Select column c but we are going to query on both <code>a</code> and <code>b</code> with <code>AND</code> operation</b>
+
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span> <span class="k">EXPLAIN</span> <span class="k">ANALYZE</span> <span class="k">SELECT</span> <span class="k">c</span> <span class="k">FROM</span> <span class="n">numbers</span> <span class="k">WHERE</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">90</span> <span class="k">AND</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
+                  <span class="n">QUERY</span> <span class="n">PLAN</span>
+<span class="c1">-----------------------------------------------------------------------------</span>
+ <span class="n">Bitmap</span> <span class="n">Heap</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">numbers</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">1320</span><span class="p">.</span><span class="mi">12</span><span class="p">..</span><span class="mi">1746</span><span class="p">.</span><span class="mi">88</span> <span class="k">rows</span><span class="o">=</span><span class="mi">110</span> <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">32</span><span class="p">.</span><span class="mi">300</span><span class="p">..</span><span class="mi">38</span><span class="p">.</span><span class="mi">262</span> <span class="k">rows</span><span class="o">=</span><span class="mi">107</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+   <span class="k">Recheck</span> <span class="n">Cond</span><span class="p">:</span> <span class="p">((</span><span class="n">b</span> <span class="o">=</span> <span class="mi">500</span><span class="p">)</span> <span class="k">AND</span> <span class="p">(</span><span class="n">a</span> <span class="o">=</span> <span class="mi">90</span><span class="p">))</span>
+   <span class="n">Heap</span> <span class="n">Blocks</span><span class="p">:</span> <span class="n">exact</span><span class="o">=</span><span class="mi">107</span>
+   <span class="o">-&gt;</span>  <span class="n">BitmapAnd</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">1320</span><span class="p">.</span><span class="mi">12</span><span class="p">..</span><span class="mi">1320</span><span class="p">.</span><span class="mi">12</span> <span class="k">rows</span><span class="o">=</span><span class="mi">110</span> <span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">32</span><span class="p">.</span><span class="mi">079</span><span class="p">..</span><span class="mi">32</span><span class="p">.</span><span class="mi">081</span> <span class="k">rows</span><span class="o">=</span><span class="mi">0</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+         <span class="o">-&gt;</span>  <span class="n">Bitmap</span> <span class="k">Index</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">numbers_b_idx</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">110</span><span class="p">.</span><span class="mi">88</span> <span class="k">rows</span><span class="o">=</span><span class="mi">9926</span> <span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">4</span><span class="p">.</span><span class="mi">494</span><span class="p">..</span><span class="mi">4</span><span class="p">.</span><span class="mi">494</span> <span class="k">rows</span><span class="o">=</span><span class="mi">9974</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+               <span class="k">Index</span> <span class="n">Cond</span><span class="p">:</span> <span class="p">(</span><span class="n">b</span> <span class="o">=</span> <span class="mi">500</span><span class="p">)</span>
+         <span class="o">-&gt;</span>  <span class="n">Bitmap</span> <span class="k">Index</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">numbers_a_idx</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">1208</span><span class="p">.</span><span class="mi">93</span> <span class="k">rows</span><span class="o">=</span><span class="mi">111000</span> <span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">26</span><span class="p">.</span><span class="mi">799</span><span class="p">..</span><span class="mi">26</span><span class="p">.</span><span class="mi">800</span> <span class="k">rows</span><span class="o">=</span><span class="mi">99868</span> <span class="n">l</span>
+<span class="n">oops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+               <span class="k">Index</span> <span class="n">Cond</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="o">=</span> <span class="mi">90</span><span class="p">)</span>
+ <span class="n">Planning</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">3</span><span class="p">.</span><span class="mi">362</span> <span class="n">ms</span>
+ <span class="n">Execution</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">38</span><span class="p">.</span><span class="mi">604</span> <span class="n">ms</span></code></pre></figure>
+
+
+		Here, we can analyze the following:
+		<ol style="margin-left: 2rem">
+			<li>PostgreSQL executed a bitmap index scan on column 'A'.</li>
+			<li>Concurrently, a bitmap index scan was performed on column 'B'.</li>
+			<li>Subsequently, PostgreSQL executed a bitmap AND operation to combine the results of the scans on 'A' and 'B'.</li>
+			<li>After obtaining the references for the rows to be retrieved, PostgreSQL proceeds to perform a bitmap heap scan.</li>
+		</ol>
+	</li>
+	<br />
+	<li>
+		<b>Select column c but we are going to query on both a and b with <code>OR</code> operation.</b>
+
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span> <span class="k">EXPLAIN</span> <span class="k">ANALYZE</span> <span class="k">SELECT</span> <span class="k">c</span> <span class="k">FROM</span> <span class="n">numbers</span> <span class="k">WHERE</span> <span class="n">A</span> <span class="o">=</span> <span class="mi">50</span> <span class="k">OR</span> <span class="n">B</span> <span class="o">=</span> <span class="mi">500</span><span class="p">;</span>
+                <span class="n">QUERY</span> <span class="n">PLAN</span>
+
+<span class="c1">-------------------------------------------------------------------------------</span>
+ <span class="n">Bitmap</span> <span class="n">Heap</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">numbers</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">1164</span><span class="p">.</span><span class="mi">23</span><span class="p">..</span><span class="mi">57490</span><span class="p">.</span><span class="mi">68</span> <span class="k">rows</span><span class="o">=</span><span class="mi">101835</span> <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">37</span><span class="p">.</span><span class="mi">957</span><span class="p">..</span><span class="mi">600</span><span class="p">.</span><span class="mi">439</span> <span class="k">rows</span><span class="o">=</span><span class="mi">109466</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+   <span class="k">Recheck</span> <span class="n">Cond</span><span class="p">:</span> <span class="p">((</span><span class="n">a</span> <span class="o">=</span> <span class="mi">50</span><span class="p">)</span> <span class="k">OR</span> <span class="p">(</span><span class="n">b</span> <span class="o">=</span> <span class="mi">500</span><span class="p">))</span>
+   <span class="n">Heap</span> <span class="n">Blocks</span><span class="p">:</span> <span class="n">exact</span><span class="o">=</span><span class="mi">46998</span>
+   <span class="o">-&gt;</span>  <span class="n">BitmapOr</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">1164</span><span class="p">.</span><span class="mi">23</span><span class="p">..</span><span class="mi">1164</span><span class="p">.</span><span class="mi">23</span> <span class="k">rows</span><span class="o">=</span><span class="mi">101926</span> <span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">25</span><span class="p">.</span><span class="mi">625</span><span class="p">..</span><span class="mi">25</span><span class="p">.</span><span class="mi">626</span> <span class="k">rows</span><span class="o">=</span><span class="mi">0</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+         <span class="o">-&gt;</span>  <span class="n">Bitmap</span> <span class="k">Index</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">numbers_a_idx</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">1002</span><span class="p">.</span><span class="mi">43</span> <span class="k">rows</span><span class="o">=</span><span class="mi">92000</span> <span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">24</span><span class="p">.</span><span class="mi">309</span><span class="p">..</span><span class="mi">24</span><span class="p">.</span><span class="mi">309</span> <span class="k">rows</span><span class="o">=</span><span class="mi">99602</span> <span class="n">lo</span>
+<span class="n">ops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+               <span class="k">Index</span> <span class="n">Cond</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="o">=</span> <span class="mi">50</span><span class="p">)</span>
+         <span class="o">-&gt;</span>  <span class="n">Bitmap</span> <span class="k">Index</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">numbers_b_idx</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">110</span><span class="p">.</span><span class="mi">88</span> <span class="k">rows</span><span class="o">=</span><span class="mi">9926</span> <span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">1</span><span class="p">.</span><span class="mi">313</span><span class="p">..</span><span class="mi">1</span><span class="p">.</span><span class="mi">314</span> <span class="k">rows</span><span class="o">=</span><span class="mi">9974</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+               <span class="k">Index</span> <span class="n">Cond</span><span class="p">:</span> <span class="p">(</span><span class="n">b</span> <span class="o">=</span> <span class="mi">500</span><span class="p">)</span>
+ <span class="n">Planning</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">1</span><span class="p">.</span><span class="mi">135</span> <span class="n">ms</span>
+ <span class="n">Execution</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">604</span><span class="p">.</span><span class="mi">165</span> <span class="n">ms</span></code></pre></figure>
+
+
+		Here, we can analyze the following:
+		<ol style="margin-left: 2rem">
+			<li>PostgreSQL executed a bitmap index scan on column <code>a</code>.</li>
+			<li>Concurrently, a bitmap index scan was performed on column <code>b</code>.</li>
+			<li>Subsequently, PostgreSQL executed a <code>BitmapOr</code> operation to combine the results of the scans on columns <code>a</code> and <code>b</code>.</li>
+			<li>After obtaining the references for the rows to be retrieved, PostgreSQL proceeds to perform a bitmap heap scan.</li>
+		</ol>
+	</li>
+</ol>
+
+<ul style="margin-left: 2rem">
+	<li><b>Composite Index</b></li>
+	<li style="margin-left: 2rem">
+		First, we need to drop the indexes on both columns <code>a</code> and <code>b</code>, and then create a composite index on columns <code>a</code> and <code>b</code>.
+
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span> <span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">numbers_a_b_idx</span> <span class="k">on</span> <span class="n">numbers</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span></code></pre></figure>
+
+	</li>
+	<ol style="margin-left: 2rem">
+		<li>
+			<b>Select column <code>c</code> for a particular value of column <code>a</code></b>
+
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span> <span class="k">EXPLAIN</span> <span class="k">ANALYZE</span> <span class="k">SELECT</span> <span class="k">c</span> <span class="k">FROM</span> <span class="n">numbers</span> <span class="k">WHERE</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">70</span><span class="p">;</span>
+							<span class="n">QUERY</span> <span class="n">PLAN</span>
+
+<span class="c1">-----------------------------------------------------------------------</span>
+<span class="n">Bitmap</span> <span class="n">Heap</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">numbers</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">1189</span><span class="p">.</span><span class="mi">93</span><span class="p">..</span><span class="mi">56830</span><span class="p">.</span><span class="mi">03</span> <span class="k">rows</span><span class="o">=</span><span class="mi">106000</span> <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">38</span><span class="p">.</span><span class="mi">779</span><span class="p">..</span><span class="mi">610</span><span class="p">.</span><span class="mi">173</span> <span class="k">rows</span><span class="o">=</span><span class="mi">99789</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+	<span class="k">Recheck</span> <span class="n">Cond</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="o">=</span> <span class="mi">70</span><span class="p">)</span>
+	<span class="n">Heap</span> <span class="n">Blocks</span><span class="p">:</span> <span class="n">exact</span><span class="o">=</span><span class="mi">45549</span>
+	<span class="o">-&gt;</span>  <span class="n">Bitmap</span> <span class="k">Index</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">numbers_a_b_idx</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">1163</span><span class="p">.</span><span class="mi">43</span> <span class="k">rows</span><span class="o">=</span><span class="mi">106000</span> <span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">27</span><span class="p">.</span><span class="mi">796</span><span class="p">..</span><span class="mi">27</span><span class="p">.</span><span class="mi">797</span> <span class="k">rows</span><span class="o">=</span><span class="mi">99789</span> <span class="n">loops</span>
+<span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+		<span class="k">Index</span> <span class="n">Cond</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span> <span class="o">=</span> <span class="mi">70</span><span class="p">)</span>
+<span class="n">Planning</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">5</span><span class="p">.</span><span class="mi">188</span> <span class="n">ms</span>
+<span class="n">Execution</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">613</span><span class="p">.</span><span class="mi">305</span> <span class="n">ms</span>
+<span class="p">(</span><span class="mi">7</span> <span class="k">rows</span><span class="p">)</span></code></pre></figure>
+
+		
+			Here, we can analyze the following:
+			<ol style="margin-left: 2rem">
+				<li>This time, PostgreSQL decided to use the composite index <code>numbers_ab_idx</code> on both columns <code>a</code> and <code>b</code>.</li>
+				<li>Subsequently, it performs a Bitmap Heap Scan on the selected rows based on the composite index.</li>
+			</ol>
+		</li>
+		<br />
+		<li>
+			<b>Select column <code>c</code> for a particular value of column <code>b</code></b>
+			
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span> <span class="k">EXPLAIN</span> <span class="k">ANALYZE</span> <span class="k">SELECT</span> <span class="k">c</span> <span class="k">FROM</span> <span class="n">numbers</span> <span class="k">WHERE</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">900</span><span class="p">;</span>
+							<span class="n">QUERY</span> <span class="n">PLAN</span>
+<span class="c1">-----------------------------------------------------------------------</span>
+<span class="n">Gather</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">1000</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">108130</span><span class="p">.</span><span class="mi">94</span> <span class="k">rows</span><span class="o">=</span><span class="mi">9926</span> <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">24</span><span class="p">.</span><span class="mi">402</span><span class="p">..</span><span class="mi">395</span><span class="p">.</span><span class="mi">326</span> <span class="k">rows</span><span class="o">=</span><span class="mi">10027</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+	<span class="n">Workers</span> <span class="n">Planned</span><span class="p">:</span> <span class="mi">2</span>
+	<span class="n">Workers</span> <span class="n">Launched</span><span class="p">:</span> <span class="mi">2</span>
+	<span class="o">-&gt;</span>  <span class="n">Parallel</span> <span class="n">Seq</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">numbers</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">106138</span><span class="p">.</span><span class="mi">34</span> <span class="k">rows</span><span class="o">=</span><span class="mi">4136</span> <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">9</span><span class="p">.</span><span class="mi">913</span><span class="p">..</span><span class="mi">317</span><span class="p">.</span><span class="mi">809</span> <span class="k">rows</span><span class="o">=</span><span class="mi">3342</span> <span class="n">loops</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+		<span class="n">Filter</span><span class="p">:</span> <span class="p">(</span><span class="n">b</span> <span class="o">=</span> <span class="mi">900</span><span class="p">)</span>
+		<span class="k">Rows</span> <span class="n">Removed</span> <span class="k">by</span> <span class="n">Filter</span><span class="p">:</span> <span class="mi">3329991</span>
+<span class="n">Planning</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">0</span><span class="p">.</span><span class="mi">574</span> <span class="n">ms</span>
+<span class="n">JIT</span><span class="p">:</span>
+	<span class="n">Functions</span><span class="p">:</span> <span class="mi">12</span>
+	<span class="k">Options</span><span class="p">:</span> <span class="n">Inlining</span> <span class="k">false</span><span class="p">,</span> <span class="n">Optimization</span> <span class="k">false</span><span class="p">,</span> <span class="n">Expressions</span> <span class="k">true</span><span class="p">,</span> <span class="n">Deforming</span> <span class="k">true</span>
+	<span class="n">Timing</span><span class="p">:</span> <span class="n">Generation</span> <span class="mi">4</span><span class="p">.</span><span class="mi">899</span> <span class="n">ms</span><span class="p">,</span> <span class="n">Inlining</span> <span class="mi">0</span><span class="p">.</span><span class="mi">000</span> <span class="n">ms</span><span class="p">,</span> <span class="n">Optimization</span> <span class="mi">3</span><span class="p">.</span><span class="mi">039</span> <span class="n">ms</span><span class="p">,</span> <span class="n">Emission</span> <span class="mi">25</span><span class="p">.</span><span class="mi">030</span> <span class="n">ms</span><span class="p">,</span> <span class="n">Total</span> <span class="mi">32</span><span class="p">.</span><span class="mi">968</span> <span class="n">ms</span>
+<span class="n">Execution</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">398</span><span class="p">.</span><span class="mi">820</span> <span class="n">ms</span>
+<span class="p">(</span><span class="mi">12</span> <span class="k">rows</span><span class="p">)</span></code></pre></figure>
+
+
+			Here, we can analyze the following:
+			<ol style="margin-left: 2rem">
+				<li>
+				This time, Postgres did not use the index <code>numbers_a_b_idx</code>. Even though we have a composite index on both columns <code>a</code> and <code>b</code>. Why? Because we cannot use this composite index when scanning a filter. The filter condition is on column <code>a</code>, and the composite index can be used for conditions involving both columns <code>a</code> and <code>b</code> or just column <code>a</code>. However, it cannot be used for conditions involving only column <code>b</code>. Therefore, if we have a composite index on columns <code>a</code> and <code>b</code>, querying on column <code>b</code> alone will not utilize the index.
+				</li>
+			</ol>	
+		</li>
+		<br />
+		<li>
+			<b>Select column c but we are going to query on both <code>A</code> and <code>B</code> with <code>AND</code> operation</b>
+
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span> <span class="k">EXPLAIN</span> <span class="k">ANALYZE</span> <span class="k">SELECT</span> <span class="k">C</span> <span class="k">FROM</span> <span class="n">numbers</span> <span class="k">WHERE</span> <span class="n">A</span> <span class="o">=</span> <span class="mi">60</span> <span class="k">AND</span> <span class="n">B</span> <span class="o">=</span> <span class="mi">600</span><span class="p">;</span>
+							<span class="n">QUERY</span> <span class="n">PLAN</span>
+<span class="c1">-------------------------------------------------------------------------</span>
+<span class="n">Bitmap</span> <span class="n">Heap</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">numbers</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">5</span><span class="p">.</span><span class="mi">44</span><span class="p">..</span><span class="mi">386</span><span class="p">.</span><span class="mi">39</span> <span class="k">rows</span><span class="o">=</span><span class="mi">98</span> <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">732</span><span class="p">..</span><span class="mi">6</span><span class="p">.</span><span class="mi">281</span> <span class="k">rows</span><span class="o">=</span><span class="mi">102</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+	<span class="k">Recheck</span> <span class="n">Cond</span><span class="p">:</span> <span class="p">((</span><span class="n">a</span> <span class="o">=</span> <span class="mi">60</span><span class="p">)</span> <span class="k">AND</span> <span class="p">(</span><span class="n">b</span> <span class="o">=</span> <span class="mi">600</span><span class="p">))</span>
+	<span class="n">Heap</span> <span class="n">Blocks</span><span class="p">:</span> <span class="n">exact</span><span class="o">=</span><span class="mi">101</span>
+	<span class="o">-&gt;</span>  <span class="n">Bitmap</span> <span class="k">Index</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">numbers_a_b_idx</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">5</span><span class="p">.</span><span class="mi">42</span> <span class="k">rows</span><span class="o">=</span><span class="mi">98</span> <span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">513</span><span class="p">..</span><span class="mi">0</span><span class="p">.</span><span class="mi">513</span> <span class="k">rows</span><span class="o">=</span><span class="mi">102</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+		<span class="k">Index</span> <span class="n">Cond</span><span class="p">:</span> <span class="p">((</span><span class="n">a</span> <span class="o">=</span> <span class="mi">60</span><span class="p">)</span> <span class="k">AND</span> <span class="p">(</span><span class="n">b</span> <span class="o">=</span> <span class="mi">600</span><span class="p">))</span>
+<span class="n">Planning</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">0</span><span class="p">.</span><span class="mi">756</span> <span class="n">ms</span>
+<span class="n">Execution</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">6</span><span class="p">.</span><span class="mi">659</span> <span class="n">ms</span></code></pre></figure>
+
+
+			Here, the situation remains the same as earlier when we had an index on both columns A and B.
+		</li>
+		<br />
+		<li>
+			<b>Select column c but we are going to query on both <code>A</code> and <code>B</code> with <code>OR</code> operation</b>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span> <span class="k">EXPLAIN</span> <span class="k">ANALYZE</span> <span class="k">SELECT</span> <span class="k">C</span> <span class="k">FROM</span> <span class="n">numbers</span> <span class="k">WHERE</span> <span class="n">A</span> <span class="o">=</span> <span class="mi">60</span>  <span class="k">or</span> <span class="n">B</span> <span class="o">=</span> <span class="mi">80</span><span class="p">;</span>
+							<span class="n">QUERY</span> <span class="n">PLAN</span>
+<span class="c1">------------------------------------------------------------------------</span>
+<span class="n">Gather</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">1000</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">128404</span><span class="p">.</span><span class="mi">51</span> <span class="k">rows</span><span class="o">=</span><span class="mi">108495</span> <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">20</span><span class="p">.</span><span class="mi">721</span><span class="p">..</span><span class="mi">388</span><span class="p">.</span><span class="mi">512</span> <span class="k">rows</span><span class="o">=</span><span class="mi">109443</span> <span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+	<span class="n">Workers</span> <span class="n">Planned</span><span class="p">:</span> <span class="mi">2</span>
+	<span class="n">Workers</span> <span class="n">Launched</span><span class="p">:</span> <span class="mi">2</span>
+	<span class="o">-&gt;</span>  <span class="n">Parallel</span> <span class="n">Seq</span> <span class="n">Scan</span> <span class="k">on</span> <span class="n">numbers</span>  <span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">116555</span><span class="p">.</span><span class="mi">01</span> <span class="k">rows</span><span class="o">=</span><span class="mi">45206</span> <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span> <span class="p">(</span><span class="n">actual</span> <span class="k">time</span><span class="o">=</span><span class="mi">8</span><span class="p">.</span><span class="mi">325</span><span class="p">..</span><span class="mi">304</span><span class="p">.</span><span class="mi">804</span> <span class="k">rows</span><span class="o">=</span><span class="mi">36481</span> <span class="n">loops</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+		<span class="n">Filter</span><span class="p">:</span> <span class="p">((</span><span class="n">a</span> <span class="o">=</span> <span class="mi">60</span><span class="p">)</span> <span class="k">OR</span> <span class="p">(</span><span class="n">b</span> <span class="o">=</span> <span class="mi">80</span><span class="p">))</span>
+		<span class="k">Rows</span> <span class="n">Removed</span> <span class="k">by</span> <span class="n">Filter</span><span class="p">:</span> <span class="mi">3296853</span>
+<span class="n">Planning</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">1</span><span class="p">.</span><span class="mi">009</span> <span class="n">ms</span>
+<span class="n">JIT</span><span class="p">:</span>
+	<span class="n">Functions</span><span class="p">:</span> <span class="mi">12</span>
+	<span class="k">Options</span><span class="p">:</span> <span class="n">Inlining</span> <span class="k">false</span><span class="p">,</span> <span class="n">Optimization</span> <span class="k">false</span><span class="p">,</span> <span class="n">Expressions</span> <span class="k">true</span><span class="p">,</span> <span class="n">Deforming</span> <span class="k">true</span>
+	<span class="n">Timing</span><span class="p">:</span> <span class="n">Generation</span> <span class="mi">5</span><span class="p">.</span><span class="mi">795</span> <span class="n">ms</span><span class="p">,</span> <span class="n">Inlining</span> <span class="mi">0</span><span class="p">.</span><span class="mi">000</span> <span class="n">ms</span><span class="p">,</span> <span class="n">Optimization</span> <span class="mi">2</span><span class="p">.</span><span class="mi">561</span> <span class="n">ms</span><span class="p">,</span> <span class="n">Emission</span> <span class="mi">21</span><span class="p">.</span><span class="mi">798</span> <span class="n">ms</span><span class="p">,</span> <span class="n">Total</span> <span class="mi">30</span><span class="p">.</span><span class="mi">154</span> <span class="n">ms</span>
+<span class="n">Execution</span> <span class="k">Time</span><span class="p">:</span> <span class="mi">397</span><span class="p">.</span><span class="mi">675</span> <span class="n">ms</span></code></pre></figure>
+
+
+			Here, we can analyze the situation as follows:
+			<ul style="margin-left: 2rem">
+				<li>
+				As observed earlier, it's not feasible to use a composite index on column <code>B</code> individually. The option is either to use it on column <code>A</code> alone or on both columns <code>A</code> and <code>B</code>. Consequently, Postgres opts for a Parallel Sequential Scan in this scenario.
+				</li>
+			</ul>
+		</li>
+	</ol>
+</ul>
+
+
+              </div>
+              <div class="entry-tags">
+                <div class=' social-sharing pull-right'>        
+     
+</div>
+              </div>
+              <div class="clearfix"><br/></div>
+
+                <div class="panel panel-default">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+      <div class="panel-body">
+        <div class="container-fluid">
+
+          <div class="row">
+            <div class="col-sm-12 col-md-4">
+              <center>
+                <img src="/blog/images/manish.jpg" alt="Manish Sharma photo" class="author-photo img-circle img-responsive"/>
+                
+                <span class="author vcard">
+                  <span class="fn">Manish Sharma</span>
+                </span>
+
+                <div class="nav-icon-size-reduce social-icons">
+                  
+                    <a href="https://twitter.com/ManishS77291587"  title="Manish Sharma on Twitter"  target="_blank"><i class="fa fa-twitter "></i></a>
+                  
+                  
+                  
+                  
+
+                  
+                    <a href="https://linkedin.com/in/heymanish" title="Manish Sharma on LinkedIn" target="_blank"><i class="fa fa-linkedin "></i></a>
+                  
+
+                  
+
+                  
+
+                  
+
+                  
+                    <a href="https://github.com/maniSHarma7575" title="Manish Sharma on Github" target="_blank"><i class="fa fa-github "></i></a>
+                  
+
+                     
+                </div><!-- /.social-icons -->
+              </center>
+            </div>
+
+            <div class="col-sm-12 col-md-8">
+              
+                <span class="author-bio">Manish Sharma works in the Technology team at eLitmus and loves building things. Outside of work, he enjoys spending time in nature and swimming.</span>
+              
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</div>
+                <div id='discourse-comments'></div>
+
+<script type="text/javascript">
+  DiscourseEmbed = { discourseUrl: 'https://adda.elitmus.com/',
+                     discourseEmbedUrl: 'https://www.elitmus.com/blog/technology/an-in-depth-look-at-database-indexing/'
+                   };
+
+  (function() {
+    var d = document.createElement('script'); 
+    d.type = 'text/javascript'; 
+    d.async = true;
+    d.src = DiscourseEmbed.discourseUrl + 'javascripts/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(d);
+  })();
+</script>
+
+
+                
+              </div><!-- /.entry-content -->
+            </div><!-- /.entry-wrapper -->
+
+          </article>
+
+          <nav class="navbar nav-justified" role="navigation">
+            <ul class="nav pager">
+              
+                <li class="previous showElem mr-auto"><a href="/blog/technology/puma-from-daemonization-to-process-control-with-systemctl-and-monit/" title="Puma: From Daemonization to Process Control with Systemctl and Monit">&larr;<span class="showPrevNex"> Previous </span> </a></li>
+              
+              
+            </ul>
+          </nav>
+        
+        </div><!-- /#main -->
+
+      <!--/col-md-2 -->
+      <div class="col-md-2">
+
+      </div>
+
+    </div><!-- /row -->
+    </div>
+    <div class="footer-color">
+      <footer role="contentinfo">
+        <center>
+            <span class='footer-text'>
+    &copy;  2005-<script> document.write(new Date().getFullYear()) </script>, eLitmus.com. | <a href="/terms_of_use/">Terms of Use</a> &middot; <a href="/privacy_policy/">Privacy Policy</a>
+
+  </span>
+        </center>
+      </footer>
+    </div><!-- /.footer-wrapper -->
+    
+
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-CB7H9KN61P"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+
+		gtag('config', 'G-CB7H9KN61P');
+	</script>
+
+
+
+<!-- Load Modernizr -->
+<script src="/blog/assets/js/vendor/modernizr-2.6.2.custom.min.js"></script>
+
+<!-- adding jquery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- end of jquery -->
+
+<script src="/blog/assets/js/scripts.min.js"></script>
+<script src="/blog/assets/js/lunr.min.js"></script>
+<script src="/blog/assets/js/lunr-search.js"></script>
+<script src="/blog/assets/js/plugins/headroom.min.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+<script src="/blog/assets/js/vendor/forkit.js"></script>
+  
+
+  </body>
+</html>
