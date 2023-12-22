@@ -7,13 +7,322 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="/" />
-<updated>2023-12-13T09:37:24+05:30</updated>
+<updated>2023-12-22T08:53:58+05:30</updated>
 <id>/</id>
 <author>
   <name>eLitmus.com</name>
   <uri>/</uri>
   <email>site-admin@elitmus.com</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[Mastering Multi Tenant setup with rails part 1]]></title>
+  <link rel="alternate" type="text/html" href="/technology/mastering-multi-tenant-setup-with-rails-part-1/"/>
+  <id>/technology/mastering-multi-tenant-setup-with-rails-part-1</id>
+  <updated>2023-12-17 14:17:45 +0530T00:00:00-00:00</updated>
+  <published>2023-12-17T00:00:00+05:30</published>
+  
+  <author>
+    <name>eLitmus.com</name>
+    <uri></uri>
+    <email>site-admin@elitmus.com</email>
+  </author>
+  <category scheme="/tags/#rails" term="rails" /><category scheme="/tags/#multi-tenant" term="multi-tenant" /><category scheme="/tags/#multi-db" term="multi-db" />
+  <content type="html">
+  
+    &lt;p&gt;Multi-tenancy is a software design where a single instance of a software application serves multiple customers or tenants (individual users or organizations). In a multi-tenant architecture, each tenant’s data and configuration are logically isolated from one another, providing a sense of individuality and privacy while sharing the same underlying infrastructure, codebase, and application instance.&lt;/p&gt;
+
+&lt;h4 id=&quot;single-tenant-application&quot;&gt;&lt;strong&gt;Single Tenant application&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;In a single-tenant application, each hosted instance has its dedicated database. Upon addition of a new organization that requires segregated data, a new application is hosted with a different database.&lt;/p&gt;
+
+&lt;div style=&quot; text-align:center;&quot;&gt;
+  &lt;img src=&quot;/blog/images/multi-tenant/single-tenant.png&quot; style=&quot;height:600px&quot; /&gt;
+&lt;/div&gt;
+
+&lt;h4 id=&quot;multi-tenant-application-types&quot;&gt;&lt;strong&gt;Multi Tenant Application types&lt;/strong&gt;&lt;/h4&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;Single Database shared rows&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Each table in database will contain an additional row known as tenant_id.&lt;/li&gt;
+      &lt;li&gt;Whenever data is stored and retrieved from table this coloumn will be used to get/store the data.&lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;Only the data that belongs to a specific customer/tenant will be fetched.&lt;/p&gt;
+
+        &lt;div style=&quot; text-align:center;&quot;&gt;
+  &lt;img src=&quot;/blog/images/multi-tenant/single-db-shared-rows.png&quot; style=&quot;height:600px;&quot; /&gt;
+&lt;/div&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Single Database shared schema&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;For each tenant a different table will be maintained in same database.&lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;Data will be segregated table wise.&lt;/p&gt;
+
+        &lt;div style=&quot; text-align:center;&quot;&gt;
+  &lt;img src=&quot;/blog/images/multi-tenant/single-db-separate-tables.png&quot; style=&quot;height:600px;&quot; /&gt;
+&lt;/div&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Dedicated Database for Each Tenant&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;For each tenant a new database schema will be maintained, it can be termed as shard.&lt;/p&gt;
+
+        &lt;div style=&quot; text-align:center;&quot;&gt;
+  &lt;img src=&quot;/blog/images/multi-tenant/multi-tenant.png&quot; style=&quot;height:600px;&quot; /&gt;
+&lt;/div&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;In this blog post, we’ll take an in-depth look at the third approach, where we opt to manage separate databases for each tenant. To demonstrate this, we’ll walk through the process of creating a basic Rails blog application from the ground up.&lt;/p&gt;
+
+&lt;h4 id=&quot;goal&quot;&gt;&lt;strong&gt;Goal&lt;/strong&gt;&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;Setting up a multi-tenant application in development mode.&lt;/li&gt;
+  &lt;li&gt;dynamically switching databases according to the requesting host name.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h5 id=&quot;what-features-rails-6-brings-in&quot;&gt;&lt;strong&gt;What features rails 6 brings in&lt;/strong&gt;&lt;/h5&gt;
+&lt;p&gt;Rails 6 introduced the multiple database setup with following features -&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Multiple writer databases and a replica for each.&lt;/li&gt;
+  &lt;li&gt;Automatic connection switching for the model you’re working with.&lt;/li&gt;
+  &lt;li&gt;Automatic swapping between the writer and replica depending on the HTTP verb and recent writes.&lt;/li&gt;
+  &lt;li&gt;Rails tasks for creating, dropping, migrating, and interacting with the multiple databases.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&quot;setup&quot;&gt;&lt;strong&gt;Setup&lt;/strong&gt;&lt;/h4&gt;
+
+&lt;p&gt;&lt;strong&gt;Create new rails app&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code&gt;rails new multi_db_blog&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;update gemfile to use mysql2 instead of sqlite3&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Setup databases&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;In &lt;code&gt;database.yml&lt;/code&gt; file update the database with name.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;development&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;ss&quot;&gt;app1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;adapter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mysql2&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;encoding&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;utf8&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;reconnect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;false&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;database&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;app1_development&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;pool&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;username&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;password&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;sr&quot;&gt;/tmp/m&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ysql&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sock&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;host&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;127&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+  &lt;span class=&quot;ss&quot;&gt;app2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;adapter&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mysql2&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;encoding&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;utf8&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;reconnect&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;false&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;database&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;app2_development&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;pool&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;username&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;password&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;sr&quot;&gt;/tmp/m&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ysql&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sock&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;host&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;127&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ol start=&quot;2&quot;&gt;
+  &lt;li&gt;&lt;code&gt;bin/rake db:create&lt;/code&gt; &lt;em&gt;create databases for both the tenants.&lt;/em&gt;&lt;/li&gt;
+  &lt;li&gt;You have the option to execute specific rake commands for each database. For instance, you can create the &lt;code&gt;app1&lt;/code&gt; database using the command: &lt;code&gt;bin/rake db:create:app1&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;Generate Models and Controller&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Model&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;bin/rails generate model Article title:string body:text&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Run migrations&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;bin/rake db:migrate&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Controller&lt;/p&gt;
+
+    &lt;p&gt;&lt;code&gt;bin/rails generate controller Articles index --skip-routes&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;update &lt;code&gt;routes.rb&lt;/code&gt; file.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;root&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;articles#index&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;resources&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:articles&lt;/span&gt;
+    &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Complete the &lt;code&gt;Articles&lt;/code&gt; Controller, Model and respective views by following &lt;a href=&quot;https://guides.rubyonrails.org/getting_started.html&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;This Guide&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Start App&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Run &lt;code&gt;bin/rails s&lt;/code&gt; to start the server.&lt;/li&gt;
+  &lt;li&gt;By default rails will connect to db1 now.&lt;/li&gt;
+  &lt;li&gt;This will act as a default database for the current application.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;Running up both databases simaltaneously&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Install nginx &amp;amp; paste the following code in nginx.conf file.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;http &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  server &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+   listen &lt;span class=&quot;m&quot;&gt;3000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+   server_name localhost&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+   location / &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        proxy_pass http://127.0.0.1:3000&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# Rails app running on port 3000&lt;/span&gt;
+        proxy_set_header Host &lt;span class=&quot;nv&quot;&gt;$host&lt;/span&gt;:&lt;span class=&quot;nv&quot;&gt;$server_port&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        proxy_set_header X-Real-IP &lt;span class=&quot;nv&quot;&gt;$remote_addr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        proxy_set_header X-Forwarded-For &lt;span class=&quot;nv&quot;&gt;$proxy_add_x_forwarded_for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+  server &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    listen &lt;span class=&quot;m&quot;&gt;4000&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    server_name localhost&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# Change this to your actual domain if needed&lt;/span&gt;
+
+    location / &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        proxy_pass http://127.0.0.1:3000&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# Rails app running on port 3000&lt;/span&gt;
+        proxy_set_header Host &lt;span class=&quot;nv&quot;&gt;$host&lt;/span&gt;:&lt;span class=&quot;nv&quot;&gt;$server_port&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        proxy_set_header X-Real-IP &lt;span class=&quot;nv&quot;&gt;$remote_addr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        proxy_set_header X-Forwarded-For &lt;span class=&quot;nv&quot;&gt;$proxy_add_x_forwarded_for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+events &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Above nginx configurations listens to port 3000 and 4000 and redirect to rails application running in port 3000.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Additional Rails changes&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Since We are using Rails 7 we can use automatic shard swap feature provided by rails. if using rails 6.1 or 6, a middleware can be introduced to automatic switch the tenants depending on request. Visit next section for the details.&lt;/p&gt;
+
+&lt;p&gt;Mention list of tenants in a &lt;code&gt;.yml&lt;/code&gt; file. You can maintain these records in a separate database as well, for now I will create a &lt;code&gt;settings.yml&lt;/code&gt; file.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;development&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;ss&quot;&gt;tenants&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;app1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;ss&quot;&gt;hosts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;localhost&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3000&lt;/span&gt;
+    &lt;span class=&quot;ss&quot;&gt;app2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;ss&quot;&gt;hosts&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;localhost&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4000&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;update &lt;code&gt;application.rb&lt;/code&gt; with following configurations.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Rails&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;application&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;configure&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;active_record&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shard_selector&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;lock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;true&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;tenants&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Rails&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;application&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config_for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:settings&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:tenants&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;# maintaining list of tenants with host&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;active_record&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shard_resolver&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;tenants&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;find&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tenants&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:hosts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;include?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;env&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;HTTP_HOST&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:app1&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;update &lt;code&gt;application_record.rb&lt;/code&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;   &lt;span class=&quot;c1&quot;&gt;# connects_to shards: {&lt;/span&gt;
+   &lt;span class=&quot;c1&quot;&gt;#  app1: { writing: :app1 },&lt;/span&gt;
+   &lt;span class=&quot;c1&quot;&gt;#  app2: { writing: :app2 }&lt;/span&gt;
+   &lt;span class=&quot;c1&quot;&gt;# }&lt;/span&gt;
+   &lt;span class=&quot;c1&quot;&gt;# OR&lt;/span&gt;
+
+  &lt;span class=&quot;no&quot;&gt;TENANTS&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Rails&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;application&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config_for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:settings&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:tenants&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;connects_to&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;TENANTS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shard&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shard&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;writing&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;shard&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_h&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h5 id=&quot;creating-middleware-for-automatic-shard-switchingignore-if-using-rails-7-or-above&quot;&gt;&lt;strong&gt;Creating Middleware for automatic shard switching(ignore if using rails 7 or above)&lt;/strong&gt;&lt;/h5&gt;
+&lt;ol&gt;
+  &lt;li&gt;Create a middleware named &lt;code&gt;middleware/tenant_selector.rb&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Add following code&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;  &lt;span class=&quot;k&quot;&gt;module&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;Middleware&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;TenantSelector&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;app&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tenants&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;vi&quot;&gt;@app&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;app&lt;/span&gt;
+        &lt;span class=&quot;vi&quot;&gt;@tenants&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tenants&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+      &lt;span class=&quot;kp&quot;&gt;attr_reader&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:tenants&lt;/span&gt;
+
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;env&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;request&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ActionDispatch&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;new&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;env&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;tenant&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;selected_tenant&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+        &lt;span class=&quot;n&quot;&gt;set_tenant&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tenant&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+          &lt;span class=&quot;vi&quot;&gt;@app&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;env&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+      &lt;span class=&quot;kp&quot;&gt;private&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;selected_tenant&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;tenants&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;find&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tenants&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:hosts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;include?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;env&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;HTTP_HOST&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:app1&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+      &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;set_tenant&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tenant&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;block&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;no&quot;&gt;ActiveRecord&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Base&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;connected_to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;shard&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tenant&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_sym&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;role&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:writing&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+          &lt;span class=&quot;k&quot;&gt;yield&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ol start=&quot;3&quot;&gt;
+  &lt;li&gt;Update &lt;code&gt;application.rb&lt;/code&gt; file with following changes.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;tenants&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Rails&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;application&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config_for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:settings&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:tenants&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;app_middleware&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;use&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Middleware&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;TenantSelector&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tenants&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;strong&gt;Final Steps&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Follow these final steps to confirm your multi-tenant Rails application is up and running smoothly:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Run &lt;code&gt;bin/rails s&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Access localhost:3000 to connect to db1&lt;/li&gt;
+  &lt;li&gt;Access localhost:4000 to connect to db2&lt;/li&gt;
+  &lt;li&gt;If you wish to add more databases, simply update the &lt;code&gt;database.yml&lt;/code&gt; and &lt;code&gt;settings.yml&lt;/code&gt; files&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;What Next?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;In the upcoming series of blog posts, we will delve into the following topics:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Maintaining Background Jobs.&lt;/li&gt;
+  &lt;li&gt;Running Rake Tasks with Cron Jobs for Multiple Databases.&lt;/li&gt;
+  &lt;li&gt;ActiveStorage Data Management with Different Storage Types for Each Tenant.&lt;/li&gt;
+  &lt;li&gt;Caching.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&quot;summary&quot;&gt;&lt;strong&gt;Summary&lt;/strong&gt;&lt;/h4&gt;
+
+&lt;p&gt;In this blog post we covered creating a multi tenant application from scratch and setting it up in development environment. We were able to automatically switch databases according to type of database.&lt;/p&gt;
+
+&lt;h4 id=&quot;references&quot;&gt;&lt;strong&gt;References&lt;/strong&gt;&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/nikhilbhatt/rails-multi-db-tutorial/releases/tag/0.0.0&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Github Code&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://guides.rubyonrails.org/active_record_multiple_databases.html&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Rails Multi Db introduction&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+  
+  &lt;p&gt;&lt;a href=&quot;/technology/mastering-multi-tenant-setup-with-rails-part-1/&quot;&gt;Mastering Multi Tenant setup with rails part 1&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on December 17, 2023.&lt;/p&gt;</content>
+</entry>
 
 
 <entry>
@@ -4491,64 +4800,6 @@ Connect with your s3 bucket and generate &lt;em&gt;$HOME/.s3cfg&lt;/em&gt; file,
 
   
   &lt;p&gt;&lt;a href=&quot;/career/how-tough-is-it-to-score-well-in-board-exams/&quot;&gt;How Tough is it to Score Well in Board Exams?&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on February 22, 2018.&lt;/p&gt;</content>
-</entry>
-
-
-<entry>
-  <title type="html"><![CDATA[It's the Attitude, Stupid!]]></title>
-  <link rel="alternate" type="text/html" href="/career/its-the-attitude-stupid/"/>
-  <id>/career/its-the-attitude-stupid</id>
-  <updated>2017-12-19 12:50:22 +0530T00:00:00-00:00</updated>
-  <published>2017-12-19T00:00:00+05:30</published>
-  
-  <author>
-    <name>eLitmus.com</name>
-    <uri></uri>
-    <email>site-admin@elitmus.com</email>
-  </author>
-  <category scheme="/tags/#career" term="career" />
-  <content type="html">
-  
-    &lt;p&gt;&lt;em&gt;Congratulations on your first job! So you cleared the selection process; cracked some tests maybe, shone through a group discussion possibly, and impressed and charmed your way through the interviews. Well done!&lt;/em&gt;
-&lt;!--more--&gt;&lt;/p&gt;
-
-&lt;p&gt;You’ve been assessed and found suitable for the job on offer. No more evaluations, no more assessments. Right?&lt;/p&gt;
-
-&lt;p&gt;Wrong! Let’s get one thing straight. This is just the beginning of your evaluation. What you’ve achieved (and by no means is it trivial) is to convince your future employer that you have potential. However, from day one in your first job, you will be continuously assessed on what you deliver.&lt;/p&gt;
-
-&lt;p&gt;For whatever it’s worth, taking the liberty to share a cheat sheet that may help in ensuring that promise does translate to delivery in the first couple of years in your career. And be warned that it’s all in the attitude…&lt;/p&gt;
-
-&lt;p&gt;&lt;u&gt;Cheat 1&lt;/u&gt;&lt;br /&gt;
-Sumadhur was undoubtedly brilliant. Armed with a degree from India’s best engineering school, he was given complex tasks in line with his academic record and promise.&lt;/p&gt;
-
-&lt;p&gt;However, very soon, his manager realised that he was not able to complete most of his tasks. The manager tried to find probable reasons behind such repeated failures. Soon, he realised that Sumadhur was not open to data, insights or feedback that conflicted with his own assumptions and beliefs.&lt;/p&gt;
-
-&lt;p&gt;Tell yourself at least once each day: “I do not know anything. I am here to learn and apply.”&lt;/p&gt;
-
-&lt;p&gt;&lt;u&gt;Cheat 2&lt;/u&gt;&lt;br /&gt;
-Abhinav had completed just 6 months in his first job, but had been upset for a while. His friends earned twice as much as him, despite working fewer hours than he did. They seemed to be having a rollicking time! Abhinav started looking around and got a 50% higher offer. He took the offer up with glee. Not only was the pay better, but the work was less demanding and had relaxed deadlines. Life could not be better…&lt;/p&gt;
-
-&lt;p&gt;Two years down the line, Abhinav started looking for yet another change, and yet another quantum leap in compensation. However, he found, to his dismay, that he was way out of depth and no company was willing to make him an offer.&lt;/p&gt;
-
-&lt;p&gt;Convince yourself that reward follows performance, and not the other way around.&lt;/p&gt;
-
-&lt;p&gt;&lt;u&gt;Cheat 3&lt;/u&gt;&lt;br /&gt;
-Kanu was very sharp. However, four years of hostel life had turned his biological clock upside down. When he did make it to office during normal working hours, he excelled in his tasks. Unfortunately, on most days, he simply could not.&lt;/p&gt;
-
-&lt;p&gt;Within six months, he was asked to leave.&lt;/p&gt;
-
-&lt;p&gt;Change your college habits to the extent required, so as to ensure that you are available (and awake!) when your work and / or team needs you to be.&lt;/p&gt;
-
-&lt;p&gt;&lt;u&gt;Cheat 4&lt;/u&gt;&lt;br /&gt;
-Manish was a star in college. He excelled in academics and was popular among students as well. Out of sheer habit, he continued behaving in a brash manner with his peers in the workplace.&lt;/p&gt;
-
-&lt;p&gt;He was counselled by his manager, but was unable to mend his ways in time and was asked to leave.&lt;/p&gt;
-
-&lt;p&gt;Accept the fact that you need to interact with people across age groups and cultures. You are not expected to like or respect one and all (after all, respect is earned!). However, you are expected to treat one and all with respect.&lt;/p&gt;
-
-
-  
-  &lt;p&gt;&lt;a href=&quot;/career/its-the-attitude-stupid/&quot;&gt;It's the Attitude, Stupid!&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on December 19, 2017.&lt;/p&gt;</content>
 </entry>
 
 </feed>
