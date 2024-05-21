@@ -19,16 +19,16 @@ Welcome back to the Rails multi-tenant architecture series! If you're just joini
 <a href="https://www.elitmus.com/blog/technology/mastering-multi-tenant-setup-with-rails-part-1/" target="_blank" style="color: blue;">Part 1</a>
 
 #### **Quick Recap**
-In the previous blog post, the focus was on delving into the concept of multi-tenancy in software design, with a specific emphasis on managing separate databases for each tenant. After exploring three types of multi-tenant application architectures, the post provided a step-by-step guide to setting up a multi-tenant Rails blog application. This included configuring databases for each tenant, implementing automatic connection switching in Rails 6, and using Nginx to run multiple databases simultaneously on different ports.
+In the previous blog post, the focus was on delving into the concept of multi-tenancy in software design, with a specific emphasis on managing separate databases for each tenant. After exploring three types of multi-tenant application architectures, a step-by-step guide was provided for setting up a multi-tenant Rails blog application. This included configuring databases for each tenant, implementing automatic connection switching in Rails 6/7, and using Nginx to run multiple databases simultaneously on different ports.
 
 #### **Introduction**
 In this blog post, the focus is on background job processing within a multi-tenant Rails environment. Specifically, it addresses the challenges of running background jobs across multiple databases and proposes solutions to ensure seamless execution of jobs.
 
 #### **Sidekiq**
-A popular background job processing library for Ruby. Here's a quick guide on how to set it up:
+First we will setup Sidekiq, A popular background job processing library for Ruby. Here's a quick guide on how to set it up:
 
-1. Add sidekiq( use > 6 version) in Gemfile. Follow <a href="https://github.com/sidekiq/sidekiq/wiki/Getting-Started" target="_blank" style="color:blue;">This Guide</a> for setup.
-2. Create a sidekiq job `rails generate sidekiq:job multi_db_testing`
+* Add sidekiq( use > 6 version) in Gemfile. Follow <a href="https://github.com/sidekiq/sidekiq/wiki/Getting-Started" target="_blank" style="color:blue;">This Guide</a> for setup.
+* Create a sidekiq job `rails generate sidekiq:job multi_db_testing`
 
 {% highlight ruby %}
 # app/sidekiq/multi_db_testing_job.rb
@@ -41,12 +41,12 @@ end
 
 {% endhighlight %}
 
-##### **Running up application with sidekiq**
+##### **Running up application along with sidekiq**
 To start both the Rails server and Sidekiq, follow these steps:
 
-1. Install foreman gem to start both rails server and sidekiq.
-2. In Gemfile add `foreman` gem & run bundle install.
-3. Create a Procfile to define the processes:
+* Install foreman gem to start both rails server and sidekiq.
+* In Gemfile add `foreman` gem & run bundle install.
+* Create a Procfile to define the processes:
 
 {% highlight ruby %}
 # procfile
@@ -55,29 +55,28 @@ sidekiq: bundle exec sidekiq
 {% endhighlight %}
 
 ##### **Triggering Background jobs**
-Create a route and controller action to trigger the Sidekiq job:
-
-{% highlight ruby %}
-  # config/routes.rb
-  resources :articles do
-    collection do
-      get :run_background_job
+* Create a route and controller action to trigger the Sidekiq job:
+  {% highlight ruby %}
+    # config/routes.rb
+    resources :articles do
+      collection do
+        get :run_background_job
+      end
     end
-  end
 
-   # app/controllers/articles_controller.rb  def run_background_job
-    MultiDbTestingJob.perform_later
+    # app/controllers/articles_controller.rb  def run_background_job
+      MultiDbTestingJob.perform_later
 
-    redirect_to root_path
-  end
+      redirect_to root_path
+    end
 
-  # app/views/articles/index.html.erb
-  <%= link_to "Run sidekiq job", run_background_job_articles_path %>
-{% endhighlight %}
+    # app/views/articles/index.html.erb
+    <%= link_to "Run sidekiq job", run_background_job_articles_path %>
+  {% endhighlight %}
 
-1. Start the server using `foreman start`
-2. Navigate to http://localhost:3000, and trigger the job.
-3. You'll notice that the job is executed, but it retrieves data only from the default database. why? Continue reading to find out the reason.
+* Start the server using `foreman start`
+* Navigate to http://localhost:3000, and trigger the job.
+* You'll notice that the job is executed, but it retrieves data only from the default database. why? Continue reading to find out the reason.
 
 ##### **Addressing the Database Connection Issue**
 To ensure that background jobs access the correct database, we need to pass the database name as a parameter to each job and modify the job accordingly:
@@ -103,10 +102,10 @@ end
 Now, you'll get the desired result for both databases.
 
 However, this approach has its drawbacks:
-1. For each background job, we need to pass an additional parameter.
-2. We need to write additional code to connect to the correct database for each background job.
+* For each background job, we need to pass an additional parameter.
+* We need to write additional code to connect to the correct database for each background job.
 
-To address these issues, we can create a Sidekiq adapter that will decide which database to connect to based on the database that initiated the background job. But before creating the adapter, we need a global attribute to remember which database we are connected to. To achieve this, Rails `current_attributes` and Sidekiq `Middleware` will be utilized.
+To address these issues, we can create a Sidekiq adapter that will decide which database to connect to based on the database that initiated the background job. But before creating the adapter, we need a global attribute to remember which database we are connected to. To achieve this, Rails `CurrentAttributes` and Sidekiq `Middleware` will be utilized.
 
 ##### **Current Attributes**
 From the definition of [Current Attributes](https://api.rubyonrails.org/classes/ActiveSupport/CurrentAttributes.html), *Abstract super class that provides a thread-isolated attributes singleton, which resets automatically before and after each request. This allows you to keep all the per-request attributes easily available to the whole system.*
@@ -134,8 +133,6 @@ end
 
 ##### **Sidekiq Middleware**
 It is a set of customizable modules that intercept and augment the behavior of Sidekiq job processing in Ruby on Rails applications. <a herf="https://github.com/sidekiq/sidekiq/wiki/Middleware" target="_blank" style="color: blue;">Sidekiq Middleware</a>
-
-#### **Creating adapter**
 
 * Create file `config/initializers/sidekiq.rb` and paste following code.
   {% highlight ruby %}
@@ -197,8 +194,12 @@ It is a set of customizable modules that intercept and augment the behavior of S
 
 * Run the project again and subsqeuently run the sidekiq job to test it out.
 
+<div style=" text-align:center;">
+  <img src="{{site.baseurl}}/images/multi-tenant/sidekiqbg.jpg" />
+</div>
+
+* You will notice that with the middleware in place, when executing a background job, it connects to the correct database.
 ##### **Code** - <a href="https://github.com/nikhilbhatt/rails-multi-db-tutorial/releases/tag/0.1.0" target="_blank" style="color: blue;">Github Link</a>
 
 #### **Summary**
-In this blog post, we tackled the challenge of background job processing in a multi-tenant Rails application. By leveraging Sidekiq and implementing a custom Sidekiq adapter middleware, we successfully addressed the issue of running background jobs across multiple databases. This solution provides a robust framework for handling background job execution in complex multi-tenant environments.
-
+In this blog post, we solved database issue with background job processing in a multi-tenant Rails application. We introduced a custom Sidekiq middleware adapter, that fixes the issue of running background jobs across multiple databases. This approach provides a robust & scalable framework for managing background job execution in complex multi-tenant environments.
