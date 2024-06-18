@@ -78,6 +78,9 @@ sidekiq: bundle exec sidekiq
 * Navigate to http://localhost:3000, and trigger the job.
 * You'll notice that the job is executed, but it retrieves data only from the default database. why? Continue reading to find out the reason.
 
+##### **Problem?**
+When a Sidekiq server initializes, it establishes a connection pool to manage database queries. During job execution, it retrieves a connection from this pool. If a specific database is not specified for the job, it defaults to the primary database (default - db 1).
+
 ##### **Addressing the Database Connection Issue**
 To ensure that background jobs access the correct database, we need to pass the database name as a parameter to each job and modify the job accordingly:
 
