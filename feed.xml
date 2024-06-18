@@ -7,13 +7,234 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="/" />
-<updated>2023-12-22T08:53:58+05:30</updated>
+<updated>2024-06-18T09:20:21+05:30</updated>
 <id>/</id>
 <author>
   <name>eLitmus.com</name>
   <uri>/</uri>
   <email>site-admin@elitmus.com</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[Mastering Multi Tenant setup with rails - background jobs]]></title>
+  <link rel="alternate" type="text/html" href="/technology/mastering-multi-tenant-setup-with-rails-background-jobs/"/>
+  <id>/technology/mastering-multi-tenant-setup-with-rails-background-jobs</id>
+  <updated>2024-05-05 12:39:14 +0530T00:00:00-00:00</updated>
+  <published>2024-05-05T00:00:00+05:30</published>
+  
+  <author>
+    <name>eLitmus.com</name>
+    <uri></uri>
+    <email>site-admin@elitmus.com</email>
+  </author>
+  <category scheme="/tags/#rails" term="rails" /><category scheme="/tags/#multi-tenant" term="multi-tenant" /><category scheme="/tags/#sidekiq" term="sidekiq" /><category scheme="/tags/#activejob" term="activejob" />
+  <content type="html">
+  
+    &lt;p&gt;Welcome back to the Rails multi-tenant architecture series! If you’re just joining in, be sure to check out Part 1, where you’ll find an introduction to multi-tenancy and a detailed walkthrough on setting up a multi-tenant Rails application.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://www.elitmus.com/blog/technology/mastering-multi-tenant-setup-with-rails-part-1/&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Part 1&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;quick-recap&quot;&gt;&lt;strong&gt;Quick Recap&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;In the previous blog post, the focus was on delving into the concept of multi-tenancy in software design, with a specific emphasis on managing separate databases for each tenant. After exploring three types of multi-tenant application architectures, a step-by-step guide was provided for setting up a multi-tenant Rails blog application. This included configuring databases for each tenant, implementing automatic connection switching in Rails 6/7, and using Nginx to run multiple databases simultaneously on different ports.&lt;/p&gt;
+
+&lt;h4 id=&quot;introduction&quot;&gt;&lt;strong&gt;Introduction&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;In this blog post, the focus is on background job processing within a multi-tenant Rails environment. Specifically, it addresses the challenges of running background jobs across multiple databases and proposes solutions to ensure seamless execution of jobs.&lt;/p&gt;
+
+&lt;h4 id=&quot;sidekiq&quot;&gt;&lt;strong&gt;Sidekiq&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;First we will setup Sidekiq, A popular background job processing library for Ruby. Here’s a quick guide on how to set it up:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Add sidekiq( use &amp;gt; 6 version) in Gemfile. Follow &lt;a href=&quot;https://github.com/sidekiq/sidekiq/wiki/Getting-Started&quot; target=&quot;_blank&quot; style=&quot;color:blue;&quot;&gt;This Guide&lt;/a&gt; for setup.&lt;/li&gt;
+  &lt;li&gt;Create a sidekiq job &lt;code&gt;rails generate sidekiq:job multi_db_testing&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;# app/sidekiq/multi_db_testing_job.rb&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MultiDbTestingJob&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ApplicationJob&lt;/span&gt;
+
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;perform&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Number of articles is &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Article&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h5 id=&quot;running-up-application-along-with-sidekiq&quot;&gt;&lt;strong&gt;Running up application along with sidekiq&lt;/strong&gt;&lt;/h5&gt;
+&lt;p&gt;To start both the Rails server and Sidekiq, follow these steps:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Install foreman gem to start both rails server and sidekiq.&lt;/li&gt;
+  &lt;li&gt;In Gemfile add &lt;code&gt;foreman&lt;/code&gt; gem &amp;amp; run bundle install.&lt;/li&gt;
+  &lt;li&gt;Create a Procfile to define the processes:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;# procfile&lt;/span&gt;
+&lt;span class=&quot;ss&quot;&gt;web&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bin&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rails&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;server&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;binding&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;port&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3000&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;--&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;development&lt;/span&gt;
+&lt;span class=&quot;ss&quot;&gt;sidekiq&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bundle&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;exec&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sidekiq&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h5 id=&quot;triggering-background-jobs&quot;&gt;&lt;strong&gt;Triggering Background jobs&lt;/strong&gt;&lt;/h5&gt;
+&lt;ul&gt;
+  &lt;li&gt;Create a route and controller action to trigger the Sidekiq job:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;    &lt;span class=&quot;c1&quot;&gt;# config/routes.rb&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;resources&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:articles&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;collection&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:run_background_job&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;# app/controllers/articles_controller.rb  def run_background_job&lt;/span&gt;
+      &lt;span class=&quot;no&quot;&gt;MultiDbTestingJob&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;perform_later&lt;/span&gt;
+
+      &lt;span class=&quot;n&quot;&gt;redirect_to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;root_path&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;# app/views/articles/index.html.erb&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;&amp;lt;%=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;link_to&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Run sidekiq job&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;run_background_job_articles_path&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&amp;gt;&lt;/span&gt;
+  &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Start the server using &lt;code&gt;foreman start&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Navigate to http://localhost:3000, and trigger the job.&lt;/li&gt;
+  &lt;li&gt;You’ll notice that the job is executed, but it retrieves data only from the default database. why? Continue reading to find out the reason.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h5 id=&quot;problem&quot;&gt;&lt;strong&gt;Problem?&lt;/strong&gt;&lt;/h5&gt;
+&lt;p&gt;When a Sidekiq server initializes, it establishes a connection pool to manage database queries. During job execution, it retrieves a connection from this pool. If a specific database is not specified for the job, it defaults to the primary database (default - db 1).&lt;/p&gt;
+
+&lt;h5 id=&quot;addressing-the-database-connection-issue&quot;&gt;&lt;strong&gt;Addressing the Database Connection Issue&lt;/strong&gt;&lt;/h5&gt;
+&lt;p&gt;To ensure that background jobs access the correct database, we need to pass the database name as a parameter to each job and modify the job accordingly:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;# /app/controllers/articles_controller.rb&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;run_background_job&lt;/span&gt;
+  &lt;span class=&quot;no&quot;&gt;MultiDbTestingJob&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;perform_later&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shard_name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;redirect_to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;root_path&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# /app/sidekiq/multi_db_testing.rb&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MultiDbTestingJob&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ApplicationJob&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;perform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shard&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;ActiveRecord&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Base&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;connected_to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;shard&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;shard&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+      &lt;span class=&quot;nb&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Number of articles in DB is &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Article&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Now, you’ll get the desired result for both databases.&lt;/p&gt;
+
+&lt;p&gt;However, this approach has its drawbacks:&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;For each background job, we need to pass an additional parameter.&lt;/li&gt;
+  &lt;li&gt;We need to write additional code to connect to the correct database for each background job.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;To address these issues, we can create a Sidekiq adapter that will decide which database to connect to based on the database that initiated the background job. But before creating the adapter, we need a global attribute to remember which database we are connected to. To achieve this, Rails &lt;code&gt;CurrentAttributes&lt;/code&gt; and Sidekiq &lt;code&gt;Middleware&lt;/code&gt; will be utilized.&lt;/p&gt;
+
+&lt;h5 id=&quot;current-attributes&quot;&gt;&lt;strong&gt;Current Attributes&lt;/strong&gt;&lt;/h5&gt;
+&lt;p&gt;From the definition of &lt;a href=&quot;https://api.rubyonrails.org/classes/ActiveSupport/CurrentAttributes.html&quot;&gt;Current Attributes&lt;/a&gt;, &lt;em&gt;Abstract super class that provides a thread-isolated attributes singleton, which resets automatically before and after each request. This allows you to keep all the per-request attributes easily available to the whole system.&lt;/em&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;# app/models/current.rb&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Current&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ActiveSupport&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;CurrentAttributes&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;attribute&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:tenant&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# app/controllers/application_controller.rb&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;before_action&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:setup_tenant&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;setup_tenant&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;tenants&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Rails&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;application&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config_for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:settings&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:tenants&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;current_tenant&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tenants&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;find&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tenants&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:hosts&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;].&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;include?&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;env&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;HTTP_HOST&amp;#39;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:app1_shard&lt;/span&gt;
+  &lt;span class=&quot;no&quot;&gt;Current&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tenant&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current_tenant&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_sym&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt; - Sidekiq also introduced the &lt;code&gt;cattr&lt;/code&gt; feature, this will help in persisting the value of current attributes when sidekiq job runs.
+&lt;a href=&quot;https://www.mikeperham.com/2022/07/29/sidekiq-and-request-specific-context/&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Read More&lt;/a&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;sidekiq-middleware&quot;&gt;&lt;strong&gt;Sidekiq Middleware&lt;/strong&gt;&lt;/h5&gt;
+&lt;p&gt;It is a set of customizable modules that intercept and augment the behavior of Sidekiq job processing in Ruby on Rails applications. &lt;a herf=&quot;https://github.com/sidekiq/sidekiq/wiki/Middleware&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Sidekiq Middleware&lt;/a&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Create file &lt;code&gt;config/initializers/sidekiq.rb&lt;/code&gt; and paste following code.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;    &lt;span class=&quot;c1&quot;&gt;# config/initializers/sidekiq.rb&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;sidekiq&amp;#39;&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;sidekiq/web&amp;#39;&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;require&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;sidekiq/middleware/current_attributes&amp;#39;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;require_relative&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;../../app/middleware/sidekiq_adapter&amp;#39;&lt;/span&gt;
+
+    &lt;span class=&quot;no&quot;&gt;Sidekiq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;CurrentAttributes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;persist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;Current&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;no&quot;&gt;Sidekiq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;configure_server&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;server_middleware&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;chain&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;chain&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Middleware&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;SidekiqAdapter&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Create file &lt;code&gt;app/middleware/sidekiq_adapter.rb&lt;/code&gt; and paste following code.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;    &lt;span class=&quot;k&quot;&gt;module&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;Middleware&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;SidekiqAdapter&lt;/span&gt;
+        &lt;span class=&quot;kp&quot;&gt;include&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Sidekiq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;ServerMiddleware&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;call&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;job_instance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;job_payload&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;queue&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+          &lt;span class=&quot;n&quot;&gt;shard&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;current_shard&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;job_payload&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+          &lt;span class=&quot;no&quot;&gt;ApplicationRecord&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;connected_to&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;shard&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;shard&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;role&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:writing&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;yield&lt;/span&gt;
+          &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;rescue&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;StandardError&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;
+          &lt;span class=&quot;nb&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Error occured &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+        &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;current_shard&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;job_payload&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+          &lt;span class=&quot;n&quot;&gt;job_payload&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;try&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:[]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;cattr&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;try&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;ss&quot;&gt;:[]&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;&amp;#39;tenant&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_sym&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;With the middleware in place, we can simplify our Sidekiq job and remove the shard logic from it. The middleware will handle connecting to the correct shard.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span&gt;&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;# multi_db_testing_job.rb&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MultiDbTestingJob&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ApplicationJob&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;perform&lt;/span&gt;
+      &lt;span class=&quot;nb&quot;&gt;p&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&amp;quot;Number of articles in DB is &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Article&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;count&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+
+  &lt;span class=&quot;c1&quot;&gt;# /app/controllers/articles_controller.rb&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;run_background_job&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;MultiDbTestingJob&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;perform_later&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;shard_name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;redirect_to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;root_path&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Run the project again and subsqeuently run the sidekiq job to test it out.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div style=&quot; text-align:center;&quot;&gt;
+  &lt;img src=&quot;/blog/images/multi-tenant/sidekiqbg.jpg&quot; /&gt;
+&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;You will notice that with the middleware in place, when executing a background job, it connects to the correct database.
+    &lt;h5 id=&quot;code---github-link&quot;&gt;&lt;strong&gt;Code&lt;/strong&gt; - &lt;a href=&quot;https://github.com/nikhilbhatt/rails-multi-db-tutorial/releases/tag/0.1.0&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Github Link&lt;/a&gt;&lt;/h5&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;summary&quot;&gt;&lt;strong&gt;Summary&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;In this blog post, we solved database issue with background job processing in a multi-tenant Rails application. We introduced a custom Sidekiq middleware adapter, that fixes the issue of running background jobs across multiple databases. This approach provides a robust &amp;amp; scalable framework for managing background job execution in complex multi-tenant environments.&lt;/p&gt;
+
+  
+  &lt;p&gt;&lt;a href=&quot;/technology/mastering-multi-tenant-setup-with-rails-background-jobs/&quot;&gt;Mastering Multi Tenant setup with rails - background jobs&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on May 05, 2024.&lt;/p&gt;</content>
+</entry>
 
 
 <entry>
@@ -4739,67 +4960,6 @@ Connect with your s3 bucket and generate &lt;em&gt;$HOME/.s3cfg&lt;/em&gt; file,
 
   
   &lt;p&gt;&lt;a href=&quot;/technology/android-versioning-using-docker-and-git-like-a-pro/&quot;&gt;Android Versioning Using Docker &amp; Git Like A Pro&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on June 10, 2018.&lt;/p&gt;</content>
-</entry>
-
-
-<entry>
-  <title type="html"><![CDATA[How Tough is it to Score Well in Board Exams?]]></title>
-  <link rel="alternate" type="text/html" href="/career/how-tough-is-it-to-score-well-in-board-exams/"/>
-  <id>/career/how-tough-is-it-to-score-well-in-board-exams</id>
-  <updated>2018-02-22 10:49:14 +0530T00:00:00-00:00</updated>
-  <published>2018-02-22T00:00:00+05:30</published>
-  
-  <author>
-    <name>eLitmus.com</name>
-    <uri></uri>
-    <email>site-admin@elitmus.com</email>
-  </author>
-  <category scheme="/tags/#career" term="career" /><category scheme="/tags/#board%20exams" term="board exams" /><category scheme="/tags/#jobs" term="jobs" /><category scheme="/tags/#the%20other%20side" term="the other side" />
-  <content type="html">
-  
-    &lt;p&gt;&lt;em&gt;I completed my entire schooling (Classes I through XII) at one of Kolkata’s favoured catholic schools. In those days, discipline and academic excellence were the primary parameters that mattered and my school checked both these boxes rather well.&lt;/em&gt;
-&lt;!--more--&gt;&lt;/p&gt;
-
-&lt;p&gt;Trouble started brewing once I graduated to Class XI and started thinking about higher education, specifically opportunities at the national level. That’s when I truly realized the impact of the education board. In my case, the impact was limited to a couple of aspects, viz. a) subjects / topics not covered in the Bengal board syllabus, and b) the frugality in awarding marks.&lt;/p&gt;
-
-&lt;p&gt;Fortunately, some extra tuitions covered up for the former, while the latter did not come into play at all in any of the options I signed up for, or in the higher education option I finally opted for.&lt;/p&gt;
-
-&lt;p&gt;Times have changed….&lt;/p&gt;
-
-&lt;p&gt;For a few years, till 2016, 40% weightage was accorded to an applicant’s Class XII board marks in calculating her All India Rank in the JEE (entrance tests for admission to India’s flagship IITs, and a few other engineering schools) exams. However, since 2017, the rules were changed to treat the Class XII marks as a qualifying criterion: a minimum of 75% marks, or a rank in the top 20th percentile in the board.&lt;/p&gt;
-
-&lt;p&gt;The 75% cut-off may appear inconsequential to folks intimately familiar with the CBSE or ISCE boards, but not all students find it amusing. The JEE implementation committee publishes the 80th percentile cut-off marks for every higher secondary educational board in the country to level the playing field. Finally, we have access to data that clearly shows the disparity in awarding marks across boards in India.&lt;/p&gt;
-
-&lt;p&gt;According to data for the 2016 Class XII exams, the 5 most liberal boards are (percentages indicate the 80th percentile cut-off score):&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;Telengana Board of Secondary Education (95%)&lt;/li&gt;
-  &lt;li&gt;Andhra Pradesh Board of Intermediate Education (94%)&lt;/li&gt;
-  &lt;li&gt;Council for the Indian School Certificate Examinations (88.6%)&lt;/li&gt;
-  &lt;li&gt;Banasthali Vidyapeeth, Rajasthan (87.4%)&lt;/li&gt;
-  &lt;li&gt;Tamil Nadu Board of Higher Secondary Education (87.2)&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;While the 4 most frugal boards are:&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;Tripura Board of Secondary Education (59.8%)&lt;/li&gt;
-  &lt;li&gt;Jharkhand Academic Council (60.6%)&lt;/li&gt;
-  &lt;li&gt;Meghalaya Board of Secondary Education (61.6%)&lt;/li&gt;
-  &lt;li&gt;Odisha Council of Higher Secondary Education (62%)&lt;/li&gt;
-  &lt;li&gt;Bihar Intermediate Education Council (63%)&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;What this essentially means is that a student scoring 95% in the Telengana board exams is academically comparable to a student scoring 60.6% in the Jharkhand board exams, despite a whopping 34.6% gap is scores!&lt;/p&gt;
-
-&lt;p&gt;The data clearly shows how a single mark-based cut-off or a mark-based weightage criterion can result in gross injustice to students from boards that are frugal in awarding marks! Thankfully, the JEE implementation committee, in its infinite wisdom, has taken steps to normalize this inherent disparity.&lt;/p&gt;
-
-&lt;p&gt;Time will tell whether the practice of allotting an explicit or implicit weightage to board exam performance will become the norm, not only in JEE but in other national level entrance tests as well. But for now, this is definitely something for parents to consider while looking for a school for their children.&lt;/p&gt;
-
-&lt;p&gt;But what about employment? It is common practice among potential employers to set mark-based cut-offs for board exams (while hiring entry-level talent), among others. And in almost all cases, the cut-off is a single number applicable across the board (pun intended!).&lt;/p&gt;
-
-&lt;p&gt;Let’s say company X sets a Class XII marks cut-off at 75%. Referring to the 10 boards listed above, company X will end up considering a population far larger than the top quintile from to 5 most generous states, and a population far smaller than the top quintile in the 5 most frugal states. The playing field is not so level anymore…..&lt;/p&gt;
-
-  
-  &lt;p&gt;&lt;a href=&quot;/career/how-tough-is-it-to-score-well-in-board-exams/&quot;&gt;How Tough is it to Score Well in Board Exams?&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on February 22, 2018.&lt;/p&gt;</content>
 </entry>
 
 </feed>
