@@ -114,7 +114,8 @@
    github: maniSHarma7575
    stackexchange:
    linkedin: heymanish
-   bio: "Manish Sharma is a member of Technology at eLitmus. He is passionate about building stuffs. Loves to spend time with nature and do swimming."
+   website: https://sharmamanish.netlify.app/
+   bio: "Manish Sharma works in the Technology team at eLitmus and loves building things. Outside of work, he enjoys spending time in nature and swimming."
 -  id: nikhil
    name: Nikhil Bhatt
    avatar: nikhil.jpg
@@ -180,3 +181,15 @@
    tumblr: 
    flickr: 
    bio: "Vikas Tiwari is a member of technology at eLitmus who loves taking on new challenges. Beyond the tech world, he's a fitness enthusiast and love to explore new places."
+-  id: kabir
+   name: Kabir Pathak
+   avatar: kabir.jpg
+   email: kabir.pathak@elitmus.com
+   twitter:
+   github: kabirpathak
+   stackexchange: 
+   linkedin: kabir-pathak-0507a4187
+   instagram: _kabir_pathak_
+   tumblr: 
+   flickr: 
+   bio: "Kabir is a member of the eLitmus tech team. He enjoys playing football and badminton. However, if going out and playing isn't an option, you will find him dabbling in competitive programming or watching motorsports."
