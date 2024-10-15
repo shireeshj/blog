@@ -56,6 +56,10 @@
 
     
 
+    
+
+    
+
 
 
 
@@ -397,26 +401,26 @@
 </ol>
 
 <figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="ss">development</span><span class="p">:</span>
-  <span class="ss">app1</span><span class="p">:</span>
-    <span class="ss">adapter</span><span class="p">:</span> <span class="n">mysql2</span>
-    <span class="ss">encoding</span><span class="p">:</span> <span class="n">utf8</span>
-    <span class="ss">reconnect</span><span class="p">:</span> <span class="kp">false</span>
-    <span class="ss">database</span><span class="p">:</span> <span class="n">app1_development</span>
-    <span class="ss">pool</span><span class="p">:</span> <span class="mi">5</span>
-    <span class="ss">username</span><span class="p">:</span>
-    <span class="ss">password</span><span class="p">:</span>
-    <span class="ss">socket</span><span class="p">:</span> <span class="sr">/tmp/m</span><span class="n">ysql</span><span class="o">.</span><span class="n">sock</span>
-    <span class="ss">host</span><span class="p">:</span> <span class="mi">127</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">1</span>
-  <span class="ss">app2</span><span class="p">:</span>
-    <span class="ss">adapter</span><span class="p">:</span> <span class="n">mysql2</span>
-    <span class="ss">encoding</span><span class="p">:</span> <span class="n">utf8</span>
-    <span class="ss">reconnect</span><span class="p">:</span> <span class="kp">false</span>
-    <span class="ss">database</span><span class="p">:</span> <span class="n">app2_development</span>
-    <span class="ss">pool</span><span class="p">:</span> <span class="mi">5</span>
-    <span class="ss">username</span><span class="p">:</span>
-    <span class="ss">password</span><span class="p">:</span>
-    <span class="ss">socket</span><span class="p">:</span> <span class="sr">/tmp/m</span><span class="n">ysql</span><span class="o">.</span><span class="n">sock</span>
-    <span class="ss">host</span><span class="p">:</span> <span class="mi">127</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">1</span></code></pre></figure>
+<span class="w">  </span><span class="ss">app1</span><span class="p">:</span>
+<span class="w">    </span><span class="ss">adapter</span><span class="p">:</span><span class="w"> </span><span class="n">mysql2</span>
+<span class="w">    </span><span class="ss">encoding</span><span class="p">:</span><span class="w"> </span><span class="n">utf8</span>
+<span class="w">    </span><span class="ss">reconnect</span><span class="p">:</span><span class="w"> </span><span class="kp">false</span>
+<span class="w">    </span><span class="ss">database</span><span class="p">:</span><span class="w"> </span><span class="n">app1_development</span>
+<span class="w">    </span><span class="ss">pool</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span>
+<span class="w">    </span><span class="ss">username</span><span class="p">:</span>
+<span class="w">    </span><span class="ss">password</span><span class="p">:</span>
+<span class="w">    </span><span class="ss">socket</span><span class="p">:</span> <span class="sr">/tmp/m</span><span class="n">ysql</span><span class="o">.</span><span class="n">sock</span>
+<span class="w">    </span><span class="ss">host</span><span class="p">:</span><span class="w"> </span><span class="mi">127</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">1</span>
+<span class="w">  </span><span class="ss">app2</span><span class="p">:</span>
+<span class="w">    </span><span class="ss">adapter</span><span class="p">:</span><span class="w"> </span><span class="n">mysql2</span>
+<span class="w">    </span><span class="ss">encoding</span><span class="p">:</span><span class="w"> </span><span class="n">utf8</span>
+<span class="w">    </span><span class="ss">reconnect</span><span class="p">:</span><span class="w"> </span><span class="kp">false</span>
+<span class="w">    </span><span class="ss">database</span><span class="p">:</span><span class="w"> </span><span class="n">app2_development</span>
+<span class="w">    </span><span class="ss">pool</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span>
+<span class="w">    </span><span class="ss">username</span><span class="p">:</span>
+<span class="w">    </span><span class="ss">password</span><span class="p">:</span>
+<span class="w">    </span><span class="ss">socket</span><span class="p">:</span> <span class="sr">/tmp/m</span><span class="n">ysql</span><span class="o">.</span><span class="n">sock</span>
+<span class="w">    </span><span class="ss">host</span><span class="p">:</span><span class="w"> </span><span class="mi">127</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">1</span></code></pre></figure>
 
 <ol start="2">
   <li><code>bin/rake db:create</code> <em>create databases for both the tenants.</em></li>
@@ -445,9 +449,9 @@
   </li>
 </ol>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="n">root</span> <span class="s2">&quot;articles#index&quot;</span>
-<span class="n">resources</span> <span class="ss">:articles</span>
-    </code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="n">root</span><span class="w"> </span><span class="s2">&quot;articles#index&quot;</span>
+<span class="n">resources</span><span class="w"> </span><span class="ss">:articles</span>
+<span class="w">    </span></code></pre></figure>
 
 <p>Complete the <code>Articles</code> Controller, Model and respective views by following <a href="https://guides.rubyonrails.org/getting_started.html" target="_blank" style="color: blue;">This Guide</a></p>
 
@@ -462,32 +466,32 @@
 
 <p>Install nginx &amp; paste the following code in nginx.conf file.</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>http <span class="o">{</span>
-  server <span class="o">{</span>
-   listen <span class="m">3000</span><span class="p">;</span>
-   server_name localhost<span class="p">;</span>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>http<span class="w"> </span><span class="o">{</span>
+<span class="w">  </span>server<span class="w"> </span><span class="o">{</span>
+<span class="w">   </span>listen<span class="w"> </span><span class="m">3000</span><span class="p">;</span>
+<span class="w">   </span>server_name<span class="w"> </span>localhost<span class="p">;</span>
 
-   location / <span class="o">{</span>
-        proxy_pass http://127.0.0.1:3000<span class="p">;</span> <span class="c1"># Rails app running on port 3000</span>
-        proxy_set_header Host <span class="nv">$host</span>:<span class="nv">$server_port</span><span class="p">;</span>
-        proxy_set_header X-Real-IP <span class="nv">$remote_addr</span><span class="p">;</span>
-        proxy_set_header X-Forwarded-For <span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
-    <span class="o">}</span>
-  <span class="o">}</span>
+<span class="w">   </span>location<span class="w"> </span>/<span class="w"> </span><span class="o">{</span>
+<span class="w">        </span>proxy_pass<span class="w"> </span>http://127.0.0.1:3000<span class="p">;</span><span class="w"> </span><span class="c1"># Rails app running on port 3000</span>
+<span class="w">        </span>proxy_set_header<span class="w"> </span>Host<span class="w"> </span><span class="nv">$host</span>:<span class="nv">$server_port</span><span class="p">;</span>
+<span class="w">        </span>proxy_set_header<span class="w"> </span>X-Real-IP<span class="w"> </span><span class="nv">$remote_addr</span><span class="p">;</span>
+<span class="w">        </span>proxy_set_header<span class="w"> </span>X-Forwarded-For<span class="w"> </span><span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
+<span class="w">    </span><span class="o">}</span>
+<span class="w">  </span><span class="o">}</span>
 
-  server <span class="o">{</span>
-    listen <span class="m">4000</span><span class="p">;</span>
-    server_name localhost<span class="p">;</span> <span class="c1"># Change this to your actual domain if needed</span>
+<span class="w">  </span>server<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span>listen<span class="w"> </span><span class="m">4000</span><span class="p">;</span>
+<span class="w">    </span>server_name<span class="w"> </span>localhost<span class="p">;</span><span class="w"> </span><span class="c1"># Change this to your actual domain if needed</span>
 
-    location / <span class="o">{</span>
-        proxy_pass http://127.0.0.1:3000<span class="p">;</span> <span class="c1"># Rails app running on port 3000</span>
-        proxy_set_header Host <span class="nv">$host</span>:<span class="nv">$server_port</span><span class="p">;</span>
-        proxy_set_header X-Real-IP <span class="nv">$remote_addr</span><span class="p">;</span>
-        proxy_set_header X-Forwarded-For <span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
-    <span class="o">}</span>
-  <span class="o">}</span>
+<span class="w">    </span>location<span class="w"> </span>/<span class="w"> </span><span class="o">{</span>
+<span class="w">        </span>proxy_pass<span class="w"> </span>http://127.0.0.1:3000<span class="p">;</span><span class="w"> </span><span class="c1"># Rails app running on port 3000</span>
+<span class="w">        </span>proxy_set_header<span class="w"> </span>Host<span class="w"> </span><span class="nv">$host</span>:<span class="nv">$server_port</span><span class="p">;</span>
+<span class="w">        </span>proxy_set_header<span class="w"> </span>X-Real-IP<span class="w"> </span><span class="nv">$remote_addr</span><span class="p">;</span>
+<span class="w">        </span>proxy_set_header<span class="w"> </span>X-Forwarded-For<span class="w"> </span><span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
+<span class="w">    </span><span class="o">}</span>
+<span class="w">  </span><span class="o">}</span>
 <span class="o">}</span>
-events <span class="o">{</span> <span class="o">}</span></code></pre></figure>
+events<span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="o">}</span></code></pre></figure>
 
 <p>Above nginx configurations listens to port 3000 and 4000 and redirect to rails application running in port 3000.</p>
 
@@ -498,35 +502,35 @@ events <span class="o">{</span> <span class="o">}</span></code></pre></figure>
 <p>Mention list of tenants in a <code>.yml</code> file. You can maintain these records in a separate database as well, for now I will create a <code>settings.yml</code> file.</p>
 
 <figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="ss">development</span><span class="p">:</span>
-  <span class="ss">tenants</span><span class="p">:</span>
-    <span class="ss">app1</span><span class="p">:</span>
-      <span class="ss">hosts</span><span class="p">:</span>
-        <span class="o">-</span> <span class="ss">localhost</span><span class="p">:</span><span class="mi">3000</span>
-    <span class="ss">app2</span><span class="p">:</span>
-      <span class="ss">hosts</span><span class="p">:</span>
-        <span class="o">-</span> <span class="ss">localhost</span><span class="p">:</span><span class="mi">4000</span></code></pre></figure>
+<span class="w">  </span><span class="ss">tenants</span><span class="p">:</span>
+<span class="w">    </span><span class="ss">app1</span><span class="p">:</span>
+<span class="w">      </span><span class="ss">hosts</span><span class="p">:</span>
+<span class="w">        </span><span class="o">-</span><span class="w"> </span><span class="ss">localhost</span><span class="p">:</span><span class="mi">3000</span>
+<span class="w">    </span><span class="ss">app2</span><span class="p">:</span>
+<span class="w">      </span><span class="ss">hosts</span><span class="p">:</span>
+<span class="w">        </span><span class="o">-</span><span class="w"> </span><span class="ss">localhost</span><span class="p">:</span><span class="mi">4000</span></code></pre></figure>
 
 <p>update <code>application.rb</code> with following configurations.</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">configure</span> <span class="k">do</span>
-  <span class="n">config</span><span class="o">.</span><span class="n">active_record</span><span class="o">.</span><span class="n">shard_selector</span> <span class="o">=</span> <span class="p">{</span> <span class="ss">lock</span><span class="p">:</span> <span class="kp">true</span> <span class="p">}</span>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">configure</span><span class="w"> </span><span class="k">do</span>
+<span class="w">  </span><span class="n">config</span><span class="o">.</span><span class="n">active_record</span><span class="o">.</span><span class="n">shard_selector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="ss">lock</span><span class="p">:</span><span class="w"> </span><span class="kp">true</span><span class="w"> </span><span class="p">}</span>
 
-  <span class="n">tenants</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config_for</span><span class="p">(</span><span class="ss">:settings</span><span class="p">)</span><span class="o">[</span><span class="ss">:tenants</span><span class="o">]</span>  <span class="c1"># maintaining list of tenants with host</span>
-  <span class="n">config</span><span class="o">.</span><span class="n">active_record</span><span class="o">.</span><span class="n">shard_resolver</span> <span class="o">=</span> <span class="o">-&gt;</span><span class="p">(</span><span class="n">request</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">tenants</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">find</span> <span class="p">{</span> <span class="o">|</span><span class="n">key</span><span class="o">|</span> <span class="n">tenants</span><span class="o">[</span><span class="n">key</span><span class="o">][</span><span class="ss">:hosts</span><span class="o">].</span><span class="n">include?</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">env</span><span class="o">[</span><span class="s1">&#39;HTTP_HOST&#39;</span><span class="o">]</span><span class="p">)</span> <span class="p">}</span> <span class="o">||</span> <span class="ss">:app1</span>
-  <span class="p">}</span>
+<span class="w">  </span><span class="n">tenants</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config_for</span><span class="p">(</span><span class="ss">:settings</span><span class="p">)</span><span class="o">[</span><span class="ss">:tenants</span><span class="o">]</span><span class="w">  </span><span class="c1"># maintaining list of tenants with host</span>
+<span class="w">  </span><span class="n">config</span><span class="o">.</span><span class="n">active_record</span><span class="o">.</span><span class="n">shard_resolver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-&gt;</span><span class="p">(</span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">tenants</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">find</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">key</span><span class="o">|</span><span class="w"> </span><span class="n">tenants</span><span class="o">[</span><span class="n">key</span><span class="o">][</span><span class="ss">:hosts</span><span class="o">].</span><span class="n">include?</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">env</span><span class="o">[</span><span class="s1">&#39;HTTP_HOST&#39;</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="ss">:app1</span>
+<span class="w">  </span><span class="p">}</span>
 <span class="k">end</span></code></pre></figure>
 
 <p>update <code>application_record.rb</code></p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span>   <span class="c1"># connects_to shards: {</span>
-   <span class="c1">#  app1: { writing: :app1 },</span>
-   <span class="c1">#  app2: { writing: :app2 }</span>
-   <span class="c1"># }</span>
-   <span class="c1"># OR</span>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">   </span><span class="c1"># connects_to shards: {</span>
+<span class="w">   </span><span class="c1">#  app1: { writing: :app1 },</span>
+<span class="w">   </span><span class="c1">#  app2: { writing: :app2 }</span>
+<span class="w">   </span><span class="c1"># }</span>
+<span class="w">   </span><span class="c1"># OR</span>
 
-  <span class="no">TENANTS</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config_for</span><span class="p">(</span><span class="ss">:settings</span><span class="p">)</span><span class="o">[</span><span class="ss">:tenants</span><span class="o">]</span>
-  <span class="n">connects_to</span> <span class="no">TENANTS</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">map</span> <span class="p">{</span> <span class="o">|</span><span class="n">shard</span><span class="o">|</span> <span class="o">[</span><span class="n">shard</span><span class="p">,</span> <span class="p">{</span> <span class="ss">writing</span><span class="p">:</span> <span class="n">shard</span> <span class="p">}</span><span class="o">]</span> <span class="p">}</span><span class="o">.</span><span class="n">to_h</span></code></pre></figure>
+<span class="w">  </span><span class="no">TENANTS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config_for</span><span class="p">(</span><span class="ss">:settings</span><span class="p">)</span><span class="o">[</span><span class="ss">:tenants</span><span class="o">]</span>
+<span class="w">  </span><span class="n">connects_to</span><span class="w"> </span><span class="no">TENANTS</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">map</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">shard</span><span class="o">|</span><span class="w"> </span><span class="o">[</span><span class="n">shard</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="ss">writing</span><span class="p">:</span><span class="w"> </span><span class="n">shard</span><span class="w"> </span><span class="p">}</span><span class="o">]</span><span class="w"> </span><span class="p">}</span><span class="o">.</span><span class="n">to_h</span></code></pre></figure>
 
 <h5 id="creating-middleware-for-automatic-shard-switchingignore-if-using-rails-7-or-above"><strong>Creating Middleware for automatic shard switching(ignore if using rails 7 or above)</strong></h5>
 <ol>
@@ -534,44 +538,44 @@ events <span class="o">{</span> <span class="o">}</span></code></pre></figure>
   <li>Add following code</li>
 </ol>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span>  <span class="k">module</span> <span class="nn">Middleware</span>
-    <span class="k">class</span> <span class="nc">TenantSelector</span>
-      <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">tenants</span><span class="p">)</span>
-        <span class="vi">@app</span> <span class="o">=</span> <span class="n">app</span>
-        <span class="vi">@tenants</span> <span class="o">=</span> <span class="n">tenants</span>
-      <span class="k">end</span>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="k">module</span><span class="w"> </span><span class="nn">Middleware</span>
+<span class="w">    </span><span class="k">class</span><span class="w"> </span><span class="nc">TenantSelector</span>
+<span class="w">      </span><span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="n">app</span><span class="p">,</span><span class="w"> </span><span class="n">tenants</span><span class="p">)</span>
+<span class="w">        </span><span class="vi">@app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">app</span>
+<span class="w">        </span><span class="vi">@tenants</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tenants</span>
+<span class="w">      </span><span class="k">end</span>
 
-      <span class="kp">attr_reader</span> <span class="ss">:tenants</span>
+<span class="w">      </span><span class="kp">attr_reader</span><span class="w"> </span><span class="ss">:tenants</span>
 
-      <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
-        <span class="n">request</span> <span class="o">=</span> <span class="no">ActionDispatch</span><span class="o">::</span><span class="no">Request</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
-        <span class="n">tenant</span> <span class="o">=</span> <span class="n">selected_tenant</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+<span class="w">      </span><span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+<span class="w">        </span><span class="n">request</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">ActionDispatch</span><span class="o">::</span><span class="no">Request</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+<span class="w">        </span><span class="n">tenant</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">selected_tenant</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
 
-        <span class="n">set_tenant</span><span class="p">(</span><span class="n">tenant</span><span class="p">)</span> <span class="k">do</span>
-          <span class="vi">@app</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
-        <span class="k">end</span>
-      <span class="k">end</span>
+<span class="w">        </span><span class="n">set_tenant</span><span class="p">(</span><span class="n">tenant</span><span class="p">)</span><span class="w"> </span><span class="k">do</span>
+<span class="w">          </span><span class="vi">@app</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+<span class="w">        </span><span class="k">end</span>
+<span class="w">      </span><span class="k">end</span>
 
-      <span class="kp">private</span>
-      <span class="k">def</span> <span class="nf">selected_tenant</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
-        <span class="n">tenants</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">find</span> <span class="p">{</span> <span class="o">|</span><span class="n">key</span><span class="o">|</span> <span class="n">tenants</span><span class="o">[</span><span class="n">key</span><span class="o">][</span><span class="ss">:hosts</span><span class="o">].</span><span class="n">include?</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">env</span><span class="o">[</span><span class="s1">&#39;HTTP_HOST&#39;</span><span class="o">]</span><span class="p">)</span> <span class="p">}</span> <span class="o">||</span> <span class="ss">:app1</span>
-      <span class="k">end</span>
+<span class="w">      </span><span class="kp">private</span>
+<span class="w">      </span><span class="k">def</span><span class="w"> </span><span class="nf">selected_tenant</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+<span class="w">        </span><span class="n">tenants</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">find</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">key</span><span class="o">|</span><span class="w"> </span><span class="n">tenants</span><span class="o">[</span><span class="n">key</span><span class="o">][</span><span class="ss">:hosts</span><span class="o">].</span><span class="n">include?</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">env</span><span class="o">[</span><span class="s1">&#39;HTTP_HOST&#39;</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="ss">:app1</span>
+<span class="w">      </span><span class="k">end</span>
 
-      <span class="k">def</span> <span class="nf">set_tenant</span><span class="p">(</span><span class="n">tenant</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
-        <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">connected_to</span><span class="p">(</span><span class="ss">shard</span><span class="p">:</span> <span class="n">tenant</span><span class="o">.</span><span class="n">to_sym</span><span class="p">,</span> <span class="ss">role</span><span class="p">:</span> <span class="ss">:writing</span><span class="p">)</span> <span class="k">do</span>
-          <span class="k">yield</span>
-        <span class="k">end</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
-  </code></pre></figure>
+<span class="w">      </span><span class="k">def</span><span class="w"> </span><span class="nf">set_tenant</span><span class="p">(</span><span class="n">tenant</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">block</span><span class="p">)</span>
+<span class="w">        </span><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">connected_to</span><span class="p">(</span><span class="ss">shard</span><span class="p">:</span><span class="w"> </span><span class="n">tenant</span><span class="o">.</span><span class="n">to_sym</span><span class="p">,</span><span class="w"> </span><span class="ss">role</span><span class="p">:</span><span class="w"> </span><span class="ss">:writing</span><span class="p">)</span><span class="w"> </span><span class="k">do</span>
+<span class="w">          </span><span class="k">yield</span>
+<span class="w">        </span><span class="k">end</span>
+<span class="w">      </span><span class="k">end</span>
+<span class="w">    </span><span class="k">end</span>
+<span class="w">  </span><span class="k">end</span>
+<span class="w">  </span></code></pre></figure>
 
 <ol start="3">
   <li>Update <code>application.rb</code> file with following changes.</li>
 </ol>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span>    <span class="n">tenants</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config_for</span><span class="p">(</span><span class="ss">:settings</span><span class="p">)</span><span class="o">[</span><span class="ss">:tenants</span><span class="o">]</span>
-    <span class="n">config</span><span class="o">.</span><span class="n">app_middleware</span><span class="o">.</span><span class="n">use</span> <span class="no">Middleware</span><span class="o">::</span><span class="no">TenantSelector</span><span class="p">,</span> <span class="n">tenants</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">    </span><span class="n">tenants</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config_for</span><span class="p">(</span><span class="ss">:settings</span><span class="p">)</span><span class="o">[</span><span class="ss">:tenants</span><span class="o">]</span>
+<span class="w">    </span><span class="n">config</span><span class="o">.</span><span class="n">app_middleware</span><span class="o">.</span><span class="n">use</span><span class="w"> </span><span class="no">Middleware</span><span class="o">::</span><span class="no">TenantSelector</span><span class="p">,</span><span class="w"> </span><span class="n">tenants</span></code></pre></figure>
 
 <p><strong>Final Steps</strong></p>
 
@@ -689,6 +693,10 @@ events <span class="o">{</span> <span class="o">}</span></code></pre></figure>
 
         </div>
       </div>
+
+  
+
+  
 
   
 

@@ -105,7 +105,20 @@
         
         
     
+        
+        
+        <url>
+            <loc>https://www.elitmus.com/blog/categories/book-review/</loc>
+        </url>
 
+        
+        
+    
+
+    
+    <url>
+        <loc>https://www.elitmus.com/blog/book-review/book-review-never-let-me-go-kazuo-ishiguro/</loc>
+    </url>
     
     <url>
         <loc>https://www.elitmus.com/blog/technology/mastering-multi-tenant-setup-with-rails-background-jobs/</loc>
@@ -117,6 +130,10 @@
     
     <url>
         <loc>https://www.elitmus.com/blog/technology/an-in-depth-look-at-database-indexing/</loc>
+    </url>
+    
+    <url>
+        <loc>https://www.elitmus.com/blog/technology/how-to-setup-aws-cloudwatch-alarm-for-your-ses-reputation-metrics/</loc>
     </url>
     
     <url>

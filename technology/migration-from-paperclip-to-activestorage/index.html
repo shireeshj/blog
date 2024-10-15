@@ -56,6 +56,10 @@
 
     
 
+    
+
+    
+
 
 
 
@@ -329,70 +333,70 @@
 
 <p>So both steps revolve around the Paperclip and ActiveStorage. Let us refresh our understanding of how paperclip and active storage works. Paperclip works by attaching file data to the model. At the same time, it changes the schema of the model by introducing four columns in the Active Record table. It manages rails validations based on size and presence of file data if required.</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span>  <span class="n">create_table</span> <span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="ss">force</span><span class="p">:</span> <span class="ss">:cascade</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
-    <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="s2">&quot;image_file_name&quot;</span>
-    <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="s2">&quot;image_content_type&quot;</span>
-    <span class="n">t</span><span class="o">.</span><span class="n">integer</span> <span class="s2">&quot;image_file_size&quot;</span>
-    <span class="n">t</span><span class="o">.</span><span class="n">datetime</span> <span class="s2">&quot;image_updated_at&quot;</span>
-  <span class="k">end</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="n">create_table</span><span class="w"> </span><span class="s2">&quot;users&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">force</span><span class="p">:</span><span class="w"> </span><span class="ss">:cascade</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">t</span><span class="o">|</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">string</span><span class="w"> </span><span class="s2">&quot;image_file_name&quot;</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">string</span><span class="w"> </span><span class="s2">&quot;image_content_type&quot;</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">integer</span><span class="w"> </span><span class="s2">&quot;image_file_size&quot;</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">datetime</span><span class="w"> </span><span class="s2">&quot;image_updated_at&quot;</span>
+<span class="w">  </span><span class="k">end</span></code></pre></figure>
 
 <p>Here’s how it would go for a <code>User</code> with an <code>image</code>, that is this in Paperclip:</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span>  <span class="k">class</span> <span class="nc">User</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-    <span class="n">has_attached_file</span> <span class="ss">:image</span>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="no">ApplicationRecord</span>
+<span class="w">    </span><span class="n">has_attached_file</span><span class="w"> </span><span class="ss">:image</span>
 
-    <span class="n">validates_attachment</span> <span class="ss">:avatar</span><span class="p">,</span> <span class="ss">presence</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span>
-      <span class="ss">content_type</span><span class="p">:</span> <span class="s2">&quot;image/jpeg&quot;</span><span class="p">,</span>
-      <span class="ss">size</span><span class="p">:</span> <span class="p">{</span> <span class="k">in</span><span class="p">:</span> <span class="mi">0</span><span class="o">..</span><span class="mi">10</span><span class="o">.</span><span class="n">kilobytes</span> <span class="p">}</span>
-  <span class="k">end</span></code></pre></figure>
+<span class="w">    </span><span class="n">validates_attachment</span><span class="w"> </span><span class="ss">:avatar</span><span class="p">,</span><span class="w"> </span><span class="ss">presence</span><span class="p">:</span><span class="w"> </span><span class="kp">true</span><span class="p">,</span>
+<span class="w">      </span><span class="ss">content_type</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;image/jpeg&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="ss">size</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">in</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="o">..</span><span class="mi">10</span><span class="o">.</span><span class="n">kilobytes</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">end</span></code></pre></figure>
 
 <p>On another side, we start by installing ActiveStorage. Normally, Rails 6.1 already comes with it, so all we need is run:</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span>  <span class="n">rails</span> <span class="ss">active_storage</span><span class="p">:</span><span class="n">install</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="n">rails</span><span class="w"> </span><span class="ss">active_storage</span><span class="p">:</span><span class="n">install</span></code></pre></figure>
 
 <p>ActiveStorage creates three database tables ActiveStorageBlobs table storing attachment metadata, the ActiveStorageAttachments table, which is a polymorphic table between the blobs table and rails model and the ActiveStorageVariantRecords table tracks the presence of variant in the database. ActiveStorage doesn’t come with validations. we found some outside gems, including <a href="https://github.com/igorkasyanchuk/active_storage_validations">active_storage_validations</a> which works for us.</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span>  <span class="n">create_table</span> <span class="ss">:active_storage_blobs</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
-    <span class="n">t</span><span class="o">.</span><span class="n">string</span>   <span class="ss">:key</span><span class="p">,</span>      <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
-    <span class="n">t</span><span class="o">.</span><span class="n">string</span>   <span class="ss">:filename</span><span class="p">,</span>     <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
-    <span class="n">t</span><span class="o">.</span><span class="n">string</span>   <span class="ss">:content_type</span>
-    <span class="n">t</span><span class="o">.</span><span class="n">text</span>     <span class="ss">:metadata</span>
-    <span class="n">t</span><span class="o">.</span><span class="n">string</span>   <span class="ss">:service_name</span><span class="p">,</span> <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
-    <span class="n">t</span><span class="o">.</span><span class="n">bigint</span>   <span class="ss">:byte_size</span><span class="p">,</span>    <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
-    <span class="n">t</span><span class="o">.</span><span class="n">string</span>   <span class="ss">:checksum</span><span class="p">,</span>     <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
-    <span class="n">t</span><span class="o">.</span><span class="n">datetime</span> <span class="ss">:created_at</span><span class="p">,</span>   <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="n">create_table</span><span class="w"> </span><span class="ss">:active_storage_blobs</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">t</span><span class="o">|</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">string</span><span class="w">   </span><span class="ss">:key</span><span class="p">,</span><span class="w">      </span><span class="ss">null</span><span class="p">:</span><span class="w"> </span><span class="kp">false</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">string</span><span class="w">   </span><span class="ss">:filename</span><span class="p">,</span><span class="w">     </span><span class="ss">null</span><span class="p">:</span><span class="w"> </span><span class="kp">false</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">string</span><span class="w">   </span><span class="ss">:content_type</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">text</span><span class="w">     </span><span class="ss">:metadata</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">string</span><span class="w">   </span><span class="ss">:service_name</span><span class="p">,</span><span class="w"> </span><span class="ss">null</span><span class="p">:</span><span class="w"> </span><span class="kp">false</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">bigint</span><span class="w">   </span><span class="ss">:byte_size</span><span class="p">,</span><span class="w">    </span><span class="ss">null</span><span class="p">:</span><span class="w"> </span><span class="kp">false</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">string</span><span class="w">   </span><span class="ss">:checksum</span><span class="p">,</span><span class="w">     </span><span class="ss">null</span><span class="p">:</span><span class="w"> </span><span class="kp">false</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">datetime</span><span class="w"> </span><span class="ss">:created_at</span><span class="p">,</span><span class="w">   </span><span class="ss">null</span><span class="p">:</span><span class="w"> </span><span class="kp">false</span>
 
-    <span class="n">t</span><span class="o">.</span><span class="n">index</span> <span class="o">[</span> <span class="ss">:key</span> <span class="o">]</span><span class="p">,</span> <span class="ss">unique</span><span class="p">:</span> <span class="kp">true</span>
-  <span class="k">end</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">index</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="ss">:key</span><span class="w"> </span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="ss">unique</span><span class="p">:</span><span class="w"> </span><span class="kp">true</span>
+<span class="w">  </span><span class="k">end</span>
 
-  <span class="n">create_table</span> <span class="ss">:active_storage_attachments</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
-    <span class="n">t</span><span class="o">.</span><span class="n">string</span>     <span class="ss">:name</span><span class="p">,</span>     <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
-    <span class="n">t</span><span class="o">.</span><span class="n">references</span> <span class="ss">:record</span><span class="p">,</span>   <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span><span class="p">,</span> <span class="ss">polymorphic</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> <span class="ss">index</span><span class="p">:</span> <span class="kp">false</span>
-    <span class="n">t</span><span class="o">.</span><span class="n">references</span> <span class="ss">:blob</span><span class="p">,</span>     <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+<span class="w">  </span><span class="n">create_table</span><span class="w"> </span><span class="ss">:active_storage_attachments</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">t</span><span class="o">|</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">string</span><span class="w">     </span><span class="ss">:name</span><span class="p">,</span><span class="w">     </span><span class="ss">null</span><span class="p">:</span><span class="w"> </span><span class="kp">false</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">references</span><span class="w"> </span><span class="ss">:record</span><span class="p">,</span><span class="w">   </span><span class="ss">null</span><span class="p">:</span><span class="w"> </span><span class="kp">false</span><span class="p">,</span><span class="w"> </span><span class="ss">polymorphic</span><span class="p">:</span><span class="w"> </span><span class="kp">true</span><span class="p">,</span><span class="w"> </span><span class="ss">index</span><span class="p">:</span><span class="w"> </span><span class="kp">false</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">references</span><span class="w"> </span><span class="ss">:blob</span><span class="p">,</span><span class="w">     </span><span class="ss">null</span><span class="p">:</span><span class="w"> </span><span class="kp">false</span>
 
-    <span class="n">t</span><span class="o">.</span><span class="n">datetime</span> <span class="ss">:created_at</span><span class="p">,</span> <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">datetime</span><span class="w"> </span><span class="ss">:created_at</span><span class="p">,</span><span class="w"> </span><span class="ss">null</span><span class="p">:</span><span class="w"> </span><span class="kp">false</span>
 
-    <span class="n">t</span><span class="o">.</span><span class="n">index</span> <span class="o">[</span> <span class="ss">:record_type</span><span class="p">,</span> <span class="ss">:record_id</span><span class="p">,</span> <span class="ss">:name</span><span class="p">,</span> <span class="ss">:blob_id</span> <span class="o">]</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;index_active_storage_attachments_uniqueness&quot;</span><span class="p">,</span> <span class="ss">unique</span><span class="p">:</span> <span class="kp">true</span>
-    <span class="n">t</span><span class="o">.</span><span class="n">foreign_key</span> <span class="ss">:active_storage_blobs</span><span class="p">,</span> <span class="ss">column</span><span class="p">:</span> <span class="ss">:blob_id</span>
-  <span class="k">end</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">index</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="ss">:record_type</span><span class="p">,</span><span class="w"> </span><span class="ss">:record_id</span><span class="p">,</span><span class="w"> </span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="ss">:blob_id</span><span class="w"> </span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="nb">name</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;index_active_storage_attachments_uniqueness&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">unique</span><span class="p">:</span><span class="w"> </span><span class="kp">true</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">foreign_key</span><span class="w"> </span><span class="ss">:active_storage_blobs</span><span class="p">,</span><span class="w"> </span><span class="ss">column</span><span class="p">:</span><span class="w"> </span><span class="ss">:blob_id</span>
+<span class="w">  </span><span class="k">end</span>
 
-  <span class="n">create_table</span> <span class="ss">:active_storage_variant_records</span> <span class="k">do</span> <span class="o">|</span><span class="n">t</span><span class="o">|</span>
-    <span class="n">t</span><span class="o">.</span><span class="n">belongs_to</span> <span class="ss">:blob</span><span class="p">,</span> <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span><span class="p">,</span> <span class="ss">index</span><span class="p">:</span> <span class="kp">false</span>
-    <span class="n">t</span><span class="o">.</span><span class="n">string</span> <span class="ss">:variation_digest</span><span class="p">,</span> <span class="ss">null</span><span class="p">:</span> <span class="kp">false</span>
+<span class="w">  </span><span class="n">create_table</span><span class="w"> </span><span class="ss">:active_storage_variant_records</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">t</span><span class="o">|</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">belongs_to</span><span class="w"> </span><span class="ss">:blob</span><span class="p">,</span><span class="w"> </span><span class="ss">null</span><span class="p">:</span><span class="w"> </span><span class="kp">false</span><span class="p">,</span><span class="w"> </span><span class="ss">index</span><span class="p">:</span><span class="w"> </span><span class="kp">false</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">string</span><span class="w"> </span><span class="ss">:variation_digest</span><span class="p">,</span><span class="w"> </span><span class="ss">null</span><span class="p">:</span><span class="w"> </span><span class="kp">false</span>
 
-    <span class="n">t</span><span class="o">.</span><span class="n">index</span> <span class="o">%</span><span class="n">i</span><span class="o">[</span> <span class="n">blob_id</span> <span class="n">variation_digest</span> <span class="o">]</span><span class="p">,</span> <span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;index_active_storage_variant_records_uniqueness&quot;</span><span class="p">,</span> <span class="ss">unique</span><span class="p">:</span> <span class="kp">true</span>
-    <span class="n">t</span><span class="o">.</span><span class="n">foreign_key</span> <span class="ss">:active_storage_blobs</span><span class="p">,</span> <span class="ss">column</span><span class="p">:</span> <span class="ss">:blob_id</span>
-  <span class="k">end</span></code></pre></figure>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">index</span><span class="w"> </span><span class="o">%</span><span class="n">i</span><span class="o">[</span><span class="w"> </span><span class="n">blob_id</span><span class="w"> </span><span class="n">variation_digest</span><span class="w"> </span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="nb">name</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;index_active_storage_variant_records_uniqueness&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">unique</span><span class="p">:</span><span class="w"> </span><span class="kp">true</span>
+<span class="w">    </span><span class="n">t</span><span class="o">.</span><span class="n">foreign_key</span><span class="w"> </span><span class="ss">:active_storage_blobs</span><span class="p">,</span><span class="w"> </span><span class="ss">column</span><span class="p">:</span><span class="w"> </span><span class="ss">:blob_id</span>
+<span class="w">  </span><span class="k">end</span></code></pre></figure>
 
 <p>Here’s how it would go for a <code>User</code> with an <code>image</code>, that is this in ActiveStorage:</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span>  <span class="k">class</span> <span class="nc">User</span> <span class="o">&lt;</span> <span class="no">ApplicationRecord</span>
-    <span class="n">has_one_attached</span> <span class="ss">:image</span>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">User</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="no">ApplicationRecord</span>
+<span class="w">    </span><span class="n">has_one_attached</span><span class="w"> </span><span class="ss">:image</span>
 
-    <span class="n">validates</span> <span class="ss">:image</span><span class="p">,</span> <span class="ss">attached</span><span class="p">:</span> <span class="kp">true</span><span class="p">,</span> 
-      <span class="ss">content_type</span><span class="p">:</span> <span class="s1">&#39;image/png&#39;</span><span class="p">,</span>
-      <span class="ss">size</span><span class="p">:</span> <span class="p">{</span> <span class="k">in</span><span class="p">:</span> <span class="mi">0</span><span class="o">..</span><span class="mi">10</span><span class="o">.</span><span class="n">kilobytes</span> <span class="p">}</span>
-  <span class="k">end</span></code></pre></figure>
+<span class="w">    </span><span class="n">validates</span><span class="w"> </span><span class="ss">:image</span><span class="p">,</span><span class="w"> </span><span class="ss">attached</span><span class="p">:</span><span class="w"> </span><span class="kp">true</span><span class="p">,</span><span class="w"> </span>
+<span class="w">      </span><span class="ss">content_type</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;image/png&#39;</span><span class="p">,</span>
+<span class="w">      </span><span class="ss">size</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">in</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="o">..</span><span class="mi">10</span><span class="o">.</span><span class="n">kilobytes</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">end</span></code></pre></figure>
 
 <p>Let’s deep dive into the two steps we adopted, <strong>Migrated Paperclip</strong> data and <strong>Adopted ActiveStorage</strong></p>
 
@@ -521,6 +525,10 @@ With the same approach next, we migrated around 14,00,000 records and, it took 4
 
         </div>
       </div>
+
+  
+
+  
 
   
 

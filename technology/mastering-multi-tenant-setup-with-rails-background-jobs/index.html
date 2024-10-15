@@ -56,6 +56,10 @@
 
     
 
+    
+
+    
+
 
 
 
@@ -337,11 +341,11 @@
 </ul>
 
 <figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="c1"># app/sidekiq/multi_db_testing_job.rb</span>
-<span class="k">class</span> <span class="nc">MultiDbTestingJob</span> <span class="o">&lt;</span> <span class="no">ApplicationJob</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MultiDbTestingJob</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="no">ApplicationJob</span>
 
-  <span class="k">def</span> <span class="nf">perform</span>
-    <span class="nb">p</span> <span class="s2">&quot;Number of articles is </span><span class="si">#{</span><span class="no">Article</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
-  <span class="k">end</span>
+<span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nf">perform</span>
+<span class="w">    </span><span class="nb">p</span><span class="w"> </span><span class="s2">&quot;Number of articles is </span><span class="si">#{</span><span class="no">Article</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="w">  </span><span class="k">end</span>
 <span class="k">end</span></code></pre></figure>
 
 <h5 id="running-up-application-along-with-sidekiq"><strong>Running up application along with sidekiq</strong></h5>
@@ -354,30 +358,30 @@
 </ul>
 
 <figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="c1"># procfile</span>
-<span class="ss">web</span><span class="p">:</span> <span class="n">bin</span><span class="o">/</span><span class="n">rails</span> <span class="n">server</span> <span class="o">--</span><span class="nb">binding</span><span class="o">=</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span> <span class="o">--</span><span class="n">port</span><span class="o">=</span><span class="mi">3000</span> <span class="o">--</span><span class="n">environment</span><span class="o">=</span><span class="n">development</span>
-<span class="ss">sidekiq</span><span class="p">:</span> <span class="n">bundle</span> <span class="nb">exec</span> <span class="n">sidekiq</span></code></pre></figure>
+<span class="ss">web</span><span class="p">:</span><span class="w"> </span><span class="n">bin</span><span class="o">/</span><span class="n">rails</span><span class="w"> </span><span class="n">server</span><span class="w"> </span><span class="o">--</span><span class="nb">binding</span><span class="o">=</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="o">.</span><span class="mi">0</span><span class="w"> </span><span class="o">--</span><span class="n">port</span><span class="o">=</span><span class="mi">3000</span><span class="w"> </span><span class="o">--</span><span class="n">environment</span><span class="o">=</span><span class="n">development</span>
+<span class="ss">sidekiq</span><span class="p">:</span><span class="w"> </span><span class="n">bundle</span><span class="w"> </span><span class="nb">exec</span><span class="w"> </span><span class="n">sidekiq</span></code></pre></figure>
 
 <h5 id="triggering-background-jobs"><strong>Triggering Background jobs</strong></h5>
 <ul>
   <li>Create a route and controller action to trigger the Sidekiq job:</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span>    <span class="c1"># config/routes.rb</span>
-    <span class="n">resources</span> <span class="ss">:articles</span> <span class="k">do</span>
-      <span class="n">collection</span> <span class="k">do</span>
-        <span class="n">get</span> <span class="ss">:run_background_job</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">    </span><span class="c1"># config/routes.rb</span>
+<span class="w">    </span><span class="n">resources</span><span class="w"> </span><span class="ss">:articles</span><span class="w"> </span><span class="k">do</span>
+<span class="w">      </span><span class="n">collection</span><span class="w"> </span><span class="k">do</span>
+<span class="w">        </span><span class="n">get</span><span class="w"> </span><span class="ss">:run_background_job</span>
+<span class="w">      </span><span class="k">end</span>
+<span class="w">    </span><span class="k">end</span>
 
-    <span class="c1"># app/controllers/articles_controller.rb  def run_background_job</span>
-      <span class="no">MultiDbTestingJob</span><span class="o">.</span><span class="n">perform_later</span>
+<span class="w">    </span><span class="c1"># app/controllers/articles_controller.rb  def run_background_job</span>
+<span class="w">      </span><span class="no">MultiDbTestingJob</span><span class="o">.</span><span class="n">perform_later</span>
 
-      <span class="n">redirect_to</span> <span class="n">root_path</span>
-    <span class="k">end</span>
+<span class="w">      </span><span class="n">redirect_to</span><span class="w"> </span><span class="n">root_path</span>
+<span class="w">    </span><span class="k">end</span>
 
-    <span class="c1"># app/views/articles/index.html.erb</span>
-    <span class="o">&lt;%=</span> <span class="n">link_to</span> <span class="s2">&quot;Run sidekiq job&quot;</span><span class="p">,</span> <span class="n">run_background_job_articles_path</span> <span class="o">%&gt;</span>
-  </code></pre></figure>
+<span class="w">    </span><span class="c1"># app/views/articles/index.html.erb</span>
+<span class="w">    </span><span class="o">&lt;%=</span><span class="w"> </span><span class="n">link_to</span><span class="w"> </span><span class="s2">&quot;Run sidekiq job&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">run_background_job_articles_path</span><span class="w"> </span><span class="o">%&gt;</span>
+<span class="w">  </span></code></pre></figure>
 
 <ul>
   <li>Start the server using <code>foreman start</code></li>
@@ -392,19 +396,19 @@
 <p>To ensure that background jobs access the correct database, we need to pass the database name as a parameter to each job and modify the job accordingly:</p>
 
 <figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="c1"># /app/controllers/articles_controller.rb</span>
-<span class="k">def</span> <span class="nf">run_background_job</span>
-  <span class="no">MultiDbTestingJob</span><span class="o">.</span><span class="n">perform_later</span><span class="p">(</span><span class="n">shard_name</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_background_job</span>
+<span class="w">  </span><span class="no">MultiDbTestingJob</span><span class="o">.</span><span class="n">perform_later</span><span class="p">(</span><span class="n">shard_name</span><span class="p">)</span>
 
-  <span class="n">redirect_to</span> <span class="n">root_path</span>
+<span class="w">  </span><span class="n">redirect_to</span><span class="w"> </span><span class="n">root_path</span>
 <span class="k">end</span>
 
 <span class="c1"># /app/sidekiq/multi_db_testing.rb</span>
-<span class="k">class</span> <span class="nc">MultiDbTestingJob</span> <span class="o">&lt;</span> <span class="no">ApplicationJob</span>
-  <span class="k">def</span> <span class="nf">perform</span><span class="p">(</span><span class="n">shard</span><span class="p">)</span>
-    <span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">connected_to</span><span class="p">(</span><span class="ss">shard</span><span class="p">:</span> <span class="n">shard</span><span class="p">)</span> <span class="k">do</span>
-      <span class="nb">p</span> <span class="s2">&quot;Number of articles in DB is </span><span class="si">#{</span><span class="no">Article</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MultiDbTestingJob</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="no">ApplicationJob</span>
+<span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nf">perform</span><span class="p">(</span><span class="n">shard</span><span class="p">)</span>
+<span class="w">    </span><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="o">.</span><span class="n">connected_to</span><span class="p">(</span><span class="ss">shard</span><span class="p">:</span><span class="w"> </span><span class="n">shard</span><span class="p">)</span><span class="w"> </span><span class="k">do</span>
+<span class="w">      </span><span class="nb">p</span><span class="w"> </span><span class="s2">&quot;Number of articles in DB is </span><span class="si">#{</span><span class="no">Article</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="w">    </span><span class="k">end</span>
+<span class="w">  </span><span class="k">end</span>
 <span class="k">end</span></code></pre></figure>
 
 <p>Now, you’ll get the desired result for both databases.</p>
@@ -421,17 +425,17 @@
 <p>From the definition of <a href="https://api.rubyonrails.org/classes/ActiveSupport/CurrentAttributes.html">Current Attributes</a>, <em>Abstract super class that provides a thread-isolated attributes singleton, which resets automatically before and after each request. This allows you to keep all the per-request attributes easily available to the whole system.</em></p>
 
 <figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="c1"># app/models/current.rb</span>
-<span class="k">class</span> <span class="nc">Current</span> <span class="o">&lt;</span> <span class="no">ActiveSupport</span><span class="o">::</span><span class="no">CurrentAttributes</span>
-  <span class="n">attribute</span> <span class="ss">:tenant</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Current</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="no">ActiveSupport</span><span class="o">::</span><span class="no">CurrentAttributes</span>
+<span class="w">  </span><span class="n">attribute</span><span class="w"> </span><span class="ss">:tenant</span>
 <span class="k">end</span>
 
 <span class="c1"># app/controllers/application_controller.rb</span>
-<span class="n">before_action</span> <span class="ss">:setup_tenant</span>
+<span class="n">before_action</span><span class="w"> </span><span class="ss">:setup_tenant</span>
 
-<span class="k">def</span> <span class="nf">setup_tenant</span>
-  <span class="n">tenants</span> <span class="o">=</span> <span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config_for</span><span class="p">(</span><span class="ss">:settings</span><span class="p">)</span><span class="o">[</span><span class="ss">:tenants</span><span class="o">]</span>
-  <span class="n">current_tenant</span> <span class="o">=</span> <span class="n">tenants</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">find</span> <span class="p">{</span> <span class="o">|</span><span class="n">key</span><span class="o">|</span> <span class="n">tenants</span><span class="o">[</span><span class="n">key</span><span class="o">][</span><span class="ss">:hosts</span><span class="o">].</span><span class="n">include?</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">env</span><span class="o">[</span><span class="s1">&#39;HTTP_HOST&#39;</span><span class="o">]</span><span class="p">)</span> <span class="p">}</span> <span class="o">||</span> <span class="ss">:app1_shard</span>
-  <span class="no">Current</span><span class="o">.</span><span class="n">tenant</span> <span class="o">=</span> <span class="n">current_tenant</span><span class="o">.</span><span class="n">to_sym</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">setup_tenant</span>
+<span class="w">  </span><span class="n">tenants</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Rails</span><span class="o">.</span><span class="n">application</span><span class="o">.</span><span class="n">config_for</span><span class="p">(</span><span class="ss">:settings</span><span class="p">)</span><span class="o">[</span><span class="ss">:tenants</span><span class="o">]</span>
+<span class="w">  </span><span class="n">current_tenant</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tenants</span><span class="o">.</span><span class="n">keys</span><span class="o">.</span><span class="n">find</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">|</span><span class="n">key</span><span class="o">|</span><span class="w"> </span><span class="n">tenants</span><span class="o">[</span><span class="n">key</span><span class="o">][</span><span class="ss">:hosts</span><span class="o">].</span><span class="n">include?</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">env</span><span class="o">[</span><span class="s1">&#39;HTTP_HOST&#39;</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="ss">:app1_shard</span>
+<span class="w">  </span><span class="no">Current</span><span class="o">.</span><span class="n">tenant</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">current_tenant</span><span class="o">.</span><span class="n">to_sym</span>
 <span class="k">end</span></code></pre></figure>
 
 <p><strong>Note</strong> - Sidekiq also introduced the <code>cattr</code> feature, this will help in persisting the value of current attributes when sidekiq job runs.
@@ -444,63 +448,63 @@
   <li>Create file <code>config/initializers/sidekiq.rb</code> and paste following code.</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span>    <span class="c1"># config/initializers/sidekiq.rb</span>
-    <span class="nb">require</span> <span class="s1">&#39;sidekiq&#39;</span>
-    <span class="nb">require</span> <span class="s1">&#39;sidekiq/web&#39;</span>
-    <span class="nb">require</span> <span class="s1">&#39;sidekiq/middleware/current_attributes&#39;</span>
-    <span class="n">require_relative</span> <span class="s1">&#39;../../app/middleware/sidekiq_adapter&#39;</span>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">    </span><span class="c1"># config/initializers/sidekiq.rb</span>
+<span class="w">    </span><span class="nb">require</span><span class="w"> </span><span class="s1">&#39;sidekiq&#39;</span>
+<span class="w">    </span><span class="nb">require</span><span class="w"> </span><span class="s1">&#39;sidekiq/web&#39;</span>
+<span class="w">    </span><span class="nb">require</span><span class="w"> </span><span class="s1">&#39;sidekiq/middleware/current_attributes&#39;</span>
+<span class="w">    </span><span class="n">require_relative</span><span class="w"> </span><span class="s1">&#39;../../app/middleware/sidekiq_adapter&#39;</span>
 
-    <span class="no">Sidekiq</span><span class="o">::</span><span class="no">CurrentAttributes</span><span class="o">.</span><span class="n">persist</span><span class="p">(</span><span class="s1">&#39;Current&#39;</span><span class="p">)</span>
+<span class="w">    </span><span class="no">Sidekiq</span><span class="o">::</span><span class="no">CurrentAttributes</span><span class="o">.</span><span class="n">persist</span><span class="p">(</span><span class="s1">&#39;Current&#39;</span><span class="p">)</span>
 
-    <span class="no">Sidekiq</span><span class="o">.</span><span class="n">configure_server</span> <span class="k">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
-      <span class="n">config</span><span class="o">.</span><span class="n">server_middleware</span> <span class="k">do</span> <span class="o">|</span><span class="n">chain</span><span class="o">|</span>
-        <span class="n">chain</span><span class="o">.</span><span class="n">add</span> <span class="no">Middleware</span><span class="o">::</span><span class="no">SidekiqAdapter</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-  </code></pre></figure>
+<span class="w">    </span><span class="no">Sidekiq</span><span class="o">.</span><span class="n">configure_server</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">config</span><span class="o">|</span>
+<span class="w">      </span><span class="n">config</span><span class="o">.</span><span class="n">server_middleware</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="o">|</span><span class="n">chain</span><span class="o">|</span>
+<span class="w">        </span><span class="n">chain</span><span class="o">.</span><span class="n">add</span><span class="w"> </span><span class="no">Middleware</span><span class="o">::</span><span class="no">SidekiqAdapter</span>
+<span class="w">      </span><span class="k">end</span>
+<span class="w">    </span><span class="k">end</span>
+<span class="w">  </span></code></pre></figure>
 
 <ul>
   <li>Create file <code>app/middleware/sidekiq_adapter.rb</code> and paste following code.</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span>    <span class="k">module</span> <span class="nn">Middleware</span>
-      <span class="k">class</span> <span class="nc">SidekiqAdapter</span>
-        <span class="kp">include</span> <span class="no">Sidekiq</span><span class="o">::</span><span class="no">ServerMiddleware</span>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">    </span><span class="k">module</span><span class="w"> </span><span class="nn">Middleware</span>
+<span class="w">      </span><span class="k">class</span><span class="w"> </span><span class="nc">SidekiqAdapter</span>
+<span class="w">        </span><span class="kp">include</span><span class="w"> </span><span class="no">Sidekiq</span><span class="o">::</span><span class="no">ServerMiddleware</span>
 
-        <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="n">job_instance</span><span class="p">,</span> <span class="n">job_payload</span><span class="p">,</span> <span class="n">queue</span><span class="p">)</span>
-          <span class="n">shard</span> <span class="o">=</span> <span class="n">current_shard</span><span class="p">(</span><span class="n">job_payload</span><span class="p">)</span>
-          <span class="no">ApplicationRecord</span><span class="o">.</span><span class="n">connected_to</span><span class="p">(</span><span class="ss">shard</span><span class="p">:</span> <span class="n">shard</span><span class="p">,</span> <span class="ss">role</span><span class="p">:</span> <span class="ss">:writing</span><span class="p">)</span> <span class="k">do</span>
-            <span class="k">yield</span>
-          <span class="k">end</span>
-        <span class="k">rescue</span> <span class="no">StandardError</span> <span class="o">=&gt;</span> <span class="n">e</span>
-          <span class="nb">p</span> <span class="s2">&quot;Error occured </span><span class="si">#{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">end</span>
+<span class="w">        </span><span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="n">job_instance</span><span class="p">,</span><span class="w"> </span><span class="n">job_payload</span><span class="p">,</span><span class="w"> </span><span class="n">queue</span><span class="p">)</span>
+<span class="w">          </span><span class="n">shard</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">current_shard</span><span class="p">(</span><span class="n">job_payload</span><span class="p">)</span>
+<span class="w">          </span><span class="no">ApplicationRecord</span><span class="o">.</span><span class="n">connected_to</span><span class="p">(</span><span class="ss">shard</span><span class="p">:</span><span class="w"> </span><span class="n">shard</span><span class="p">,</span><span class="w"> </span><span class="ss">role</span><span class="p">:</span><span class="w"> </span><span class="ss">:writing</span><span class="p">)</span><span class="w"> </span><span class="k">do</span>
+<span class="w">            </span><span class="k">yield</span>
+<span class="w">          </span><span class="k">end</span>
+<span class="w">        </span><span class="k">rescue</span><span class="w"> </span><span class="no">StandardError</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">e</span>
+<span class="w">          </span><span class="nb">p</span><span class="w"> </span><span class="s2">&quot;Error occured </span><span class="si">#{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="w">        </span><span class="k">end</span>
 
-        <span class="k">def</span> <span class="nf">current_shard</span><span class="p">(</span><span class="n">job_payload</span><span class="p">)</span>
-          <span class="n">job_payload</span><span class="o">.</span><span class="n">try</span><span class="p">(</span><span class="ss">:[]</span><span class="p">,</span> <span class="s1">&#39;cattr&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">try</span><span class="p">(</span><span class="ss">:[]</span><span class="p">,</span> <span class="s1">&#39;tenant&#39;</span><span class="p">)</span><span class="o">&amp;.</span><span class="n">to_sym</span>
-        <span class="k">end</span>
-      <span class="k">end</span>
-    <span class="k">end</span>
-  </code></pre></figure>
+<span class="w">        </span><span class="k">def</span><span class="w"> </span><span class="nf">current_shard</span><span class="p">(</span><span class="n">job_payload</span><span class="p">)</span>
+<span class="w">          </span><span class="n">job_payload</span><span class="o">.</span><span class="n">try</span><span class="p">(</span><span class="ss">:[]</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;cattr&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">try</span><span class="p">(</span><span class="ss">:[]</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;tenant&#39;</span><span class="p">)</span><span class="o">&amp;.</span><span class="n">to_sym</span>
+<span class="w">        </span><span class="k">end</span>
+<span class="w">      </span><span class="k">end</span>
+<span class="w">    </span><span class="k">end</span>
+<span class="w">  </span></code></pre></figure>
 
 <ul>
   <li>With the middleware in place, we can simplify our Sidekiq job and remove the shard logic from it. The middleware will handle connecting to the correct shard.</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span>  <span class="c1"># multi_db_testing_job.rb</span>
-  <span class="k">class</span> <span class="nc">MultiDbTestingJob</span> <span class="o">&lt;</span> <span class="no">ApplicationJob</span>
-    <span class="k">def</span> <span class="nf">perform</span>
-      <span class="nb">p</span> <span class="s2">&quot;Number of articles in DB is </span><span class="si">#{</span><span class="no">Article</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="k">end</span>
-  <span class="k">end</span>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="c1"># multi_db_testing_job.rb</span>
+<span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">MultiDbTestingJob</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="no">ApplicationJob</span>
+<span class="w">    </span><span class="k">def</span><span class="w"> </span><span class="nf">perform</span>
+<span class="w">      </span><span class="nb">p</span><span class="w"> </span><span class="s2">&quot;Number of articles in DB is </span><span class="si">#{</span><span class="no">Article</span><span class="o">.</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="w">    </span><span class="k">end</span>
+<span class="w">  </span><span class="k">end</span>
 
 
-  <span class="c1"># /app/controllers/articles_controller.rb</span>
-  <span class="k">def</span> <span class="nf">run_background_job</span>
-    <span class="no">MultiDbTestingJob</span><span class="o">.</span><span class="n">perform_later</span><span class="p">(</span><span class="n">shard_name</span><span class="p">)</span>
+<span class="w">  </span><span class="c1"># /app/controllers/articles_controller.rb</span>
+<span class="w">  </span><span class="k">def</span><span class="w"> </span><span class="nf">run_background_job</span>
+<span class="w">    </span><span class="no">MultiDbTestingJob</span><span class="o">.</span><span class="n">perform_later</span><span class="p">(</span><span class="n">shard_name</span><span class="p">)</span>
 
-    <span class="n">redirect_to</span> <span class="n">root_path</span>
-  <span class="k">end</span></code></pre></figure>
+<span class="w">    </span><span class="n">redirect_to</span><span class="w"> </span><span class="n">root_path</span>
+<span class="w">  </span><span class="k">end</span></code></pre></figure>
 
 <ul>
   <li>Run the project again and subsqeuently run the sidekiq job to test it out.</li>
@@ -615,6 +619,10 @@
 
   
 
+  
+
+  
+
 </div>
                 <div id='discourse-comments'></div>
 
@@ -644,6 +652,8 @@
               
                 <li class="previous showElem mr-auto"><a href="/blog/technology/mastering-multi-tenant-setup-with-rails-part-1/" title="Mastering Multi Tenant setup with rails part 1">&larr;<span class="showPrevNex"> Previous </span> </a></li>
               
+              
+                <li class="next showElem ml-auto"><a href="/blog/book-review/book-review-never-let-me-go-kazuo-ishiguro/" title="Book review: Never let me go - Kazuo Ishiguro"> <span class='showPrevNex'> Next </span> &rarr; </a></li>
               
             </ul>
           </nav>

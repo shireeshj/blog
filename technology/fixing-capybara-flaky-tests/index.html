@@ -56,6 +56,10 @@
 
     
 
+    
+
+    
+
 
 
 
@@ -324,9 +328,9 @@
 
 <p><strong>Demo Code</strong></p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>visit submit_page
-click_on <span class="s1">&#39;Submit&#39;</span>
-assert page.has_content <span class="s1">&#39;Some content after clicking on submit&#39;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>visit<span class="w"> </span>submit_page
+click_on<span class="w"> </span><span class="s1">&#39;Submit&#39;</span>
+assert<span class="w"> </span>page.has_content<span class="w"> </span><span class="s1">&#39;Some content after clicking on submit&#39;</span></code></pre></figure>
 
 <p>In most cases, this test will run without any issues. However, occasionally the test may fail on the third line with the error “Expected false to be truthy”. This error can occur when the page is visited and the JavaScript on the page takes a few seconds to load. During this time, the submit button may be clicked, but because there is no JavaScript associated with the button yet, the button click does not do anything. As a result, the test is still on the submit page when it tries to assert that the expected content is present, causing the test to fail.</p>
 
@@ -344,16 +348,16 @@ assert page.has_content <span class="s1">&#39;Some content after clicking on sub
 
 <p><strong>Browser Call Stack</strong></p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>          <span class="p">|</span>               <span class="p">|</span>
-          <span class="p">|</span>               <span class="p">|</span>
-          <span class="p">|</span>   JavaScript  <span class="p">|</span>  &lt;-- existing code on the page<span class="o">(</span><span class="m">1</span><span class="o">)</span>
-          <span class="p">|</span>_______________<span class="p">|</span>
-          <span class="p">|</span>               <span class="p">|</span>
-          <span class="p">|</span>   JavaScript  <span class="p">|</span>  &lt;-- existing code on the page<span class="o">(</span><span class="m">2</span><span class="o">)</span>
-          <span class="p">|</span>_______________<span class="p">|</span>
-          <span class="p">|</span>               <span class="p">|</span>
-          <span class="p">|</span>  click action <span class="p">|</span>  &lt;-- added by execute_script method<span class="o">(</span><span class="m">3</span><span class="o">)</span>
-          <span class="p">|</span>_______________<span class="p">|</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">          </span><span class="p">|</span><span class="w">               </span><span class="p">|</span>
+<span class="w">          </span><span class="p">|</span><span class="w">               </span><span class="p">|</span>
+<span class="w">          </span><span class="p">|</span><span class="w">   </span>JavaScript<span class="w">  </span><span class="p">|</span><span class="w">  </span>&lt;--<span class="w"> </span>existing<span class="w"> </span>code<span class="w"> </span>on<span class="w"> </span>the<span class="w"> </span>page<span class="o">(</span><span class="m">1</span><span class="o">)</span>
+<span class="w">          </span><span class="p">|</span>_______________<span class="p">|</span>
+<span class="w">          </span><span class="p">|</span><span class="w">               </span><span class="p">|</span>
+<span class="w">          </span><span class="p">|</span><span class="w">   </span>JavaScript<span class="w">  </span><span class="p">|</span><span class="w">  </span>&lt;--<span class="w"> </span>existing<span class="w"> </span>code<span class="w"> </span>on<span class="w"> </span>the<span class="w"> </span>page<span class="o">(</span><span class="m">2</span><span class="o">)</span>
+<span class="w">          </span><span class="p">|</span>_______________<span class="p">|</span>
+<span class="w">          </span><span class="p">|</span><span class="w">               </span><span class="p">|</span>
+<span class="w">          </span><span class="p">|</span><span class="w">  </span>click<span class="w"> </span>action<span class="w"> </span><span class="p">|</span><span class="w">  </span>&lt;--<span class="w"> </span>added<span class="w"> </span>by<span class="w"> </span>execute_script<span class="w"> </span>method<span class="o">(</span><span class="m">3</span><span class="o">)</span>
+<span class="w">          </span><span class="p">|</span>_______________<span class="p">|</span></code></pre></figure>
 
 
               </div>
@@ -441,6 +445,10 @@ assert page.has_content <span class="s1">&#39;Some content after clicking on sub
 
         </div>
       </div>
+
+  
+
+  
 
   
 

@@ -56,6 +56,10 @@
 
     
 
+    
+
+    
+
 
 
 
@@ -326,17 +330,17 @@
 
 <p>To confirm that no package with the same name existed I had to use the following command.</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>npm search react-rails-pagination</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>npm<span class="w"> </span>search<span class="w"> </span>react-rails-pagination</code></pre></figure>
 
 <p>You can use</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>npm search &lt;your-package-name&gt;</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>npm<span class="w"> </span>search<span class="w"> </span>&lt;your-package-name&gt;</code></pre></figure>
 
 <p>And if no existing package is found with the same name, then you are good to go.</p>
 
 <p>After I selected a package name, I had to run the following command in my terminal to initialise the package.</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>npx create-react-library react-rails-pagination</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>npx<span class="w"> </span>create-react-library<span class="w"> </span>react-rails-pagination</code></pre></figure>
 
 <p>I was prompted to answer a few questions about my package now</p>
 
@@ -352,9 +356,9 @@
 
 <p>I had to run the following commands in two different terminal tabs to start the development environment</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="nb">cd</span> react-rails-pagination <span class="o">&amp;&amp;</span> npm start</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="nb">cd</span><span class="w"> </span>react-rails-pagination<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>start</code></pre></figure>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="nb">cd</span> react-rails-pagination/example <span class="o">&amp;&amp;</span> npm start</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="nb">cd</span><span class="w"> </span>react-rails-pagination/example<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>start</code></pre></figure>
 
 <p>The first command watches the <code>src/</code> and recompiles it into the <code>dist/</code> folder when you make changes.</p>
 
@@ -376,9 +380,9 @@
 
 <p>For this I have to make some changes to the <code>index.js</code> file.</p>
 
-<figure class="highlight"><pre><code class="language-js" data-lang="js"><span></span><span class="k">import</span> <span class="nx">Pagination</span> <span class="nx">from</span> <span class="s1">&#39;./Pagination&#39;</span><span class="p">;</span>
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span></span><span class="k">import</span><span class="w"> </span><span class="nx">Pagination</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;./Pagination&#39;</span><span class="p">;</span>
 
-<span class="k">export</span> <span class="k">default</span> <span class="nx">Pagination</span><span class="p">;</span></code></pre></figure>
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">Pagination</span><span class="p">;</span></code></pre></figure>
 
 <p>This imports my component into the <code>index.js</code> file and sets it as the default export from the package. I do this because the source file or the entrypoint of my package is the <code>src/index.js</code> file.</p>
 
@@ -392,22 +396,22 @@
 
 <p>In that folder, I have to edit the <code>App.js</code> file which imports the <code>ExampleComponent</code> that I modified earlier to use my <code>Pagination</code> component.</p>
 
-<figure class="highlight"><pre><code class="language-js" data-lang="js"><span></span><span class="k">import</span> <span class="nx">React</span> <span class="nx">from</span> <span class="s1">&#39;react&#39;</span>
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span></span><span class="k">import</span><span class="w"> </span><span class="nx">React</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;react&#39;</span>
 
-<span class="k">import</span> <span class="nx">Pagination</span> <span class="nx">from</span> <span class="s1">&#39;react-rails-pagination&#39;</span>
-<span class="k">import</span> <span class="s1">&#39;react-rails-pagination/dist/index.css&#39;</span>
+<span class="k">import</span><span class="w"> </span><span class="nx">Pagination</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;react-rails-pagination&#39;</span>
+<span class="k">import</span><span class="w"> </span><span class="s1">&#39;react-rails-pagination/dist/index.css&#39;</span>
 
-<span class="kd">const</span> <span class="nx">App</span> <span class="o">=</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="p">{</span>
-  <span class="kd">let</span> <span class="nx">page</span> <span class="o">=</span> <span class="mf">1</span><span class="p">;</span>
-  <span class="kd">const</span> <span class="nx">totalPages</span> <span class="o">=</span> <span class="mf">5</span><span class="p">;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">App</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="nx">page</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">totalPages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">5</span><span class="p">;</span>
 
-  <span class="kd">const</span> <span class="nx">handleChangePage</span> <span class="o">=</span> <span class="p">(</span><span class="nx">currentPage</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
-    <span class="nx">page</span> <span class="o">=</span> <span class="nx">currentPage</span><span class="p">;</span>
-  <span class="p">}</span>
-  <span class="k">return</span> <span class="o">&lt;</span><span class="nx">Pagination</span> <span class="nx">page</span><span class="o">=</span><span class="p">{</span><span class="nx">page</span><span class="p">}</span> <span class="nx">pages</span><span class="o">=</span><span class="p">{</span><span class="nx">totalPages</span><span class="p">}</span> <span class="nx">handleChangePage</span><span class="o">=</span><span class="p">{</span><span class="nx">handleChangePage</span><span class="p">}</span> <span class="o">/&gt;</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">handleChangePage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">currentPage</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">page</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">currentPage</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="o">&lt;</span><span class="nx">Pagination</span><span class="w"> </span><span class="nx">page</span><span class="o">=</span><span class="p">{</span><span class="nx">page</span><span class="p">}</span><span class="w"> </span><span class="nx">pages</span><span class="o">=</span><span class="p">{</span><span class="nx">totalPages</span><span class="p">}</span><span class="w"> </span><span class="nx">handleChangePage</span><span class="o">=</span><span class="p">{</span><span class="nx">handleChangePage</span><span class="p">}</span><span class="w"> </span><span class="o">/&gt;</span>
 <span class="p">}</span>
 
-<span class="k">export</span> <span class="k">default</span> <span class="nx">App</span><span class="p">;</span></code></pre></figure>
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">App</span><span class="p">;</span></code></pre></figure>
 
 <p>These changes allow me to import my package into this example application and check if it is working or not.</p>
 
@@ -448,33 +452,33 @@ package-lock.json</code></pre></figure>
 <p>Next I opened the <code>package.json</code> and added a few things in there as well.</p>
 
 <figure class="highlight"><pre><code class="language-json" data-lang="json"><span></span><span class="p">{</span>
-  <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;react-rails-pagination&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;React Pagination Component for Rails and other MVC Frameworks&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;license&quot;</span><span class="p">:</span> <span class="s2">&quot;MIT&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;repository&quot;</span><span class="p">:</span> <span class="s2">&quot;piyushswain/react-rails-pagination&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;main&quot;</span><span class="p">:</span> <span class="s2">&quot;dist/index.js&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;module&quot;</span><span class="p">:</span> <span class="s2">&quot;dist/index.modern.js&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;src/index.js&quot;</span><span class="p">,</span>
-  <span class="nt">&quot;engines&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;node&quot;</span><span class="p">:</span> <span class="s2">&quot;&gt;=10&quot;</span>
-  <span class="p">},</span>
-  <span class="nt">&quot;keywords&quot;</span><span class="p">:</span> <span class="p">[</span>
-    <span class="s2">&quot;react&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;rails&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;mvc&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;react-component&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;pagination&quot;</span>
-  <span class="p">],</span>
-  <span class="nt">&quot;author&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Piyush Swain&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;piyush.swain3@gmail.com&quot;</span>
-  <span class="p">},</span>
-  <span class="nt">&quot;homepage&quot;</span><span class="p">:</span> <span class="s2">&quot;https://github.com/piyushswain/react-rails-pagination&quot;</span><span class="p">,</span>
-  <span class="err">.</span>
-  <span class="err">.</span>
-  <span class="err">.</span>
-  <span class="err">.</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;react-rails-pagination&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;React Pagination Component for Rails and other MVC Frameworks&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;license&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MIT&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;repository&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;piyushswain/react-rails-pagination&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;main&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dist/index.js&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;dist/index.modern.js&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;src/index.js&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;engines&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;node&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&gt;=10&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;keywords&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;react&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;rails&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;mvc&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;react-component&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;pagination&quot;</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;author&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Piyush Swain&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;email&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;piyush.swain3@gmail.com&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;homepage&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://github.com/piyushswain/react-rails-pagination&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="err">.</span>
+<span class="w">  </span><span class="err">.</span>
+<span class="w">  </span><span class="err">.</span>
+<span class="w">  </span><span class="err">.</span>
 <span class="p">}</span></code></pre></figure>
 
 <p>I updated the <code>author</code> field to add my email.</p>
@@ -489,22 +493,22 @@ package-lock.json</code></pre></figure>
 
 <p>I review all the changes and then first push my code to my github repository.</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>git remote add origin https://github.com/piyushswain/react-rails-pagination.git <span class="c1"># Sets the new remote for the local repo</span>
-git add .
-git commit -m <span class="s1">&#39;Initial Commit&#39;</span>
-git push -u origin main  <span class="c1"># Pushes the changes to the remote repository</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </span>origin<span class="w"> </span>https://github.com/piyushswain/react-rails-pagination.git<span class="w"> </span><span class="c1"># Sets the new remote for the local repo</span>
+git<span class="w"> </span>add<span class="w"> </span>.
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s1">&#39;Initial Commit&#39;</span>
+git<span class="w"> </span>push<span class="w"> </span>-u<span class="w"> </span>origin<span class="w"> </span>main<span class="w">  </span><span class="c1"># Pushes the changes to the remote repository</span></code></pre></figure>
 
 <p>Now, my package is ready to be published. I run the following commands to start the process of publishing my package to npm.</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>npm login</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>npm<span class="w"> </span>login</code></pre></figure>
 
 <p>Login command asks for the username and password of your npm account. Enter those succeessfully and it will log you in to npm. If you have already logged in to npm, then you can skip this step.</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>npm run build</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>npm<span class="w"> </span>run<span class="w"> </span>build</code></pre></figure>
 
 <p>This optimizes and creates a production build for your package. I recommend running this everytime before you issue a publish command.</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>npm publish</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>npm<span class="w"> </span>publish</code></pre></figure>
 
 <p>Finally, running this command will upload your package to npm. You can check it in your npm profile where you can find all your uploaded packages.</p>
 
@@ -590,6 +594,10 @@ git push -u origin main  <span class="c1"># Pushes the changes to the remote rep
 
         </div>
       </div>
+
+  
+
+  
 
   
 

@@ -1,0 +1,707 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>How to setup AWS Cloudwatch alarm for your SES reputation metrics &#8211; eLitmus Blog</title>
+<meta name="description" content="We learn new things everyday, and we document our learnings here...">
+
+<meta name="keywords" content="AWS, AWS SES, AWS SNS, AWS Cloudwatch">
+
+<!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary">    
+<meta name="twitter:title" content="How to setup AWS Cloudwatch alarm for your SES reputation metrics">
+<meta name="twitter:description" content="<p>Amazon Simple Email Service (SES) is an email platform that offers a straightforward and cost-effective way for you to send and receive emails using your own email addresses and domains.</p>
+
+">
+<meta name="twitter:site" content="@elitmus">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        
+    
+
+    
+
+
+
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="/blog/images/blog_logo_taglinedorange.png"/>
+<meta property="og:type" content="article">
+<meta property="og:title" content="How to setup AWS Cloudwatch alarm for your SES reputation metrics">
+<meta property="og:description" content="<p>Amazon Simple Email Service (SES) is an email platform that offers a straightforward and cost-effective way for you to send and receive emails using your own email addresses and domains.</p>
+
+">
+<meta property="og:url" content="/blog/technology/how-to-setup-aws-cloudwatch-alarm-for-your-ses-reputation-metrics/">
+
+<meta property="og:site_name" content="eLitmus Blog">
+
+
+
+
+
+
+
+<link rel="canonical" href="https://www.elitmus.com/blog/technology/how-to-setup-aws-cloudwatch-alarm-for-your-ses-reputation-metrics/">
+<link href="/blog/feed.xml" type="application/atom+xml" rel="alternate" title="eLitmus Blog Feed">
+
+
+	<link rel="author" href="https://plus.google.com/+eLitmus?rel=author">
+
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Icons -->
+<!-- apple touch icons -->
+<link rel="apple-touch-icon" sizes="57x57" href="/blog/images/apple-touch-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="114x114" href="/blog/images/apple-touch-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/blog/images/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/blog/images/apple-touch-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="60x60" href="/blog/images/apple-touch-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/blog/images/apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/blog/images/apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/blog/images/apple-touch-icon-152x152.png">
+<!-- Favicons default 16x16 -->
+<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="/blog/favicon.ico">
+
+<!-- Favicons others -->
+<link rel="icon" type="image/png" href="/blog/images/favicon-196x196.png" sizes="196x196">
+<link rel="icon" type="image/png" href="/blog/images/favicon-160x160.png" sizes="160x160">
+<link rel="icon" type="image/png" href="/blog/images/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/blog/images/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/blog/images/favicon-32x32.png" sizes="32x32">
+
+<!-- Icons for Windows 8 Tiles -->
+<meta name="msapplication-TileColor" content="#ffffff"/>
+<meta name="msapplication-TileImage" content="/blog/images/mstile-144x144.png">
+
+<!-- For all browsers -->
+
+
+<!-- Webfonts -->
+<link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:600,300,300italic|The+Girl+Next+Door" rel="stylesheet" type="text/css">
+<link href='//fonts.googleapis.com/css?family=Source+Code+Pro:300' rel='stylesheet' type='text/css'>
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- bootstrap 4 -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/bootstrap.min.css">
+
+<!-- below css file is used for navbar in individual blogposts -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/main.min.css">
+
+<!-- <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"> -->
+
+<!-- Optional theme -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/bootstrap-theme.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Font Awesome -->
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/font-elitmuslogo.css" />
+
+<link rel="stylesheet" href="/blog/assets/css/customize.css">
+<link rel="stylesheet" href="/blog/assets/css/forkit.css">
+</head>
+
+<body id="post">
+
+  <header class="headroom">
+
+  <nav class="navbar navbar-expand-md navbar-dark bg-black fixed-top" role="navigation">
+
+      <a class="navbar-brand" href="/blog/">
+        <img src="https://cdn0.elitmus.net/assets/elitmus-only-logo-6efc8a74032179afdb89829a093e05bd05d627dd4354bbd1ff7f4eb5db8a0af8.svg" class="img-logo">
+        <span><div class="blog-label">blog</div></span>
+      </a>
+
+      <!-- the toggle button -->
+      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="navbar-toggler-icon"></span>
+        <span class="sr-only">Toggle navigation</span><!-- only for screen readers -->
+      </button>
+
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav mr-auto">
+
+          <!-- first item = dropdown search -->
+          <li class="nav-item">
+            <div class="dropdown search-box-margin">
+
+            
+              <div class="form-inline">
+                 
+
+                <input data-toggle="dropdown" placeholder="Search..." id="search-box" class="form-control form-control-sm search-input dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+
+
+                <div class="dropdown-menu" id="search-dropdown">
+                  <a role='presentation' class='dropdown-item search-results'> Type more.... </a>
+                </div>
+
+              </div>
+
+
+
+            <!-- the below line will pass "search word" to search.html -->
+
+            <!--
+            <form class="form-inline" action="/blog/search" method="get">
+               
+
+
+              <label for="search_box">Search</label>
+              <input data-toggle="dropdown" type="text" name="query" placeholder="Search..." id="search-box" class="form-control form-control-sm search-input dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+
+              <div class="dropdown-menu" id="search-dropdown">
+                  <a role='presentation' class='dropdown-item search-results'> Type more.... </a>
+              </div>
+
+              <input type="submit" value="search">
+
+            </form>
+            -->
+
+            <!-- end of form -->
+
+
+            </div>
+          </li>
+        </ul>
+
+        
+
+        <!-- every link on the right side -->
+        <ul class="nav navbar-nav navbar-right nav-icon-size-reduce">
+          
+          <li class="nav-item">
+             
+              <a href="/blog/" class="nav-link">
+                <i class="fa fa-home"></i> Home
+              </a>
+            
+          </li>
+          
+          <li class="nav-item">
+             
+              <a href="/blog/posts/" class="nav-link">
+                <i class="fa fa-file-text-o"></i> Posts
+              </a>
+            
+          </li>
+          
+          <li class="nav-item">
+             
+              <a href="//www.elitmus.com/" class="nav-link">
+                <i class="el el-elitmuslogo"></i> eLitmus
+              </a>
+            
+          </li>
+          
+
+          <!-- feed is the last link -->
+          <li class="nav-item">
+            <a href="/blog/feed.xml" class="nav-link" title="Atom/RSS feed">
+              <i class="fa fa-rss"></i> Feed
+            </a>
+          </li>
+        </ul>
+
+
+
+      </div> <!-- /.navbar-collapse -->
+
+  </nav><!--[if lt IE 9]><div class="upgrade"><strong><a href="https://whatbrowser.org/">Your browser is quite old!</strong> Why not upgrade to a different browser to better enjoy this site?</a></div><![endif]-->
+</header>
+<!-- 
+
+  <div class="search-wrapper">
+    <div class="search-form">
+      <input type="text" class="search-field" placeholder="Search...">
+      <i class="icon-remove-sign icon-2x"></i>
+      <ul class="search-results post-list"></ul> -->
+<!-- /.search-results -->
+<!-- </div> -->
+<!-- /.search-form -->
+<!-- </div> -->
+<!-- ./search-wrapper -->
+<!--  -->
+
+  
+
+  <div class="container-fluid">
+
+  <div class="row">
+
+
+    <div class="col-md-2"></div>
+      <div class="col-md-8">
+        
+
+        <div id="main" role="main" class="marginal">
+          <article class="entry">
+
+            
+
+            <div>
+              <header>
+                <span class="entry-tags">
+                  
+                    <a href="/blog/tags/#AWS" title="Pages tagged AWS">AWS</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#AWS SES" title="Pages tagged AWS SES">AWS SES</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#AWS SNS" title="Pages tagged AWS SNS">AWS SNS</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#AWS Cloudwatch" title="Pages tagged AWS Cloudwatch">AWS Cloudwatch</a>
+                    
+                  
+
+                  <div class=' social-sharing pull-right'>        
+     
+</div>
+
+                </span>
+              
+                
+                  <h1 class="no-padding">How to setup AWS Cloudwatch alarm for your SES reputation metrics</h1>
+                
+              </header>
+            </div>
+           
+            <div>
+              <div>
+                <span class='badge badge-warning'> <a href="/blog/categories/technology/index.html" > technology </a></span>
+              </div>
+
+              
+
+              <div class="post-content-justify">
+                <p>Amazon Simple Email Service (SES) is an email platform that offers a straightforward and cost-effective way for you to send and receive emails using your own email addresses and domains.</p>
+
+<p>AWS SES has associated <a href="https://docs.aws.amazon.com/pinpoint/latest/userguide/channels-email-deliverability-dashboard-bounce-complaint.html" target="_blank" style="color: blue;">reputation metrics (Bounce &amp; Complaint rate)</a>, and if these metrics exceed the threshold limit, AWS may disable your email service, potentially causing a significant impact on your business.</p>
+
+<p>Why not create an alarm that monitors these reputation metrics and notifies you when they approach the threshold value? This way, you can prevent email service downtime.</p>
+
+<p>Fortunately, AWS provides a few services that, when combined, can help you easily set up the SES reputation metrics alarm.</p>
+
+<p><img src="/blog/images/aws-cloudwatch-alarm-for-ses-monitoring/aws-cloudwatch-alarm-architecture.png" alt="Alarm Architecture" /></p>
+
+<p><strong>Amazon Simple Email Service</strong></p>
+
+<p>I recommend following <a href="https://www.sitepoint.com/deliver-the-mail-with-amazon-ses-and-rails/" target="_blank" style="color: blue;">deliver the mail with Amazon SES and Rails</a> 
+  article to set up AWS SES for your Ruby on Rails application, as I’ll be using Ruby on Rails as my backend language.</p>
+
+<p><strong>Amazon Simple Notification Service</strong></p>
+
+<p>Amazon Simple Notification Service (SNS) is a web service that coordinates and manages message delivery from publishers to subscribers. You can learn more about it <a href="https://www.sitepoint.com/deliver-the-mail-with-amazon-ses-and-rails/" target="_blank" style="color: blue;">here</a>.</p>
+
+<p>We will configure SNS to send notifications to both an email address and an API endpoint in your backend server.</p>
+
+<ul>
+  <li><strong>Steps to create SNS topic</strong>
+    <ul>
+      <li>Go to <a href="https://us-east-1.console.aws.amazon.com/sns/v3/home?region=us-east-1#/dashboard" target="_blank" style="color: blue;"> AWS SNS dashboard</a> and click on the <strong><em>Create Topic</em></strong> button.</li>
+      <li>Select <strong><em>Standard</em></strong> as the type of topic.</li>
+      <li>Type a name for the topic. For example, <strong><em>ses-reputation-notifier</em></strong>.</li>
+      <li>Click on <strong><em>Create topic</em></strong> button.</li>
+    </ul>
+  </li>
+  <li><strong>Steps to create subscription for SNS topic</strong>
+    <ul>
+      <li>Go to <a href="https://us-east-1.console.aws.amazon.com/sns/v3/home?region=us-east-1#/dashboard" target="_blank" style="color: blue;"> AWS SNS dashboard</a> and click on the <strong><em>Create Subscription</em></strong> button.</li>
+      <li>Select the SNS topic you created from Topic ARN</li>
+      <li>Choose the protocol from the list of protocols.
+        <ul>
+          <li><strong>Email</strong>
+            <ul>
+              <li>Select the <strong><em>Email</em></strong> protocol.</li>
+              <li>Enter your email in the endpoint.</li>
+              <li>You’ll receive a subscription URL on your email. Visit this URL to subscribe to the SNS topic.</li>
+            </ul>
+          </li>
+          <li><strong>HTTP/HTTPS</strong>
+            <ul>
+              <li>We will configure the HTTP/HTTPS protocol after creating the public API endpoint in later part of the blog.</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p><strong>Amazon Cloudwatch</strong></p>
+
+<p>Amazon CloudWatch monitors your Amazon Web Services (AWS) resources and the applications you run on AWS in real time. You can use CloudWatch to collect and track metrics, which are variables you can measure for your resources and applications. You can learn more about it <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html" target="_blank" style="color: blue;">here</a>.</p>
+
+<p>For our SES reputation monitoring alarm, we’ll require four alarms. Two will be for monitoring bounce rate, and two will be for monitoring complaint rate. We create two alarms for each reputation metric because the first alarm triggers when the reputation metric exceeds the threshold, and the second alarm triggers when the reputation metric returns to normal.</p>
+
+<p><strong>Steps to create alarm</strong></p>
+<ul>
+  <li>
+    <p><strong>1. Bounce rate (OK -&gt; ALARM)</strong></p>
+
+    <p>This alarm will activate when the Bounce rate surpasses the set limit. This transition will change the alarm state from <strong><em>OK</em></strong> to <strong><em>ALARM.</em></strong></p>
+    <ul>
+      <li>Go to <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html" target="_blank" style="color: blue;">AWS Cloudwatch</a> and click on <strong><em>Create alarm</em></strong>.</li>
+      <li>Click on <strong><em>Select metrics</em></strong> and select <strong><em>SES &gt; Account Metrics &gt; Reputation.BounceRate</em></strong> and click on <strong><em>Select metrics</em></strong></li>
+      <li>Select <strong><em>1 hour</em></strong> from period dropdown.</li>
+      <li>Fill <strong><em>Define the threshold value</em></strong> with 0.05 (suggested by AWS).</li>
+      <li>Click on <strong><em>Additional configuration</em></strong> and from dropdown select <strong><em>Treat Missing data as Good</em></strong>.</li>
+      <li>From <strong><em>Alarm state trigger</em></strong> select <strong><em>In alarm</em></strong>.</li>
+      <li>From <strong><em>Send a notification to…</em></strong> select the SNS topic you created.</li>
+      <li>Type a name for the alarm. For example, <strong><em>bounce-rate-threshold-exceeded</em></strong> and click on <strong><em>Create alarm</em></strong>.</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>2. Bounce rate (ALARM -&gt; OK)</strong></p>
+
+    <p>This alarm will activate when the Bounce rate returns within the specified limit. This transition will change the alarm state from <strong><em>ALARM</em></strong> to <strong><em>OK</em></strong>.</p>
+    <ul>
+      <li>The procedure will be same for as for <strong><em>Alarm #1</em></strong>.</li>
+      <li>Just <strong><em>OK</em></strong> will be selected for <strong><em>Alarm state trigger</em></strong>.</li>
+      <li>Type a name for the alarm. for example, <strong><em>bounce-rate-threshold-inlimit</em></strong></li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>3. Complaint rate (OK -&gt; ALARM)</strong></p>
+
+    <p>This alarm will activate when the Complaint rate surpasses the set limit. This transition will change the alarm state from <strong><em>OK</em></strong> to <strong><em>ALARM.</em></strong></p>
+    <ul>
+      <li>Go to <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html" target="_blank" style="color: blue;">AWS Cloudwatch</a> and click on <strong><em>Create alarm</em></strong>.</li>
+      <li>Click on <strong><em>Select metrics</em></strong> and select <strong><em>SES &gt; Account Metrics &gt; Reputation.ComplaintRate</em></strong> and click on <strong><em>Select metrics</em></strong></li>
+      <li>Select <strong><em>1 hour</em></strong> from period dropdown.</li>
+      <li>Fill <strong><em>Define the threshold value</em></strong> with 0.001 (suggested by AWS).</li>
+      <li>Click on <strong><em>Additional configuration</em></strong> and from dropdown select <strong><em>Treat Missing data as Good</em></strong>.</li>
+      <li>From <strong><em>Alarm state trigger</em></strong> select <strong><em>In alarm</em></strong>.</li>
+      <li>From <strong><em>Send a notification to…</em></strong> select the SNS topic you created.</li>
+      <li>Type a name for the alarm. For example, <strong><em>complaint-rate-threshold-exceeded</em></strong> and click on <strong><em>Create alarm</em></strong>.</li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>4. Complaint rate (ALARM -&gt; OK)</strong></p>
+
+    <p>This alarm will activate when the Complaint rate returns within the specified limit. This transition will change the alarm state from <strong><em>ALARM</em></strong> to <strong><em>OK.</em></strong></p>
+    <ul>
+      <li>The procedure will be same for as for <strong><em>Alarm #3</em></strong>.</li>
+      <li>Just <strong><em>OK</em></strong> will be selected for <strong><em>Alarm state trigger</em></strong>.</li>
+      <li>Type a name for the alarm. for example, <strong><em>complaint-rate-threshold-inlimit</em></strong></li>
+    </ul>
+  </li>
+</ul>
+
+<p><strong>API endpoint to receive POST request</strong></p>
+
+<p>You’ll need an API endpoint to receive POST requests from AWS SNS.</p>
+
+<p>Create a file in <code>app &gt; controllers &gt; sns_notification_controller.rb</code></p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">    </span>class<span class="w"> </span>SnsNotificationController<span class="w"> </span>&lt;<span class="w"> </span>ApplicationController
+<span class="w">      </span>skip_before_action<span class="w"> </span>:verify_authenticity_token
+<span class="w">      </span>before_action<span class="w"> </span>:authenticate_request
+
+<span class="w">      </span>def<span class="w"> </span>ses_reputation_notifier
+<span class="w">        </span><span class="k">case</span><span class="w"> </span>message_body<span class="o">[</span><span class="s1">&#39;Type&#39;</span><span class="o">]</span>
+<span class="w">        </span>when<span class="w"> </span><span class="s1">&#39;SubscriptionConfirmation&#39;</span>
+<span class="w">          </span>Rails.logger.error<span class="o">(</span>message_body<span class="o">[</span><span class="s1">&#39;SubscribeURL&#39;</span><span class="o">])</span>
+<span class="w">        </span>when<span class="w"> </span><span class="s1">&#39;Notification&#39;</span>
+<span class="w">          </span><span class="nv">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>JSON.parse<span class="o">(</span>message_body<span class="o">[</span><span class="s1">&#39;Message&#39;</span><span class="o">])</span>
+
+<span class="w">          </span><span class="nv">alarm_active</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>message<span class="o">[</span><span class="s1">&#39;NewStateValue&#39;</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;ALARM&#39;</span>
+<span class="w">          </span>//<span class="w"> </span>Your<span class="w"> </span>logic<span class="w"> </span>based<span class="w"> </span>on<span class="w"> </span>alarm<span class="w"> </span>status
+<span class="w">        </span>end
+
+<span class="w">        </span>head<span class="w"> </span>:ok
+<span class="w">      </span>end
+
+<span class="w">      </span>private
+
+<span class="w">        </span>def<span class="w"> </span>authenticate_request
+<span class="w">          </span>head<span class="w"> </span>:unauthorized<span class="w"> </span><span class="k">if</span><span class="w"> </span>raw_post.blank?<span class="w"> </span><span class="o">||</span><span class="w"> </span>!message_verifier.authentic?<span class="o">(</span>raw_post<span class="o">)</span>
+<span class="w">        </span>end
+
+<span class="w">        </span>def<span class="w"> </span>raw_post
+<span class="w">          </span>@raw_post<span class="w"> </span><span class="o">||=</span><span class="w"> </span>request.raw_post
+<span class="w">        </span>end
+
+<span class="w">        </span>def<span class="w"> </span>message_body
+<span class="w">          </span>@message_body<span class="w"> </span><span class="o">||=</span><span class="w"> </span>JSON.parse<span class="o">(</span>raw_post<span class="o">)</span>
+<span class="w">        </span>end
+
+<span class="w">        </span>def<span class="w"> </span>message_verifier
+<span class="w">          </span>@message_verifier<span class="w"> </span><span class="o">||=</span><span class="w"> </span>Aws::SNS::MessageVerifier.new
+<span class="w">        </span>end
+<span class="w">    </span>end
+<span class="w">  </span></code></pre></figure>
+
+<p>The code above uses the official <a href="https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SNS/Client.html" target="_blank" style="color: blue;">AWS SNS SDK</a>.</p>
+
+<p>Add a route for the <strong><em>ses_reputation_notifier</em></strong> action in the <strong><em>sns_notification</em></strong> within the <code>config/routes.rb</code> file.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>post<span class="w"> </span><span class="s1">&#39;/ses_reputation_notifier&#39;</span>,<span class="w"> </span>to:<span class="w"> </span><span class="s1">&#39;sns_notification#ses_reputation_notifier&#39;</span></code></pre></figure>
+
+<p>The API endpoint needs to be a public endpoint so that SNS can send notifications without requiring any token. Since it’s a public endpoint, we need to verify the authenticity of the request to ensure it comes from SNS.</p>
+
+<p>There are two types of notifications sent by SNS:</p>
+
+<ol>
+  <li>Subscription Confirmation</li>
+  <li>Notifications</li>
+</ol>
+
+<p>Before being able to receive notifications, we must confirm the subscription by visiting the subscribeUrl sent in the request body. That’s why we log the subscribeURL. Once you visit that URL, you’ll be subscribed to the SNS topic. After subscription, you’ll start receiving notifications.</p>
+
+<p><strong>Steps to create HTTP/HTTPS subscription for SNS topic</strong></p>
+<ul>
+  <li>Select <strong><em>HTTP</em></strong> or <strong><em>HTTPS</em></strong> protocol.</li>
+  <li>Enter the public API endpoint URL in the endpoint field. For example: <strong><em>https://your-domain/ses_reputation_notifier</em></strong></li>
+  <li>A POST request will be sent to the API endpoint, and the subscription URL will be logged (as specified in the code above). Visit this URL to confirm the subscription.</li>
+</ul>
+
+<p>Now, your SNS topic is configured to publish messages to the specified email and API endpoint.</p>
+
+<p><strong>Conclusion</strong></p>
+
+<p>Now that we’ve set up a CloudWatch alarm to monitor SES reputation metrics, it will notify both via email and API endpoint using SNS. With the notifications received by the server, you can ensure that any potential issues won’t significantly impact the current flow.</p>
+
+<p><strong>References</strong></p>
+
+<ol>
+  <li>AWS SES - <a href="https://www.sitepoint.com/deliver-the-mail-with-amazon-ses-and-rails/" target="_blank" style="color: blue;">Here</a></li>
+  <li>AWS SNS - <a href="https://aws.amazon.com/sns/" target="_blank" style="color: blue;">Here</a></li>
+  <li>AWS Cloudwatch - <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html" target="_blank" style="color: blue;">Here</a></li>
+  <li>AWS SNS SDK (Ruby) - <a href="https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SNS/Client.html" target="_blank" style="color: blue;">Here</a></li>
+  <li>Reputation monitoring alarms using CloudWatch - <a href="https://docs.aws.amazon.com/ses/latest/dg/reputationdashboard-cloudwatch-alarm.html" target="_blank" style="color: blue;">Here</a></li>
+</ol>
+
+
+              </div>
+              <div class="entry-tags">
+                <div class=' social-sharing pull-right'>        
+     
+</div>
+              </div>
+              <div class="clearfix"><br/></div>
+
+                <div class="panel panel-default">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+      <div class="panel-body">
+        <div class="container-fluid">
+
+          <div class="row">
+            <div class="col-sm-12 col-md-4">
+              <center>
+                <img src="/blog/images/vikastiwari14.jpg" alt="Vikas Tiwari photo" class="author-photo img-circle img-responsive"/>
+                
+                <span class="author vcard">
+                  <span class="fn">Vikas Tiwari</span>
+                </span>
+
+                <div class="nav-icon-size-reduce social-icons">
+                  
+                  
+                  
+                  
+
+                  
+                    <a href="https://linkedin.com/in/vikastiwari14" title="Vikas Tiwari on LinkedIn" target="_blank"><i class="fa fa-linkedin "></i></a>
+                  
+
+                  
+
+                  
+                    <a href="https://instagram.com/vikastiwari14_" title="Vikas Tiwari on Instagram" target="_blank"><i class="fa fa-instagram "></i></a>
+                  
+
+                  
+
+                  
+                    <a href="https://github.com/VikasTiwari14" title="Vikas Tiwari on Github" target="_blank"><i class="fa fa-github "></i></a>
+                  
+
+                     
+                </div><!-- /.social-icons -->
+              </center>
+            </div>
+
+            <div class="col-sm-12 col-md-8">
+              
+                <span class="author-bio">Vikas Tiwari is a member of technology at eLitmus who loves taking on new challenges. Beyond the tech world, he's a fitness enthusiast and love to explore new places.</span>
+              
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+  
+
+  
+
+</div>
+                <div id='discourse-comments'></div>
+
+<script type="text/javascript">
+  DiscourseEmbed = { discourseUrl: 'https://adda.elitmus.com/',
+                     discourseEmbedUrl: 'https://www.elitmus.com/blog/technology/how-to-setup-aws-cloudwatch-alarm-for-your-ses-reputation-metrics/'
+                   };
+
+  (function() {
+    var d = document.createElement('script'); 
+    d.type = 'text/javascript'; 
+    d.async = true;
+    d.src = DiscourseEmbed.discourseUrl + 'javascripts/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(d);
+  })();
+</script>
+
+
+                
+              </div><!-- /.entry-content -->
+            </div><!-- /.entry-wrapper -->
+
+          </article>
+
+          <nav class="navbar nav-justified" role="navigation">
+            <ul class="nav pager">
+              
+                <li class="previous showElem mr-auto"><a href="/blog/technology/puma-from-daemonization-to-process-control-with-systemctl-and-monit/" title="Puma: From Daemonization to Process Control with Systemctl and Monit">&larr;<span class="showPrevNex"> Previous </span> </a></li>
+              
+              
+                <li class="next showElem ml-auto"><a href="/blog/technology/an-in-depth-look-at-database-indexing/" title="An in-depth look at Database Indexing"> <span class='showPrevNex'> Next </span> &rarr; </a></li>
+              
+            </ul>
+          </nav>
+        
+        </div><!-- /#main -->
+
+      <!--/col-md-2 -->
+      <div class="col-md-2">
+
+      </div>
+
+    </div><!-- /row -->
+    </div>
+    <div class="footer-color">
+      <footer role="contentinfo">
+        <center>
+            <span class='footer-text'>
+    &copy;  2005-<script> document.write(new Date().getFullYear()) </script>, eLitmus.com. | <a href="/terms_of_use/">Terms of Use</a> &middot; <a href="/privacy_policy/">Privacy Policy</a>
+
+  </span>
+        </center>
+      </footer>
+    </div><!-- /.footer-wrapper -->
+    
+
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-CB7H9KN61P"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+
+		gtag('config', 'G-CB7H9KN61P');
+	</script>
+
+
+
+<!-- Load Modernizr -->
+<script src="/blog/assets/js/vendor/modernizr-2.6.2.custom.min.js"></script>
+
+<!-- adding jquery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- end of jquery -->
+
+<script src="/blog/assets/js/scripts.min.js"></script>
+<script src="/blog/assets/js/lunr.min.js"></script>
+<script src="/blog/assets/js/lunr-search.js"></script>
+<script src="/blog/assets/js/plugins/headroom.min.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+<script src="/blog/assets/js/vendor/forkit.js"></script>
+  
+
+  </body>
+</html>

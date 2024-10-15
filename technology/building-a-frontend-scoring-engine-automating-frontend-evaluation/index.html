@@ -56,6 +56,10 @@
 
     
 
+    
+
+    
+
 
 
 
@@ -436,53 +440,53 @@ This test aims to assess the behavior of navigation and redirection implemented 
 
 <figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="c1"># Use the node:slim base image</span>
 
-FROM node:slim
+FROM<span class="w"> </span>node:slim
 
 <span class="c1"># Set an environment variable to skip Puppeteer Chromium download during installation</span>
 
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD <span class="nb">true</span>
-RUN apt-get update <span class="o">&amp;&amp;</span> apt-get install gnupg wget -y <span class="o">&amp;&amp;</span> <span class="se">\</span>
- wget --quiet --output-document<span class="o">=</span>- https://dl-ssl.google.com/linux/linux_signing_key.pub <span class="p">|</span> gpg --dearmor &gt; /etc/apt/trusted.gpg.d/google-archive.gpg <span class="o">&amp;&amp;</span> <span class="se">\</span>
- sh -c <span class="s1">&#39;echo &quot;deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main&quot; &gt;&gt; /etc/apt/sources.list.d/google.list&#39;</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
- apt-get update <span class="o">&amp;&amp;</span> <span class="se">\</span>
- apt-get install google-chrome-stable -y --no-install-recommends <span class="o">&amp;&amp;</span> <span class="se">\</span>
- rm -rf /var/lib/apt/lists/<span class="se">\*</span>
+ENV<span class="w"> </span>PUPPETEER_SKIP_CHROMIUM_DOWNLOAD<span class="w"> </span><span class="nb">true</span>
+RUN<span class="w"> </span>apt-get<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>gnupg<span class="w"> </span>wget<span class="w"> </span>-y<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>wget<span class="w"> </span>--quiet<span class="w"> </span>--output-document<span class="o">=</span>-<span class="w"> </span>https://dl-ssl.google.com/linux/linux_signing_key.pub<span class="w"> </span><span class="p">|</span><span class="w"> </span>gpg<span class="w"> </span>--dearmor<span class="w"> </span>&gt;<span class="w"> </span>/etc/apt/trusted.gpg.d/google-archive.gpg<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;echo &quot;deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main&quot; &gt;&gt; /etc/apt/sources.list.d/google.list&#39;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>apt-get<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>google-chrome-stable<span class="w"> </span>-y<span class="w"> </span>--no-install-recommends<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
+<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/var/lib/apt/lists/<span class="se">\*</span>
 
 <span class="c1"># Set the working directory inside the container</span>
 
-WORKDIR /usr/src/app
+WORKDIR<span class="w"> </span>/usr/src/app
 
 <span class="c1"># Copy the package.json file to the working directory</span>
 
-COPY package.json ./
+COPY<span class="w"> </span>package.json<span class="w"> </span>./
 
 <span class="c1"># Install project dependencies using npm</span>
 
-RUN npm install
+RUN<span class="w"> </span>npm<span class="w"> </span>install
 
 <span class="c1"># Expose port 3000 to allow access to the app outside the container</span>
 
-EXPOSE <span class="m">3000</span>
+EXPOSE<span class="w"> </span><span class="m">3000</span>
 
 <span class="c1"># Run the app using the &quot;npm test&quot; command when the container starts</span>
 
-CMD <span class="o">[</span><span class="s2">&quot;npm&quot;</span>, <span class="s2">&quot;test&quot;</span><span class="o">]</span></code></pre></figure>
+CMD<span class="w"> </span><span class="o">[</span><span class="s2">&quot;npm&quot;</span>,<span class="w"> </span><span class="s2">&quot;test&quot;</span><span class="o">]</span></code></pre></figure>
 
 <h4 id="build-command">Build command:</h4>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>docker build -t bhushan21z/puppchrome .</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>bhushan21z/puppchrome<span class="w"> </span>.</code></pre></figure>
 
 <h4 id="publish-it-to-docker-hub">Publish it to Docker Hub:</h4>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>docker push bhushan21z/puppchrome:tagname</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>docker<span class="w"> </span>push<span class="w"> </span>bhushan21z/puppchrome:tagname</code></pre></figure>
 
 <h4 id="pull-commnd">Pull commnd:</h4>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>docker pull bhushan21z/puppchrome</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>docker<span class="w"> </span>pull<span class="w"> </span>bhushan21z/puppchrome</code></pre></figure>
 
 <h4 id="run-command">Run command:</h4>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>docker run -it --rm -v <span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/files:usr/src/app/files puppeteerchrome</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/files:usr/src/app/files<span class="w"> </span>puppeteerchrome</code></pre></figure>
 
 <h2 id="features-and-architecture"><strong>Features and Architecture</strong></h2>
 
@@ -650,6 +654,10 @@ If you have any questions, doubts or suggestions feel free to reach out to me on
 
         </div>
       </div>
+
+  
+
+  
 
   
 
