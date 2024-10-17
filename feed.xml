@@ -7,13 +7,203 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="/" />
-<updated>2024-10-15T14:18:42+05:30</updated>
+<updated>2024-10-17T14:53:16+05:30</updated>
 <id>/</id>
 <author>
   <name>eLitmus.com</name>
   <uri>/</uri>
   <email>site-admin@elitmus.com</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[Improving Drag in React JS: A Smoother Approach to Draggable Elements]]></title>
+  <link rel="alternate" type="text/html" href="/technology/improving-drag-in-reactjs-a-smoother-approach-to-draggable-elements/"/>
+  <id>/technology/improving-drag-in-reactjs-a-smoother-approach-to-draggable-elements</id>
+  <updated>2024-10-15 19:39:07 +0530T00:00:00-00:00</updated>
+  <published>2024-10-15T00:00:00+05:30</published>
+  
+  <author>
+    <name>eLitmus.com</name>
+    <uri></uri>
+    <email>site-admin@elitmus.com</email>
+  </author>
+  <category scheme="/tags/#technology" term="technology" /><category scheme="/tags/#javascript" term="javascript" /><category scheme="/tags/#ReactJS" term="ReactJS" />
+  <content type="html">
+  
+    &lt;p&gt;When building interactive web components, such as a &lt;code&gt;draggable&lt;/code&gt; element, you might run into the problem where the native draggable attribute leaves the original element in place while dragging a semi-transparent copy. This behavior can feel clunky and disrupts the user experience. In this blog, I’ll show you how to build a smooth draggable component where the element itself follows the mouse pointer, rather than a ghost image.&lt;/p&gt;
+
+&lt;div style=&quot; text-align: center; margin: 20px;&quot;&gt;
+  &lt;img src=&quot;/blog/images/draggable-element/draggable.gif&quot; /&gt;
+&lt;/div&gt;
+
+&lt;p&gt;By default, when you set an HTML element to &lt;code&gt;draggable=&quot;true&quot;&lt;/code&gt;, the browser shows a semi-transparent copy of the element that moves with your mouse. While this behavior is native and functional, it often doesn’t look great. You want to make sure that the original element moves smoothly with the cursor without showing the browser’s default ghost image.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Solution&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The solution is to create an overlay element that follows the mouse pointer while hiding the original element during dragging. This approach improves the user experience and creates a smoother drag-and-drop interaction.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Step-by-Step Guide&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Setup Initial State&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;We are going to need some state to handle the Drag &amp;amp; Drop.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;const&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;isDragging,&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;setIsDragging&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;useState&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;const&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;offset,&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;setOffset&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;useState&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;null&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;const&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;position,&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;setPosition&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;useState&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;null&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;const&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;draggableRef&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;useRef&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;null&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;code&gt;isDragging&lt;/code&gt;: This will store the current drag state of the element.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;offset&lt;/code&gt;: When the user starts dragging, they can click anywhere within the draggable element. This stores the coordinate distance between the element’s origin point and the clicked position.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;position&lt;/code&gt;: This will store the current cursor position.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;draggableRef&lt;/code&gt;: We’ll use this to retrieve the origin position of the draggable element.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Create the Draggable Element&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;First, let’s set up a simple HTML element to drag:&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;&amp;lt;div&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;className&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;App&amp;quot;&lt;/span&gt;&amp;gt;
+&lt;span class=&quot;w&quot;&gt;        &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;          &lt;/span&gt;isDragging&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;position&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;            &lt;/span&gt;&amp;lt;div
+&lt;span class=&quot;w&quot;&gt;              &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;className&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;draggable-item draggable-overlay&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;              &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;style&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;top:&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.y&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;px&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;left:&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;position&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.x&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;px&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;            &lt;/span&gt;&amp;gt;
+&lt;span class=&quot;w&quot;&gt;              &lt;/span&gt;Drag&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;Me!
+&lt;span class=&quot;w&quot;&gt;            &lt;/span&gt;&amp;lt;/div&amp;gt;
+&lt;span class=&quot;w&quot;&gt;          &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;        &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;        &lt;/span&gt;&amp;lt;div
+&lt;span class=&quot;w&quot;&gt;          &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;draggableRef&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;          &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;onMouseDown&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;handleMouseDown&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;          &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;className&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&amp;quot;draggable-item&amp;quot;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;          &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;style&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;={&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;opacity:&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;isDragging&lt;/span&gt;&lt;span class=&quot;p&quot;&gt; ? 0 : 1&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;sb&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;        &lt;/span&gt;&amp;gt;
+&lt;span class=&quot;w&quot;&gt;          &lt;/span&gt;Drag&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;Me!
+&lt;span class=&quot;w&quot;&gt;        &lt;/span&gt;&amp;lt;/div&amp;gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;&amp;lt;/div&amp;gt;
+&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Handle Drag Start: Hide the Original and Create an Overlay&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;We are not going to use native &lt;code&gt;drag&lt;/code&gt; events. Instead we will be using &lt;code&gt;onMouseDown&lt;/code&gt; event as it will give us more flexibility.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;const&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;getInitialPosition&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;const&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;draggableElement&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;draggableRef?.current?.getBoundingClientRect&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;        &lt;/span&gt;x:&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;draggableElement?.x&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;||&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;+&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;window.scrollX,&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;//&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;It&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;will&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;handle&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;edge&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;case&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;when&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;there&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;is&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;scroll&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;in&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;the&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;page.
+&lt;span class=&quot;w&quot;&gt;        &lt;/span&gt;y:&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;draggableElement?.y&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;||&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;+&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;window.scrollY,
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;const&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;handleMouseDown&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;event&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;setIsDragging&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;const&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;initialPosition&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;getInitialPosition&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;setOffset&lt;span class=&quot;o&quot;&gt;({&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;        &lt;/span&gt;x:&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;event.clientX&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;-&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;initialPosition.x,
+&lt;span class=&quot;w&quot;&gt;        &lt;/span&gt;y:&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;event.clientY&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;-&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;initialPosition.y,
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;})&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;setPosition&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;initialPosition&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;document.addEventListener&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;mouseup&amp;#39;&lt;/span&gt;,&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;handleMouseUp&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;useEffect&lt;span class=&quot;o&quot;&gt;(()&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;offset&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;document.addEventListener&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;mousemove&amp;#39;&lt;/span&gt;,&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;handleMouseMove&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;document.removeEventListener&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;mousemove&amp;#39;&lt;/span&gt;,&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;handleMouseMove&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;document.removeEventListener&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;mousemove&amp;#39;&lt;/span&gt;,&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;handleMouseMove&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;  &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;,&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;offset&lt;span class=&quot;o&quot;&gt;])&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Move the Overlay with the Mouse&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;In last step we had added an &lt;code&gt;eventListener&lt;/code&gt; on &lt;code&gt;mousemove&lt;/code&gt; event. Now, let’s make sure that on mouse move the overlay follows it.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;const&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;handleMouseMove&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;event&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;!isDragging&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;event.clientX&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&amp;gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;event.clientY&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&amp;gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;        &lt;/span&gt;setPosition&lt;span class=&quot;o&quot;&gt;({&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;          &lt;/span&gt;x:&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;event.clientX&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;-&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;offset?.x&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;||&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;,
+&lt;span class=&quot;w&quot;&gt;          &lt;/span&gt;y:&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;event.clientY&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;-&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;offset?.y&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;||&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;,
+&lt;span class=&quot;w&quot;&gt;        &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;})&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Clean Up on Drag End&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;Once the dragging is finished, we need to remove the overlay and make the original element visible again. Also we need to remove the &lt;code&gt;mousemove&lt;/code&gt; event listener.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;const&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;handleMouseUp&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&amp;gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;setIsDragging&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;setPosition&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;null&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;setOffset&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;null&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;document.removeEventListener&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;&amp;#39;mouseup&amp;#39;&lt;/span&gt;,&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;handleMouseUp&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Styling the Draggable &amp;amp; Overlay&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;Finally, you can style the overlay so that it looks like the original element. This CSS will ensure that the overlay matches the original element’s appearance.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;.draggable-item&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;border:&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;2px&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;solid&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;#707070;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;padding:&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;7px&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;14px&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;border-radius:&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;8px&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;width:&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;fit-content&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;cursor:&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;grab&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;user-select:&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;none&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;background-color:&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;coral&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;.draggable-overlay&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;position:&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;absolute&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;cursor:&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;grabbing&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;      &lt;/span&gt;box-shadow:&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;0px&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;20px&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;25px&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;-5px&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;c1&quot;&gt;#0000001a;&lt;/span&gt;
+&lt;span class=&quot;w&quot;&gt;    &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;strong&gt;Conclusion&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;By using an overlay element to follow the mouse and hiding the original element, you can avoid the default ghost image that the browser shows when dragging. This method provides a smoother and more visually pleasing drag-and-drop experience.&lt;/p&gt;
+
+&lt;p&gt;Feel free to experiment with this solution in your projects, and let me know if you find any other creative ways to enhance the draggable experience!&lt;/p&gt;
+
+  
+  &lt;p&gt;&lt;a href=&quot;/technology/improving-drag-in-reactjs-a-smoother-approach-to-draggable-elements/&quot;&gt;Improving Drag in React JS: A Smoother Approach to Draggable Elements&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on October 15, 2024.&lt;/p&gt;</content>
+</entry>
 
 
 <entry>
@@ -4584,163 +4774,6 @@ With the same approach next, we migrated around 14,00,000 records and, it took 4
 
   
   &lt;p&gt;&lt;a href=&quot;/technology/migration-from-paperclip-to-activestorage/&quot;&gt;Migration from Paperclip to ActiveStorage&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on May 21, 2021.&lt;/p&gt;</content>
-</entry>
-
-
-<entry>
-  <title type="html"><![CDATA[Revamp of our Coding Platform]]></title>
-  <link rel="alternate" type="text/html" href="/technology/revamp-of-our-coding-platform/"/>
-  <id>/technology/revamp-of-our-coding-platform</id>
-  <updated>2021-05-17 20:30:00 +0530T00:00:00-00:00</updated>
-  <published>2021-05-17T00:00:00+05:30</published>
-  
-  <author>
-    <name>eLitmus.com</name>
-    <uri></uri>
-    <email>site-admin@elitmus.com</email>
-  </author>
-  <category scheme="/tags/#Codelitmus" term="Codelitmus" /><category scheme="/tags/#Ruby%20on%20Rails" term="Ruby on Rails" /><category scheme="/tags/#REACT" term="REACT" />
-  <content type="html">
-  
-    &lt;p&gt;&lt;strong&gt;&lt;em&gt;The story of how we took a good platform and made it even better&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Before I start telling you this story, I want to just make this clear that this is not filled with technical details of our implementation but rather with the thought process and the journey of redeveloping our coding platform. I will definitely share my learnings and some technical details of this whole endeavour in later blog posts.&lt;/p&gt;
-
-&lt;p&gt;So, this story starts in October 2019, with me looking at a web application that I inherited from previous developers at the organisation that I had joined 6 months earlier and thinking to myself that, “Here we have a perfectly functional web application that does it’s job pretty well, but still why does it feel so underwhelming and out of place on the modern web”.&lt;/p&gt;
-
-&lt;h3 id=&quot;realization&quot;&gt;Realization&lt;/h3&gt;
-
-&lt;p&gt;What I realized after 2 days of pondering on this topic was that, with the way web applications and their popularity has been growing in our times, The UX had become as important as the function of the web application.&lt;/p&gt;
-
-&lt;p&gt;If that was not clear, then let me explain further. In broad terms we can breakdown the components of a web application into 2 areas -&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;Back End or Server Side components&lt;/li&gt;
-  &lt;li&gt;Front End or User Side components&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The &lt;strong&gt;Back End&lt;/strong&gt; controls the functions of the web application, what it can do and how efficiently it can do that task.&lt;/p&gt;
-
-&lt;p&gt;While the &lt;strong&gt;Front End&lt;/strong&gt; dictates the interaction between the user and the application.&lt;/p&gt;
-
-&lt;p&gt;Now, both of these components need to be as good as the other one to ensure that your web application provides a seamless experience. In the case of our coding platform, this was not true, as we had a great &lt;strong&gt;Back End&lt;/strong&gt; implementation but the &lt;strong&gt;Front End&lt;/strong&gt; felt like it was still stuck in the early 2010s.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/blog/images/revamp-of-our-coding-platform/codelitmus_old_dashboard.png&quot; alt=&quot;Codelitmus Old Dashboard&quot; /&gt;
-&lt;img src=&quot;/blog/images/revamp-of-our-coding-platform/codelitmus_old_pl.png&quot; alt=&quot;Codelitmus Old Dashboard&quot; /&gt;
-&lt;img src=&quot;/blog/images/revamp-of-our-coding-platform/codelitmus_old_editor.png&quot; alt=&quot;Codelitmus Old Dashboard&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;identify-the-issue&quot;&gt;Identify the Issue&lt;/h3&gt;
-
-&lt;p&gt;I knew I wanted to change this platform, but it was important to focus on a few specifics instead of getting bogged down by all the things I wanted to improve. So, I sat down with my colleague &lt;a href=&quot;https://www.shubhampandey.in&quot;&gt;Shubham Pandey&lt;/a&gt; (Please do checkout his blog and website. He has some amazing stuff on there) and we tried to categorise the problems in the platform under a few broad umbrellas.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Experience&lt;/strong&gt; - We used this category to encompass all the problems that were related to causing an inconvenience to the user who was using our platform.
-Some of the problems we put under this category were things like the user not being able to see the list of problems while coding, the user’s event time starting before they can see the editor, not being able to see the result and the problem statement at one time and a few more things similar to these problems.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Interface&lt;/strong&gt; - We brought all the issues regarding design, layouts and colours on the platform under this category.
-Problems like the text being too small in some places, buttons not being of a standard size, the event timer not eye catching feature of the design and again a few more problems similar to these ones.&lt;/p&gt;
-
-&lt;p&gt;The actual list was a lot longer than mentioned here but, all of them importantly came under these two broad categories.&lt;/p&gt;
-
-&lt;h3 id=&quot;setting-objectives&quot;&gt;Setting Objectives&lt;/h3&gt;
-
-&lt;p&gt;Now that we had our problem well-defined, we could move on to coming up with a plan of action to solve these problems. To solve these problems we started thinking like a user who had minimal technical background to give us a set of objectives.&lt;/p&gt;
-
-&lt;p&gt;One of the biggest issues we noticed was the number of clicks that a user had to go through to reach the problem and start coding. On the old platform, a user had to go through the following steps to start their event:&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;=&amp;gt; Login&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;=&amp;gt; Find event on dashboard&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;=&amp;gt; Click on &quot;Load Challenge&quot;&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;=&amp;gt; Find/Select a problem from the list&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;=&amp;gt; Click on &quot;Start&quot;&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;=&amp;gt; Start Coding&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;This was a lot of clicks to start an event on a platform dedicated to hosting coding events and we needed to reduce this as every click meant a complete page reload.&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;strong&gt;Objective 1:&lt;/strong&gt; Reduce the amount of clicks a user needs to reach the Coding Test&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;strong&gt;Objective 2:&lt;/strong&gt; Minimise Page Reloads&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;Another issue was the dated look and feel of the UI. It did not feel slick or intuitive. This might have been a very good UI by 2012 standards but for 2019 it was not up to the mark.&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;strong&gt;Objective 3:&lt;/strong&gt; Modernise the UI&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;We found another issue with the editor we were using on the platform. We used Codemirror on the older platform which although was a good editor, had a few problems that were holding it back. The size of the library was huge, we had to load multiple script tags to access the full set of features, few editing options were missing and some more.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;P.S :&lt;/strong&gt; After the recent Codemirror 6 updates some of these problems were solved but at that time there was no confirmation if that would be the case.&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;strong&gt;Objective 4:&lt;/strong&gt; Use a featureful coding editor with long term support&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;So, these were the 4 objectives that we set out to achieve in the first version of our new coding platform. Even though this was technically an overhaul of an existing project, we had started calling it “new” so that we start thinking for solutions from scratch instead of just updating a few things and complicating the whole code base and the project even more.&lt;/p&gt;
-
-&lt;h3 id=&quot;plan-of-action-and-execution&quot;&gt;Plan of Action and Execution&lt;/h3&gt;
-
-&lt;p&gt;To achieve our 4 objectives, we selected the following libraries and plugins and I will also briefly explain why we opted for these:&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;REACT&lt;/li&gt;
-  &lt;li&gt;Bootstrap&lt;/li&gt;
-  &lt;li&gt;Monaco Editor&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;To achieve &lt;strong&gt;Objectives 1 &amp;amp; 2&lt;/strong&gt;.
-We decided that we had to change flow of the user journey on the platform.
-This was the only way that we could reduce the amount of clicks on the platform and for minimising page reloads, REACT came to our rescue.&lt;/p&gt;
-
-&lt;p&gt;REACT allowed us to develop, what we call a SPA (Single Page Application) quite easily and without much hassle.
-I will explain the specific use cases and advantages of a SPA in a future blog post.
-Also an added benefit was that REACT had a pretty simple integration with our existing application which is a Ruby on Rails based web application. We integrated REACT into our Rails 5.2 application using the webpacker gem.
-After Rails 6 the webpacker gem now comes as standard with Rails so using REACT as front end for a Rails application has become easier now.&lt;/p&gt;
-
-&lt;p&gt;Bootstrap is a very popular library that makes developing beautiful UIs very simple with its plethora of classes and functionality that it offers. So, that was a very obvious choice to achieve &lt;strong&gt;Objective 3&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;p&gt;And lastly Monaco Editor is also a very popular and well-supported coding editor. It is being officially maintained by Microsoft and contains a lot of features that Virtual Studio Code Editor provides on a desktop. That makes it an obvious choice when we were deciding on an editor to use for our platform to achieve &lt;strong&gt;Objective 4&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;p&gt;Now you can check out the redeveloped platform and see how we executed our plan.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/blog/images/revamp-of-our-coding-platform/codelitmus_new_dashboard.png&quot; alt=&quot;Codelitmus New Dashboard&quot; /&gt;
-&lt;img src=&quot;/blog/images/revamp-of-our-coding-platform/codelitmus_new_editor_pl.png&quot; alt=&quot;Codelitmus New Dashboard&quot; /&gt;
-&lt;img src=&quot;/blog/images/revamp-of-our-coding-platform/codelitmus_new_editor_pd.png&quot; alt=&quot;Codelitmus New Dashboard&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Remember, the number of clicks the older platform required to get to the actual coding? That has been reduced to the following now in this new platform:&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;=&amp;gt; Login&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;=&amp;gt; Find event on dashboard&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;=&amp;gt; Click on &quot;Load Challenge&quot;&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;=&amp;gt; Start Event&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;That’s it. Everything was compressed into a single page to provide a more intuitive and easy to use coding platform that would allow the candidate to focus on coding more than worrying about other things. We tried to make everything else like time, problem list, result etc. available at a glance whenever the candidate needs it.&lt;/p&gt;
-
-&lt;p&gt;And if you are wondering, we did add a “Dark Mode” also, which has become quite the rage nowadays in modern web design. Notice the sun and moon icons on the right edge of the top bar that denoted the Light and Dark Modes respectively.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/blog/images/revamp-of-our-coding-platform/codelitmus_new_dashboard_dark.png&quot; alt=&quot;Codelitmus New Dashboard Dark&quot; /&gt;
-&lt;img src=&quot;/blog/images/revamp-of-our-coding-platform/codelitmus_new_editor_pl_dark.png&quot; alt=&quot;Codelitmus New Dashboard Dark&quot; /&gt;
-&lt;img src=&quot;/blog/images/revamp-of-our-coding-platform/codelitmus_new_editor_pd_dark.png&quot; alt=&quot;Codelitmus New Dashboard Dark&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;So, that was the story of how we did a complete overhaul of our coding platform to make it fit for the modern web.
-It took us about 2 months to complete this project, from coming up with the concept, finalising the technical specifications, development, testing and finally deployment.&lt;/p&gt;
-
-&lt;p&gt;The process that we followed is what I still use whenever I have to come up with a solution to any problem. That is probably the biggest learning that I took from this project along with learning REACT and developing Single Page Applications that I use quite a lot now.&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;You can find this article on the author’s blog &lt;a href=&quot;https://piyushswain.github.io/blog&quot;&gt;piyushswain.github.io&lt;/a&gt; as well.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-  
-  &lt;p&gt;&lt;a href=&quot;/technology/revamp-of-our-coding-platform/&quot;&gt;Revamp of our Coding Platform&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on May 17, 2021.&lt;/p&gt;</content>
 </entry>
 
 </feed>
