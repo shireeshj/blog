@@ -142,6 +142,10 @@
 
 <link rel="stylesheet" href="/blog/assets/css/customize.css">
 <link rel="stylesheet" href="/blog/assets/css/forkit.css">
+
+<!-- Prism -->
+<link rel="stylesheet" href="/blog/assets/css/prism.css">
+
 </head>
 
 <body id="post">
@@ -339,10 +343,10 @@
   </li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">    </span>const<span class="w"> </span><span class="o">[</span>isDragging,<span class="w"> </span>setIsDragging<span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>useState<span class="o">(</span><span class="nb">false</span><span class="o">)</span><span class="p">;</span>
-<span class="w">    </span>const<span class="w"> </span><span class="o">[</span>offset,<span class="w"> </span>setOffset<span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>useState<span class="o">(</span>null<span class="o">)</span><span class="p">;</span>
-<span class="w">    </span>const<span class="w"> </span><span class="o">[</span>position,<span class="w"> </span>setPosition<span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>useState<span class="o">(</span>null<span class="o">)</span><span class="p">;</span>
-<span class="w">    </span>const<span class="w"> </span><span class="nv">draggableRef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>useRef<span class="o">(</span>null<span class="o">)</span><span class="p">;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">const [isDragging, setIsDragging] = useState(false);
+    const [offset, setOffset] = useState(null);
+    const [position, setPosition] = useState(null);
+    const draggableRef = useRef(null);</code></pre></figure>
 
 <p><code>isDragging</code>: This will store the current drag state of the element.</p>
 
@@ -360,28 +364,28 @@
   </li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">(</span>
-<span class="w">      </span>&lt;div<span class="w"> </span><span class="nv">className</span><span class="o">=</span><span class="s2">&quot;App&quot;</span>&gt;
-<span class="w">        </span><span class="o">{</span>
-<span class="w">          </span>isDragging<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>position<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">(</span>
-<span class="w">            </span>&lt;div
-<span class="w">              </span><span class="nv">className</span><span class="o">=</span><span class="s2">&quot;draggable-item draggable-overlay&quot;</span>
-<span class="w">              </span><span class="nv">style</span><span class="o">={</span><span class="w"> </span><span class="sb">`</span>top:<span class="w"> </span><span class="si">${</span><span class="nv">position</span><span class="p">.y</span><span class="si">}</span>px<span class="p">;</span><span class="w"> </span>left:<span class="w"> </span><span class="si">${</span><span class="nv">position</span><span class="p">.x</span><span class="si">}</span>px<span class="sb">`</span><span class="o">}</span>
-<span class="w">            </span>&gt;
-<span class="w">              </span>Drag<span class="w"> </span>Me!
-<span class="w">            </span>&lt;/div&gt;
-<span class="w">          </span><span class="o">)</span>
-<span class="w">        </span><span class="o">}</span>
-<span class="w">        </span>&lt;div
-<span class="w">          </span><span class="nv">ref</span><span class="o">={</span>draggableRef<span class="o">}</span>
-<span class="w">          </span><span class="nv">onMouseDown</span><span class="o">={</span>handleMouseDown<span class="o">}</span>
-<span class="w">          </span><span class="nv">className</span><span class="o">=</span><span class="s2">&quot;draggable-item&quot;</span>
-<span class="w">          </span><span class="nv">style</span><span class="o">={</span><span class="sb">`</span>opacity:<span class="w"> </span><span class="si">${</span><span class="nv">isDragging</span><span class="p"> ? 0 : 1</span><span class="si">}</span><span class="p">;</span><span class="sb">`</span><span class="o">}</span>
-<span class="w">        </span>&gt;
-<span class="w">          </span>Drag<span class="w"> </span>Me!
-<span class="w">        </span>&lt;/div&gt;
-<span class="w">      </span>&lt;/div&gt;
-<span class="w">    </span><span class="o">)</span><span class="p">;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">return (
+      &lt;div className=&quot;App&quot;&gt;
+        {
+          isDragging &amp;&amp; position &amp;&amp; (
+            &lt;div
+              className=&quot;draggable-item draggable-overlay&quot;
+              style={ `top: ${position.y}px; left: ${position.x}px`}
+            &gt;
+              Drag Me!
+            &lt;/div&gt;
+          )
+        }
+        &lt;div
+          ref={draggableRef}
+          onMouseDown={handleMouseDown}
+          className=&quot;draggable-item&quot;
+          style={`opacity: ${isDragging ? 0 : 1};`}
+        &gt;
+          Drag Me!
+        &lt;/div&gt;
+      &lt;/div&gt;
+    );</code></pre></figure>
 
 <ul>
   <li>
@@ -391,36 +395,36 @@
   </li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">    </span>const<span class="w"> </span><span class="nv">getInitialPosition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">()</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span><span class="o">{</span>
-<span class="w">      </span>const<span class="w"> </span><span class="nv">draggableElement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>draggableRef?.current?.getBoundingClientRect<span class="o">()</span><span class="p">;</span>
-<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="o">{</span>
-<span class="w">        </span>x:<span class="w"> </span><span class="o">(</span>draggableElement?.x<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="m">0</span><span class="o">)</span><span class="w"> </span>+<span class="w"> </span>window.scrollX,<span class="w"> </span>//<span class="w"> </span>It<span class="w"> </span>will<span class="w"> </span>handle<span class="w"> </span>edge<span class="w"> </span><span class="k">case</span><span class="w"> </span>when<span class="w"> </span>there<span class="w"> </span>is<span class="w"> </span>scroll<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>page.
-<span class="w">        </span>y:<span class="w"> </span><span class="o">(</span>draggableElement?.y<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="m">0</span><span class="o">)</span><span class="w"> </span>+<span class="w"> </span>window.scrollY,
-<span class="w">      </span><span class="o">}</span><span class="p">;</span>
-<span class="w">    </span><span class="o">}</span><span class="p">;</span>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">const getInitialPosition = () =&gt; {
+      const draggableElement = draggableRef?.current?.getBoundingClientRect();
+      return {
+        x: (draggableElement?.x || 0) + window.scrollX, // It will handle edge case when there is scroll in the page.
+        y: (draggableElement?.y || 0) + window.scrollY,
+      };
+    };
 
-<span class="w">    </span>const<span class="w"> </span><span class="nv">handleMouseDown</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">(</span>event<span class="o">)</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span><span class="o">{</span>
-<span class="w">      </span>setIsDragging<span class="o">(</span><span class="nb">true</span><span class="o">)</span><span class="p">;</span>
-<span class="w">      </span>const<span class="w"> </span><span class="nv">initialPosition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>getInitialPosition<span class="o">()</span><span class="p">;</span>
-<span class="w">      </span>setOffset<span class="o">({</span>
-<span class="w">        </span>x:<span class="w"> </span>event.clientX<span class="w"> </span>-<span class="w"> </span>initialPosition.x,
-<span class="w">        </span>y:<span class="w"> </span>event.clientY<span class="w"> </span>-<span class="w"> </span>initialPosition.y,
-<span class="w">      </span><span class="o">})</span><span class="p">;</span>
-<span class="w">      </span>setPosition<span class="o">(</span>initialPosition<span class="o">)</span><span class="p">;</span>
-<span class="w">      </span>document.addEventListener<span class="o">(</span><span class="s1">&#39;mouseup&#39;</span>,<span class="w"> </span>handleMouseUp<span class="o">)</span><span class="p">;</span>
-<span class="w">    </span><span class="o">}</span><span class="p">;</span>
+    const handleMouseDown = (event) =&gt; {
+      setIsDragging(true);
+      const initialPosition = getInitialPosition();
+      setOffset({
+        x: event.clientX - initialPosition.x,
+        y: event.clientY - initialPosition.y,
+      });
+      setPosition(initialPosition);
+      document.addEventListener(&#39;mouseup&#39;, handleMouseUp);
+    };
 
-<span class="w">    </span>useEffect<span class="o">(()</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span><span class="o">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">(</span>offset<span class="o">)</span><span class="w"> </span><span class="o">{</span>
-<span class="w">      </span>document.addEventListener<span class="o">(</span><span class="s1">&#39;mousemove&#39;</span>,<span class="w"> </span>handleMouseMove<span class="o">)</span><span class="p">;</span>
-<span class="w">    </span><span class="o">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="o">{</span>
-<span class="w">      </span>document.removeEventListener<span class="o">(</span><span class="s1">&#39;mousemove&#39;</span>,<span class="w"> </span>handleMouseMove<span class="o">)</span><span class="p">;</span>
-<span class="w">    </span><span class="o">}</span>
+    useEffect(() =&gt; {
+    if (offset) {
+      document.addEventListener(&#39;mousemove&#39;, handleMouseMove);
+    } else {
+      document.removeEventListener(&#39;mousemove&#39;, handleMouseMove);
+    }
 
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">()</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span><span class="o">{</span>
-<span class="w">      </span>document.removeEventListener<span class="o">(</span><span class="s1">&#39;mousemove&#39;</span>,<span class="w"> </span>handleMouseMove<span class="o">)</span><span class="p">;</span>
-<span class="w">    </span><span class="o">}</span><span class="p">;</span>
-<span class="w">  </span><span class="o">}</span>,<span class="w"> </span><span class="o">[</span>offset<span class="o">])</span><span class="p">;</span></code></pre></figure>
+    return () =&gt; {
+      document.removeEventListener(&#39;mousemove&#39;, handleMouseMove);
+    };
+  }, [offset]);</code></pre></figure>
 
 <ul>
   <li>
@@ -430,16 +434,16 @@
   </li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">    </span>const<span class="w"> </span><span class="nv">handleMouseMove</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">(</span>event<span class="o">)</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span><span class="o">{</span>
-<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="o">(</span>!isDragging<span class="o">)</span><span class="w"> </span><span class="k">return</span><span class="p">;</span>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">const handleMouseMove = (event) =&gt; {
+      if (!isDragging) return;
 
-<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="o">(</span>event.clientX<span class="w"> </span>&gt;<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>event.clientY<span class="w"> </span>&gt;<span class="w"> </span><span class="m">0</span><span class="o">)</span><span class="w"> </span><span class="o">{</span>
-<span class="w">        </span>setPosition<span class="o">({</span>
-<span class="w">          </span>x:<span class="w"> </span>event.clientX<span class="w"> </span>-<span class="w"> </span><span class="o">(</span>offset?.x<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="m">0</span><span class="o">)</span>,
-<span class="w">          </span>y:<span class="w"> </span>event.clientY<span class="w"> </span>-<span class="w"> </span><span class="o">(</span>offset?.y<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="m">0</span><span class="o">)</span>,
-<span class="w">        </span><span class="o">})</span><span class="p">;</span>
-<span class="w">      </span><span class="o">}</span>
-<span class="w">    </span><span class="o">}</span><span class="p">;</span></code></pre></figure>
+      if (event.clientX &gt; 0 &amp;&amp; event.clientY &gt; 0) {
+        setPosition({
+          x: event.clientX - (offset?.x || 0),
+          y: event.clientY - (offset?.y || 0),
+        });
+      }
+    };</code></pre></figure>
 
 <ul>
   <li>
@@ -449,13 +453,13 @@
   </li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">    </span>const<span class="w"> </span><span class="nv">handleMouseUp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">()</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span><span class="o">{</span>
-<span class="w">      </span>setIsDragging<span class="o">(</span><span class="nb">false</span><span class="o">)</span><span class="p">;</span>
-<span class="w">      </span>setPosition<span class="o">(</span>null<span class="o">)</span><span class="p">;</span>
-<span class="w">      </span>setOffset<span class="o">(</span>null<span class="o">)</span><span class="p">;</span>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">const handleMouseUp = () =&gt; {
+      setIsDragging(false);
+      setPosition(null);
+      setOffset(null);
 
-<span class="w">      </span>document.removeEventListener<span class="o">(</span><span class="s1">&#39;mouseup&#39;</span>,<span class="w"> </span>handleMouseUp<span class="o">)</span><span class="p">;</span>
-<span class="w">    </span><span class="o">}</span><span class="p">;</span></code></pre></figure>
+      document.removeEventListener(&#39;mouseup&#39;, handleMouseUp);
+    };</code></pre></figure>
 
 <ul>
   <li>
@@ -465,21 +469,21 @@
   </li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">    </span>.draggable-item<span class="w"> </span><span class="o">{</span>
-<span class="w">      </span>border:<span class="w"> </span>2px<span class="w"> </span>solid<span class="w"> </span><span class="c1">#707070;</span>
-<span class="w">      </span>padding:<span class="w"> </span>7px<span class="w"> </span>14px<span class="p">;</span>
-<span class="w">      </span>border-radius:<span class="w"> </span>8px<span class="p">;</span>
-<span class="w">      </span>width:<span class="w"> </span>fit-content<span class="p">;</span>
-<span class="w">      </span>cursor:<span class="w"> </span>grab<span class="p">;</span>
-<span class="w">      </span>user-select:<span class="w"> </span>none<span class="p">;</span>
-<span class="w">      </span>background-color:<span class="w"> </span>coral<span class="p">;</span>
-<span class="w">    </span><span class="o">}</span>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">.draggable-item {
+      border: 2px solid #707070;
+      padding: 7px 14px;
+      border-radius: 8px;
+      width: fit-content;
+      cursor: grab;
+      user-select: none;
+      background-color: coral;
+    }
 
-<span class="w">    </span>.draggable-overlay<span class="w"> </span><span class="o">{</span>
-<span class="w">      </span>position:<span class="w"> </span>absolute<span class="p">;</span>
-<span class="w">      </span>cursor:<span class="w"> </span>grabbing<span class="p">;</span>
-<span class="w">      </span>box-shadow:<span class="w"> </span>0px<span class="w"> </span>20px<span class="w"> </span>25px<span class="w"> </span>-5px<span class="w"> </span><span class="c1">#0000001a;</span>
-<span class="w">    </span><span class="o">}</span></code></pre></figure>
+    .draggable-overlay {
+      position: absolute;
+      cursor: grabbing;
+      box-shadow: 0px 20px 25px -5px #0000001a;
+    }</code></pre></figure>
 
 <p><strong>Conclusion</strong></p>
 
@@ -667,6 +671,9 @@
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 <script src="/blog/assets/js/vendor/forkit.js"></script>
+
+<!-- Prism -->
+<script src="/blog/assets/js/prism.js"></script>
   
 
   </body>

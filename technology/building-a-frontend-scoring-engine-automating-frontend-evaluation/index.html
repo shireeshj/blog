@@ -144,6 +144,10 @@
 
 <link rel="stylesheet" href="/blog/assets/css/customize.css">
 <link rel="stylesheet" href="/blog/assets/css/forkit.css">
+
+<!-- Prism -->
+<link rel="stylesheet" href="/blog/assets/css/prism.css">
+
 </head>
 
 <body id="post">
@@ -438,55 +442,55 @@ This test aims to assess the behavior of navigation and redirection implemented 
 
 <h4 id="dockerfile">Dockerfile:</h4>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="c1"># Use the node:slim base image</span>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"># Use the node:slim base image
 
-FROM<span class="w"> </span>node:slim
+FROM node:slim
 
-<span class="c1"># Set an environment variable to skip Puppeteer Chromium download during installation</span>
+# Set an environment variable to skip Puppeteer Chromium download during installation
 
-ENV<span class="w"> </span>PUPPETEER_SKIP_CHROMIUM_DOWNLOAD<span class="w"> </span><span class="nb">true</span>
-RUN<span class="w"> </span>apt-get<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>gnupg<span class="w"> </span>wget<span class="w"> </span>-y<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
-<span class="w"> </span>wget<span class="w"> </span>--quiet<span class="w"> </span>--output-document<span class="o">=</span>-<span class="w"> </span>https://dl-ssl.google.com/linux/linux_signing_key.pub<span class="w"> </span><span class="p">|</span><span class="w"> </span>gpg<span class="w"> </span>--dearmor<span class="w"> </span>&gt;<span class="w"> </span>/etc/apt/trusted.gpg.d/google-archive.gpg<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
-<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;echo &quot;deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main&quot; &gt;&gt; /etc/apt/sources.list.d/google.list&#39;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
-<span class="w"> </span>apt-get<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
-<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>google-chrome-stable<span class="w"> </span>-y<span class="w"> </span>--no-install-recommends<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
-<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/var/lib/apt/lists/<span class="se">\*</span>
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+RUN apt-get update &amp;&amp; apt-get install gnupg wget -y &amp;&amp; \
+ wget --quiet --output-document=- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor &gt; /etc/apt/trusted.gpg.d/google-archive.gpg &amp;&amp; \
+ sh -c &#39;echo &quot;deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main&quot; &gt;&gt; /etc/apt/sources.list.d/google.list&#39; &amp;&amp; \
+ apt-get update &amp;&amp; \
+ apt-get install google-chrome-stable -y --no-install-recommends &amp;&amp; \
+ rm -rf /var/lib/apt/lists/\*
 
-<span class="c1"># Set the working directory inside the container</span>
+# Set the working directory inside the container
 
-WORKDIR<span class="w"> </span>/usr/src/app
+WORKDIR /usr/src/app
 
-<span class="c1"># Copy the package.json file to the working directory</span>
+# Copy the package.json file to the working directory
 
-COPY<span class="w"> </span>package.json<span class="w"> </span>./
+COPY package.json ./
 
-<span class="c1"># Install project dependencies using npm</span>
+# Install project dependencies using npm
 
-RUN<span class="w"> </span>npm<span class="w"> </span>install
+RUN npm install
 
-<span class="c1"># Expose port 3000 to allow access to the app outside the container</span>
+# Expose port 3000 to allow access to the app outside the container
 
-EXPOSE<span class="w"> </span><span class="m">3000</span>
+EXPOSE 3000
 
-<span class="c1"># Run the app using the &quot;npm test&quot; command when the container starts</span>
+# Run the app using the &quot;npm test&quot; command when the container starts
 
-CMD<span class="w"> </span><span class="o">[</span><span class="s2">&quot;npm&quot;</span>,<span class="w"> </span><span class="s2">&quot;test&quot;</span><span class="o">]</span></code></pre></figure>
+CMD [&quot;npm&quot;, &quot;test&quot;]</code></pre></figure>
 
 <h4 id="build-command">Build command:</h4>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>bhushan21z/puppchrome<span class="w"> </span>.</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">docker build -t bhushan21z/puppchrome .</code></pre></figure>
 
 <h4 id="publish-it-to-docker-hub">Publish it to Docker Hub:</h4>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>docker<span class="w"> </span>push<span class="w"> </span>bhushan21z/puppchrome:tagname</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">docker push bhushan21z/puppchrome:tagname</code></pre></figure>
 
 <h4 id="pull-commnd">Pull commnd:</h4>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>docker<span class="w"> </span>pull<span class="w"> </span>bhushan21z/puppchrome</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">docker pull bhushan21z/puppchrome</code></pre></figure>
 
 <h4 id="run-command">Run command:</h4>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>/files:usr/src/app/files<span class="w"> </span>puppeteerchrome</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">docker run -it --rm -v $(pwd)/files:usr/src/app/files puppeteerchrome</code></pre></figure>
 
 <h2 id="features-and-architecture"><strong>Features and Architecture</strong></h2>
 
@@ -745,6 +749,9 @@ If you have any questions, doubts or suggestions feel free to reach out to me on
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 <script src="/blog/assets/js/vendor/forkit.js"></script>
+
+<!-- Prism -->
+<script src="/blog/assets/js/prism.js"></script>
   
 
   </body>

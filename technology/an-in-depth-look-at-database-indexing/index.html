@@ -144,6 +144,10 @@
 
 <link rel="stylesheet" href="/blog/assets/css/customize.css">
 <link rel="stylesheet" href="/blog/assets/css/forkit.css">
+
+<!-- Prism -->
+<link rel="stylesheet" href="/blog/assets/css/prism.css">
+
 </head>
 
 <body id="post">
@@ -368,13 +372,13 @@
 			<li>
 				Spin up the Docker container by using the official Postgres <a href="https://hub.docker.com/_/postgres" target="_blank" style="color: blue;">image</a>.
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>docker<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span><span class="nv">POSTGRES_PASSWORD</span><span class="o">=</span>secret<span class="w"> </span>--name<span class="w"> </span>pg<span class="w"> </span>postgres</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">docker run -e POSTGRES_PASSWORD=secret --name pg postgres</code></pre></figure>
 
 			</li>
 			<li>
 				Start the Postgres command shell:
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>pg<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>postgres</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">docker exec -it pg psql -U postgres</code></pre></figure>
 
 			</li>
 		</ol>
@@ -387,38 +391,38 @@
 			<li>
 				Create a table named <code>employees</code>:
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">employees</span><span class="p">(</span><span class="n">id</span><span class="w"> </span><span class="nb">serial</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="p">,</span><span class="w"> </span><span class="n">employeeid</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="nb">TEXT</span><span class="p">);</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">create table employees(id serial primary key, employeeid integer, name TEXT);</code></pre></figure>
 
 			</li>
 			<li>
 				Insert into the <code>employees</code> table using the <a href="https://www.postgresql.org/docs/current/functions-srf.html" target="_blank" style="color: blue;">generate_series</a> function:
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="k">create</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="k">replace</span><span class="w"> </span><span class="k">function</span><span class="w"> </span><span class="n">gen_random_string</span><span class="p">(</span><span class="k">length</span><span class="w"> </span><span class="nb">integer</span><span class="p">)</span>
-<span class="k">RETURNS</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="w"> </span><span class="k">as</span>
-<span class="err">$$</span>
-<span class="k">DECLARE</span>
-<span class="k">result</span><span class="w"> </span><span class="nb">VARCHAR</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">;</span>
-<span class="k">BEGIN</span>
-<span class="k">FOR</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="mi">1</span><span class="p">..</span><span class="k">length</span><span class="w"> </span><span class="n">LOOP</span>
-<span class="w">	</span><span class="k">result</span><span class="w"> </span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="k">result</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">chr</span><span class="p">((</span><span class="n">floor</span><span class="p">(</span><span class="n">random</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">26</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">65</span><span class="p">)::</span><span class="nb">integer</span><span class="p">);</span>
-<span class="k">END</span><span class="w"> </span><span class="n">LOOP</span><span class="p">;</span>
-<span class="k">RETURN</span><span class="w"> </span><span class="k">result</span><span class="p">;</span>
-<span class="k">END</span><span class="p">;</span>
-<span class="err">$$</span><span class="w"> </span><span class="k">language</span><span class="w"> </span><span class="n">plpgsql</span><span class="p">;</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">create or replace function gen_random_string(length integer)
+RETURNS VARCHAR as
+$$
+DECLARE
+result VARCHAR := &#39;&#39;;
+BEGIN
+FOR i IN 1..length LOOP
+	result := result || chr((floor(random() * 26) + 65)::integer);
+END LOOP;
+RETURN result;
+END;
+$$ language plpgsql;
 
-<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">EMPLOYEES</span><span class="p">(</span><span class="n">employeeid</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">)</span>
-<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">gen_random_string</span><span class="p">((</span><span class="n">random</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">5</span><span class="p">)::</span><span class="nb">integer</span><span class="p">)</span>
-<span class="k">FROM</span><span class="w"> </span><span class="n">generate_series</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1000000</span><span class="p">);</span></code></pre></figure>
+INSERT INTO EMPLOYEES(employeeid, name)
+SELECT *, gen_random_string((random() * 10 + 5)::integer)
+FROM generate_series(0, 1000000);</code></pre></figure>
 
 			</li>
 			<li>
 				Confirm the result by executing the <code>count</code> query:
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="k">select</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">employees</span><span class="p">;</span>
-<span class="k">count</span>
-<span class="c1">--------</span>
-<span class="w">	</span><span class="mi">1000001</span>
-<span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="k">row</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">select count(*) from employees;
+count
+--------
+	1000001
+(1 row)</code></pre></figure>
 
 			</li>
 		</ol>
@@ -439,10 +443,10 @@
 					<li>
 						<b>Select All Query:</b>
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span><span class="w"> </span><span class="k">explain</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">employees</span><span class="p">;</span>
-<span class="n">QUERY</span><span class="w"> </span><span class="n">PLAN</span>
-<span class="c1">-------------------------------------------------------------</span>
-<span class="n">Seq</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">employees</span><span class="w"> </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">16139</span><span class="p">.</span><span class="mi">01</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">1000001</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">19</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">postgres=# explain select * from employees;
+QUERY PLAN
+-------------------------------------------------------------
+Seq Scan on employees (cost=0.00..16139.01 rows=1000001 width=19)</code></pre></figure>
 
 						<ul style="margin-left: 2rem">
 							<li>
@@ -464,12 +468,12 @@
 					<li>
       			<b>Select All Query with Order By (Indexed Column):</b>
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span><span class="w"> </span><span class="k">create</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="n">employees_employeeid_idx</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">employees</span><span class="p">(</span><span class="n">employeeid</span><span class="p">);</span>
-<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span>
-<span class="n">postgres</span><span class="o">=#</span><span class="w"> </span><span class="k">explain</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">employees</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">employeeid</span><span class="p">;</span>
-<span class="n">QUERY</span><span class="w"> </span><span class="n">PLAN</span>
-<span class="c1">-----------------------------------------------------------------</span>
-<span class="k">Index</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="n">employees_employeeid_idx</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">employees</span><span class="w"> </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">42</span><span class="p">..</span><span class="mi">32122</span><span class="p">.</span><span class="mi">44</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">1000001</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">19</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">postgres=# create index employees_employeeid_idx ON employees(employeeid);
+CREATE INDEX
+postgres=# explain select * from employees order by employeeid;
+QUERY PLAN
+-----------------------------------------------------------------
+Index Scan using employees_employeeid_idx on employees (cost=0.42..32122.44 rows=1000001 width=19)</code></pre></figure>
 
 						<ul style="margin-left: 2rem">
 							<li>
@@ -481,12 +485,12 @@
 					<li>
 						<b>Select All Query with Order By (Non-Indexed Column):</b>
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span><span class="w"> </span><span class="k">explain</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">employees</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
-<span class="n">QUERY</span><span class="w"> </span><span class="n">PLAN</span>
-<span class="c1">--------------------------------------------------------------</span>
-<span class="n">Sort</span><span class="w"> </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">136306</span><span class="p">.</span><span class="mi">96</span><span class="p">..</span><span class="mi">138806</span><span class="p">.</span><span class="mi">96</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">1000001</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">19</span><span class="p">)</span>
-<span class="w">	</span><span class="n">Sort</span><span class="w"> </span><span class="k">Key</span><span class="p">:</span><span class="w"> </span><span class="n">name</span>
-<span class="w">	</span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Seq</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">employees</span><span class="w"> </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">16139</span><span class="p">.</span><span class="mi">01</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">1000001</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">19</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">postgres=# explain select * from employees order by name;
+QUERY PLAN
+--------------------------------------------------------------
+Sort (cost=136306.96..138806.96 rows=1000001 width=19)
+	Sort Key: name
+	-&gt; Seq Scan on employees (cost=0.00..16139.01 rows=1000001 width=19)</code></pre></figure>
 
 						<ul style="margin-left: 2rem">
 							<li>
@@ -498,10 +502,10 @@
 					<li>
 						<b>Select Only ID:</b>
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span><span class="w"> </span><span class="k">explain</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">employees</span><span class="p">;</span>
-<span class="n">QUERY</span><span class="w"> </span><span class="n">PLAN</span>
-<span class="c1">---------------------------------------------------</span>
-<span class="n">Seq</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">employees</span><span class="w"> </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">16139</span><span class="p">.</span><span class="mi">01</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">1000001</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">postgres=# explain select id from employees;
+QUERY PLAN
+---------------------------------------------------
+Seq Scan on employees (cost=0.00..16139.01 rows=1000001 width=4)</code></pre></figure>
 
 						<ul style="margin-left: 2rem">
 							<li>
@@ -513,11 +517,11 @@
 					<li>
 						<b>Select All Query for a Particular ID:</b>
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span><span class="w"> </span><span class="k">explain</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">employees</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
-<span class="n">QUERY</span><span class="w"> </span><span class="n">PLAN</span>
-<span class="c1">-------------------------------------------------------------------</span>
-<span class="k">Index</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="n">employees_pkey</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">employees</span><span class="w"> </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">42</span><span class="p">..</span><span class="mi">8</span><span class="p">.</span><span class="mi">44</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">1</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">19</span><span class="p">)</span>
-<span class="w">	</span><span class="k">Index</span><span class="w"> </span><span class="n">Cond</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">postgres=# explain select * from employees where id = 10;
+QUERY PLAN
+-------------------------------------------------------------------
+Index Scan using employees_pkey on employees (cost=0.42..8.44 rows=1 width=19)
+	Index Cond: (id = 10)</code></pre></figure>
 
 						<ul style="margin-left: 2rem">
 							<li>
@@ -586,14 +590,14 @@ Let’s delve into two scenarios:</p>
 	<li>
 		<b>Index Only Scan</b>
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span><span class="w"> </span><span class="k">EXPLAIN</span><span class="w"> </span><span class="k">ANALYZE</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">employees</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span>
-<span class="w">							</span><span class="n">QUERY</span><span class="w"> </span><span class="n">PLAN</span>
-<span class="c1">-----------------------------------------------------------------------------</span>
-<span class="w"> </span><span class="k">Index</span><span class="w"> </span><span class="k">Only</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="n">employees_pkey</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">employees</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">42</span><span class="p">..</span><span class="mi">4</span><span class="p">.</span><span class="mi">44</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">1</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">2</span><span class="p">.</span><span class="mi">529</span><span class="p">..</span><span class="mi">2</span><span class="p">.</span><span class="mi">542</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">1</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="w">   </span><span class="k">Index</span><span class="w"> </span><span class="n">Cond</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span>
-<span class="w">   </span><span class="n">Heap</span><span class="w"> </span><span class="n">Fetches</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span>
-<span class="w"> </span><span class="n">Planning</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">510</span><span class="w"> </span><span class="n">ms</span>
-<span class="w"> </span><span class="n">Execution</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">.</span><span class="mi">708</span><span class="w"> </span><span class="n">ms</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">postgres=# EXPLAIN ANALYZE select id from employees where id = 100;
+							QUERY PLAN
+-----------------------------------------------------------------------------
+ Index Only Scan using employees_pkey on employees  (cost=0.42..4.44 rows=1 width=4) (actual time=2.529..2.542 rows=1 loops=1)
+   Index Cond: (id = 100)
+   Heap Fetches: 0
+ Planning Time: 0.510 ms
+ Execution Time: 2.708 ms</code></pre></figure>
 
 		If we examine the given query, we retrieve the ID using a filter on the ID column, which serves as the primary key and has an index on it.
 
@@ -618,13 +622,13 @@ Let’s delve into two scenarios:</p>
 	<li>
 		<b>Index Scan</b>
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span><span class="w"> </span><span class="k">EXPLAIN</span><span class="w"> </span><span class="k">ANALYZE</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">employees</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span><span class="p">;</span>
-<span class="w">								</span><span class="n">QUERY</span><span class="w"> </span><span class="n">PLAN</span>
-<span class="c1">----------------------------------------------------------------------------</span>
-<span class="w"> </span><span class="k">Index</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="n">employees_pkey</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">employees</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">42</span><span class="p">..</span><span class="mi">8</span><span class="p">.</span><span class="mi">44</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">1</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">11</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">1</span><span class="p">.</span><span class="mi">250</span><span class="p">..</span><span class="mi">1</span><span class="p">.</span><span class="mi">260</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">1</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="w">   </span><span class="k">Index</span><span class="w"> </span><span class="n">Cond</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span><span class="p">)</span>
-<span class="w"> </span><span class="n">Planning</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">703</span><span class="w"> </span><span class="n">ms</span>
-<span class="w"> </span><span class="n">Execution</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">.</span><span class="mi">655</span><span class="w"> </span><span class="n">ms</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">postgres=# EXPLAIN ANALYZE select name from employees where id = 1000;
+								QUERY PLAN
+----------------------------------------------------------------------------
+ Index Scan using employees_pkey on employees  (cost=0.42..8.44 rows=1 width=11) (actual time=1.250..1.260 rows=1 loops=1)
+   Index Cond: (id = 1000)
+ Planning Time: 0.703 ms
+ Execution Time: 1.655 ms</code></pre></figure>
 
 
 		If we examine the given query, we are retrieving the <code>name</code> using a filter on the ID column, which serves as the primary key and has an index on it.
@@ -633,29 +637,29 @@ Let’s delve into two scenarios:</p>
 		<img src="/blog/images/database-indexing/index-scan.png" width="425" />	
 
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span><span class="w"> </span><span class="k">EXPLAIN</span><span class="w"> </span><span class="k">ANALYZE</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">employees</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">1000</span><span class="p">;</span>
-<span class="w">                      </span><span class="n">QUERY</span><span class="w"> </span><span class="n">PLAN</span>
-<span class="c1">----------------------------------------------------------------------------------------------------------</span>
-<span class="w"> </span><span class="k">Index</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="n">employees_pkey</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">employees</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">42</span><span class="p">..</span><span class="mi">40</span><span class="p">.</span><span class="mi">75</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">1047</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">062</span><span class="p">..</span><span class="mi">1</span><span class="p">.</span><span class="mi">139</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">999</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="w">   </span><span class="k">Index</span><span class="w"> </span><span class="n">Cond</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">1000</span><span class="p">)</span>
-<span class="w"> </span><span class="n">Planning</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">.</span><span class="mi">948</span><span class="w"> </span><span class="n">ms</span>
-<span class="w"> </span><span class="n">Execution</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">.</span><span class="mi">215</span><span class="w"> </span><span class="n">ms</span>
-<span class="p">(</span><span class="mi">4</span><span class="w"> </span><span class="k">rows</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">postgres=# EXPLAIN ANALYZE select name from employees where id &lt; 1000;
+                      QUERY PLAN
+----------------------------------------------------------------------------------------------------------
+ Index Scan using employees_pkey on employees  (cost=0.42..40.75 rows=1047 width=32) (actual time=0.062..1.139 rows=999 loops=1)
+   Index Cond: (id &lt; 1000)
+ Planning Time: 4.948 ms
+ Execution Time: 1.215 ms
+(4 rows)</code></pre></figure>
 
 
 		In this case, we are filtering the record using the filter on the id with '&lt;' operator and filtering out record which have id less than 1000. So the process begins with an Index scanning on the Index table then fetching the rows from the heap. Same as in case of fetching single id.
 		<img src="/blog/images/database-indexing/index-scan.png" width="425" />	
 
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span><span class="w"> </span><span class="k">EXPLAIN</span><span class="w"> </span><span class="k">ANALYZE</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">employees</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1000</span><span class="p">;</span>
-<span class="w">                    </span><span class="n">QUERY</span><span class="w"> </span><span class="n">PLAN</span>
-<span class="c1">---------------------------------------------------------------------------</span>
-<span class="w"> </span><span class="n">Seq</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">employees</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">18639</span><span class="p">.</span><span class="mi">01</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">998953</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">104</span><span class="p">..</span><span class="mi">168</span><span class="p">.</span><span class="mi">884</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">999001</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="w">   </span><span class="n">Filter</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">1000</span><span class="p">)</span>
-<span class="w">   </span><span class="k">Rows</span><span class="w"> </span><span class="n">Removed</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">Filter</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span>
-<span class="w"> </span><span class="n">Planning</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">158</span><span class="w"> </span><span class="n">ms</span>
-<span class="w"> </span><span class="n">Execution</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">198</span><span class="p">.</span><span class="mi">259</span><span class="w"> </span><span class="n">ms</span>
-<span class="p">(</span><span class="mi">5</span><span class="w"> </span><span class="k">rows</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">postgres=# EXPLAIN ANALYZE select name from employees where id &gt; 1000;
+                    QUERY PLAN
+---------------------------------------------------------------------------
+ Seq Scan on employees  (cost=0.00..18639.01 rows=998953 width=32) (actual time=0.104..168.884 rows=999001 loops=1)
+   Filter: (id &gt; 1000)
+   Rows Removed by Filter: 1000
+ Planning Time: 0.158 ms
+ Execution Time: 198.259 ms
+(5 rows)</code></pre></figure>
 
 
 		In this case, we are filtering the record using the filter on the id with '&gt;' operator and filtering out records which have id greater than 1000. So, in this case, as Postgres knows it has to fetch 99% of the data anyway, it prefers to use the Seq Scan on the heap table. Rather than going to the Index table to filter out the records and then again going to the heap to filter those Index-scanned rows.
@@ -666,18 +670,18 @@ Let’s delve into two scenarios:</p>
 		<b>Parallel Seq Scan</b>
 
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span><span class="w"> </span><span class="k">EXPLAIN</span><span class="w"> </span><span class="k">ANALYZE</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">employees</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;WABOY&#39;</span><span class="p">;</span>
-<span class="w">								</span><span class="n">QUERY</span><span class="w"> </span><span class="n">PLAN</span>
-<span class="c1">----------------------------------------------------------------------------</span>
-<span class="w"> </span><span class="n">Gather</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">1000</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">12347</span><span class="p">.</span><span class="mi">44</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">1</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">3</span><span class="p">.</span><span class="mi">970</span><span class="p">..</span><span class="mi">120</span><span class="p">.</span><span class="mi">383</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">1</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="w">   </span><span class="n">Workers</span><span class="w"> </span><span class="n">Planned</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span>
-<span class="w">   </span><span class="n">Workers</span><span class="w"> </span><span class="n">Launched</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span>
-<span class="w">   </span><span class="o">-&gt;</span><span class="w">  </span><span class="n">Parallel</span><span class="w"> </span><span class="n">Seq</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">employees</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">11347</span><span class="p">.</span><span class="mi">34</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">1</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">64</span><span class="p">.</span><span class="mi">894</span><span class="p">..</span><span class="mi">102</span><span class="p">.</span><span class="mi">448</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">0</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="w">		 </span><span class="n">Filter</span><span class="p">:</span><span class="w"> </span><span class="p">((</span><span class="n">name</span><span class="p">)::</span><span class="nb">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;WABOY&#39;</span><span class="p">::</span><span class="nb">text</span><span class="p">)</span>
-<span class="w">		 </span><span class="k">Rows</span><span class="w"> </span><span class="n">Removed</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">Filter</span><span class="p">:</span><span class="w"> </span><span class="mi">333333</span>
-<span class="w"> </span><span class="n">Planning</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">898</span><span class="w"> </span><span class="n">ms</span>
-<span class="w"> </span><span class="n">Execution</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">120</span><span class="p">.</span><span class="mi">850</span><span class="w"> </span><span class="n">ms</span>
-<span class="p">(</span><span class="mi">8</span><span class="w"> </span><span class="k">rows</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">postgres=# EXPLAIN ANALYZE select id from employees where name = &#39;WABOY&#39;;
+								QUERY PLAN
+----------------------------------------------------------------------------
+ Gather  (cost=1000.00..12347.44 rows=1 width=4) (actual time=3.970..120.383 rows=1 loops=1)
+   Workers Planned: 2
+   Workers Launched: 2
+   -&gt;  Parallel Seq Scan on employees  (cost=0.00..11347.34 rows=1 width=4) (actual time=64.894..102.448 rows=0 loops=3)
+		 Filter: ((name)::text = &#39;WABOY&#39;::text)
+		 Rows Removed by Filter: 333333
+ Planning Time: 0.898 ms
+ Execution Time: 120.850 ms
+(8 rows)</code></pre></figure>
 
 
 		If we examine the given query, we are retrieving the <code>id</code> using a filter on the name column, which doesn't have an index on it.
@@ -691,8 +695,8 @@ Let’s delve into two scenarios:</p>
 		Let's create a Bitmap Index on the name column to get started.
 
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span><span class="w"> </span><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">employees_name_idx</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">employees</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
-<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">postgres=# CREATE INDEX employees_name_idx ON employees(name);
+CREATE INDEX</code></pre></figure>
 
 		Let's explore how Bitmap Scan works in PostgreSQL.
 		<br /><br />
@@ -724,16 +728,16 @@ Let’s delve into two scenarios:</p>
 		Now let's filter out the id, name by the name
 
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span><span class="w"> </span><span class="k">EXPLAIN</span><span class="w"> </span><span class="k">ANALYZE</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">employees</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;WABOY&#39;</span><span class="p">;</span>
-<span class="w">                  </span><span class="n">QUERY</span><span class="w"> </span><span class="n">PLAN</span>
-<span class="c1">--------------------------------------------------------------------------------</span>
-<span class="w"> </span><span class="n">Bitmap</span><span class="w"> </span><span class="n">Heap</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">employees</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">111</span><span class="p">.</span><span class="mi">17</span><span class="p">..</span><span class="mi">6277</span><span class="p">.</span><span class="mi">29</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">5000</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">36</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">348</span><span class="p">..</span><span class="mi">0</span><span class="p">.</span><span class="mi">369</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">1</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="w">   </span><span class="k">Recheck</span><span class="w"> </span><span class="n">Cond</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;WABOY&#39;</span><span class="p">::</span><span class="nb">text</span><span class="p">)</span>
-<span class="w">   </span><span class="n">Heap</span><span class="w"> </span><span class="n">Blocks</span><span class="p">:</span><span class="w"> </span><span class="n">exact</span><span class="o">=</span><span class="mi">1</span>
-<span class="w">   </span><span class="o">-&gt;</span><span class="w">  </span><span class="n">Bitmap</span><span class="w"> </span><span class="k">Index</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">employees_name_idx</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">109</span><span class="p">.</span><span class="mi">92</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">5000</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">274</span><span class="p">..</span><span class="mi">0</span><span class="p">.</span><span class="mi">274</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">1</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="w">         </span><span class="k">Index</span><span class="w"> </span><span class="n">Cond</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;WABOY&#39;</span><span class="p">::</span><span class="nb">text</span><span class="p">)</span>
-<span class="w"> </span><span class="n">Planning</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">905</span><span class="w"> </span><span class="n">ms</span>
-<span class="w"> </span><span class="n">Execution</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">734</span><span class="w"> </span><span class="n">ms</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">postgres=# EXPLAIN ANALYZE select id, name from employees where name = &#39;WABOY&#39;;
+                  QUERY PLAN
+--------------------------------------------------------------------------------
+ Bitmap Heap Scan on employees  (cost=111.17..6277.29 rows=5000 width=36) (actual time=0.348..0.369 rows=1 loops=1)
+   Recheck Cond: (name = &#39;WABOY&#39;::text)
+   Heap Blocks: exact=1
+   -&gt;  Bitmap Index Scan on employees_name_idx  (cost=0.00..109.92 rows=5000 width=0) (actual time=0.274..0.274 rows=1 loops=1)
+         Index Cond: (name = &#39;WABOY&#39;::text)
+ Planning Time: 0.905 ms
+ Execution Time: 0.734 ms</code></pre></figure>
 
 		Upon analyzing the provided query, we extract the <code>id</code> and <code>name</code> by applying a filter on the <code>name</code> column, which has an index.
 		<img src="/blog/images/database-indexing/bitmap-scan.png" width="425" />
@@ -756,16 +760,16 @@ Let’s delve into two scenarios:</p>
 		Prerequisite: Let's create a table to learn how to combine indexes.
 
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">NUMBERS</span><span class="p">(</span><span class="n">id</span><span class="w"> </span><span class="nb">serial</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="w"> </span><span class="nb">integer</span><span class="p">);</span>
-<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">NUMBERS</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">)</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="p">(</span><span class="n">random</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="p">)::</span><span class="nb">integer</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">random</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1000</span><span class="p">)::</span><span class="nb">integer</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">random</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2000</span><span class="p">)::</span><span class="nb">integer</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">generate_series</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">10000000</span><span class="p">);</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">CREATE TABLE NUMBERS(id serial primary key, a integer, b integer, c integer);
+INSERT INTO NUMBERS(a, b, c) select (random() * 100)::integer, (random() * 1000)::integer, (random() * 2000)::integer from generate_series(0, 10000000);</code></pre></figure>
 
 	</li>
 	<li>
 		Now let's create index on the columns <code>A</code> and <code>B</code>.
 
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">numbers_a_idx</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">numbers</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
-<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">numbers_b_idx</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">numbers</span><span class="p">(</span><span class="n">b</span><span class="p">);</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">CREATE INDEX numbers_a_idx on numbers(a);
+CREATE INDEX numbers_b_idx on numbers(b);</code></pre></figure>
 
 	</li>
 </ul>
@@ -774,17 +778,17 @@ Let’s delve into two scenarios:</p>
 	<li>
 	<b>Select column <code>c</code> for a particular value of column <code>a</code></b>
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span><span class="w"> </span><span class="k">EXPLAIN</span><span class="w"> </span><span class="k">ANALYZE</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="k">c</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">numbers</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">88</span><span class="p">;</span>
-<span class="w">                  </span><span class="n">QUERY</span><span class="w"> </span><span class="n">PLAN</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">postgres=# EXPLAIN ANALYZE SELECT c FROM numbers WHERE a = 88;
+                  QUERY PLAN
 
-<span class="c1">---------------------------------------------------------------------------------</span>
-<span class="w"> </span><span class="n">Bitmap</span><span class="w"> </span><span class="n">Heap</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">numbers</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">1101</span><span class="p">.</span><span class="mi">09</span><span class="p">..</span><span class="mi">57496</span><span class="p">.</span><span class="mi">05</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">98665</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">41</span><span class="p">.</span><span class="mi">110</span><span class="p">..</span><span class="mi">683</span><span class="p">.</span><span class="mi">631</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">99888</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="w">   </span><span class="k">Recheck</span><span class="w"> </span><span class="n">Cond</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">88</span><span class="p">)</span>
-<span class="w">   </span><span class="n">Heap</span><span class="w"> </span><span class="n">Blocks</span><span class="p">:</span><span class="w"> </span><span class="n">exact</span><span class="o">=</span><span class="mi">45619</span>
-<span class="w">   </span><span class="o">-&gt;</span><span class="w">  </span><span class="n">Bitmap</span><span class="w"> </span><span class="k">Index</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">numbers_a_idx</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">1076</span><span class="p">.</span><span class="mi">42</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">98665</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">29</span><span class="p">.</span><span class="mi">403</span><span class="p">..</span><span class="mi">29</span><span class="p">.</span><span class="mi">403</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">99888</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="w">         </span><span class="k">Index</span><span class="w"> </span><span class="n">Cond</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">88</span><span class="p">)</span>
-<span class="w"> </span><span class="n">Planning</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">.</span><span class="mi">569</span><span class="w"> </span><span class="n">ms</span>
-<span class="w"> </span><span class="n">Execution</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">687</span><span class="p">.</span><span class="mi">152</span><span class="w"> </span><span class="n">ms</span></code></pre></figure>
+---------------------------------------------------------------------------------
+ Bitmap Heap Scan on numbers  (cost=1101.09..57496.05 rows=98665 width=4) (actual time=41.110..683.631 rows=99888 loops=1)
+   Recheck Cond: (a = 88)
+   Heap Blocks: exact=45619
+   -&gt;  Bitmap Index Scan on numbers_a_idx  (cost=0.00..1076.42 rows=98665 width=0) (actual time=29.403..29.403 rows=99888 loops=1)
+         Index Cond: (a = 88)
+ Planning Time: 1.569 ms
+ Execution Time: 687.152 ms</code></pre></figure>
 
 
 		Here, we can analyze that since we have an index only on column <code>a</code>, a bitmap index scan is performed on column <code>a</code>. To retrieve column <code>c</code>, it jumps to the heap and performs a bitmap heap scan.
@@ -794,21 +798,21 @@ Let’s delve into two scenarios:</p>
 		<b>Select column c but we are going to query on both <code>a</code> and <code>b</code> with <code>AND</code> operation</b>
 
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span><span class="w"> </span><span class="k">EXPLAIN</span><span class="w"> </span><span class="k">ANALYZE</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="k">c</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">numbers</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">90</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">500</span><span class="p">;</span>
-<span class="w">                  </span><span class="n">QUERY</span><span class="w"> </span><span class="n">PLAN</span>
-<span class="c1">-----------------------------------------------------------------------------</span>
-<span class="w"> </span><span class="n">Bitmap</span><span class="w"> </span><span class="n">Heap</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">numbers</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">1320</span><span class="p">.</span><span class="mi">12</span><span class="p">..</span><span class="mi">1746</span><span class="p">.</span><span class="mi">88</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">110</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">32</span><span class="p">.</span><span class="mi">300</span><span class="p">..</span><span class="mi">38</span><span class="p">.</span><span class="mi">262</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">107</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="w">   </span><span class="k">Recheck</span><span class="w"> </span><span class="n">Cond</span><span class="p">:</span><span class="w"> </span><span class="p">((</span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">500</span><span class="p">)</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">90</span><span class="p">))</span>
-<span class="w">   </span><span class="n">Heap</span><span class="w"> </span><span class="n">Blocks</span><span class="p">:</span><span class="w"> </span><span class="n">exact</span><span class="o">=</span><span class="mi">107</span>
-<span class="w">   </span><span class="o">-&gt;</span><span class="w">  </span><span class="n">BitmapAnd</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">1320</span><span class="p">.</span><span class="mi">12</span><span class="p">..</span><span class="mi">1320</span><span class="p">.</span><span class="mi">12</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">110</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">32</span><span class="p">.</span><span class="mi">079</span><span class="p">..</span><span class="mi">32</span><span class="p">.</span><span class="mi">081</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">0</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="w">         </span><span class="o">-&gt;</span><span class="w">  </span><span class="n">Bitmap</span><span class="w"> </span><span class="k">Index</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">numbers_b_idx</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">110</span><span class="p">.</span><span class="mi">88</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">9926</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">4</span><span class="p">.</span><span class="mi">494</span><span class="p">..</span><span class="mi">4</span><span class="p">.</span><span class="mi">494</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">9974</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span>
-<span class="p">)</span>
-<span class="w">               </span><span class="k">Index</span><span class="w"> </span><span class="n">Cond</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">500</span><span class="p">)</span>
-<span class="w">         </span><span class="o">-&gt;</span><span class="w">  </span><span class="n">Bitmap</span><span class="w"> </span><span class="k">Index</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">numbers_a_idx</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">1208</span><span class="p">.</span><span class="mi">93</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">111000</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">26</span><span class="p">.</span><span class="mi">799</span><span class="p">..</span><span class="mi">26</span><span class="p">.</span><span class="mi">800</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">99868</span><span class="w"> </span><span class="n">l</span>
-<span class="n">oops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="w">               </span><span class="k">Index</span><span class="w"> </span><span class="n">Cond</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">90</span><span class="p">)</span>
-<span class="w"> </span><span class="n">Planning</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">.</span><span class="mi">362</span><span class="w"> </span><span class="n">ms</span>
-<span class="w"> </span><span class="n">Execution</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">38</span><span class="p">.</span><span class="mi">604</span><span class="w"> </span><span class="n">ms</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">postgres=# EXPLAIN ANALYZE SELECT c FROM numbers WHERE a = 90 AND b = 500;
+                  QUERY PLAN
+-----------------------------------------------------------------------------
+ Bitmap Heap Scan on numbers  (cost=1320.12..1746.88 rows=110 width=4) (actual time=32.300..38.262 rows=107 loops=1)
+   Recheck Cond: ((b = 500) AND (a = 90))
+   Heap Blocks: exact=107
+   -&gt;  BitmapAnd  (cost=1320.12..1320.12 rows=110 width=0) (actual time=32.079..32.081 rows=0 loops=1)
+         -&gt;  Bitmap Index Scan on numbers_b_idx  (cost=0.00..110.88 rows=9926 width=0) (actual time=4.494..4.494 rows=9974 loops=1
+)
+               Index Cond: (b = 500)
+         -&gt;  Bitmap Index Scan on numbers_a_idx  (cost=0.00..1208.93 rows=111000 width=0) (actual time=26.799..26.800 rows=99868 l
+oops=1)
+               Index Cond: (a = 90)
+ Planning Time: 3.362 ms
+ Execution Time: 38.604 ms</code></pre></figure>
 
 
 		Here, we can analyze the following:
@@ -824,22 +828,22 @@ Let’s delve into two scenarios:</p>
 		<b>Select column c but we are going to query on both a and b with <code>OR</code> operation.</b>
 
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span><span class="w"> </span><span class="k">EXPLAIN</span><span class="w"> </span><span class="k">ANALYZE</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="k">c</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">numbers</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">50</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">500</span><span class="p">;</span>
-<span class="w">                </span><span class="n">QUERY</span><span class="w"> </span><span class="n">PLAN</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">postgres=# EXPLAIN ANALYZE SELECT c FROM numbers WHERE A = 50 OR B = 500;
+                QUERY PLAN
 
-<span class="c1">-------------------------------------------------------------------------------</span>
-<span class="w"> </span><span class="n">Bitmap</span><span class="w"> </span><span class="n">Heap</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">numbers</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">1164</span><span class="p">.</span><span class="mi">23</span><span class="p">..</span><span class="mi">57490</span><span class="p">.</span><span class="mi">68</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">101835</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">37</span><span class="p">.</span><span class="mi">957</span><span class="p">..</span><span class="mi">600</span><span class="p">.</span><span class="mi">439</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">109466</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="w">   </span><span class="k">Recheck</span><span class="w"> </span><span class="n">Cond</span><span class="p">:</span><span class="w"> </span><span class="p">((</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">50</span><span class="p">)</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="p">(</span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">500</span><span class="p">))</span>
-<span class="w">   </span><span class="n">Heap</span><span class="w"> </span><span class="n">Blocks</span><span class="p">:</span><span class="w"> </span><span class="n">exact</span><span class="o">=</span><span class="mi">46998</span>
-<span class="w">   </span><span class="o">-&gt;</span><span class="w">  </span><span class="n">BitmapOr</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">1164</span><span class="p">.</span><span class="mi">23</span><span class="p">..</span><span class="mi">1164</span><span class="p">.</span><span class="mi">23</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">101926</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">25</span><span class="p">.</span><span class="mi">625</span><span class="p">..</span><span class="mi">25</span><span class="p">.</span><span class="mi">626</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">0</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="w">         </span><span class="o">-&gt;</span><span class="w">  </span><span class="n">Bitmap</span><span class="w"> </span><span class="k">Index</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">numbers_a_idx</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">1002</span><span class="p">.</span><span class="mi">43</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">92000</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">24</span><span class="p">.</span><span class="mi">309</span><span class="p">..</span><span class="mi">24</span><span class="p">.</span><span class="mi">309</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">99602</span><span class="w"> </span><span class="n">lo</span>
-<span class="n">ops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="w">               </span><span class="k">Index</span><span class="w"> </span><span class="n">Cond</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">50</span><span class="p">)</span>
-<span class="w">         </span><span class="o">-&gt;</span><span class="w">  </span><span class="n">Bitmap</span><span class="w"> </span><span class="k">Index</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">numbers_b_idx</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">110</span><span class="p">.</span><span class="mi">88</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">9926</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">1</span><span class="p">.</span><span class="mi">313</span><span class="p">..</span><span class="mi">1</span><span class="p">.</span><span class="mi">314</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">9974</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span>
-<span class="p">)</span>
-<span class="w">               </span><span class="k">Index</span><span class="w"> </span><span class="n">Cond</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">500</span><span class="p">)</span>
-<span class="w"> </span><span class="n">Planning</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">.</span><span class="mi">135</span><span class="w"> </span><span class="n">ms</span>
-<span class="w"> </span><span class="n">Execution</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">604</span><span class="p">.</span><span class="mi">165</span><span class="w"> </span><span class="n">ms</span></code></pre></figure>
+-------------------------------------------------------------------------------
+ Bitmap Heap Scan on numbers  (cost=1164.23..57490.68 rows=101835 width=4) (actual time=37.957..600.439 rows=109466 loops=1)
+   Recheck Cond: ((a = 50) OR (b = 500))
+   Heap Blocks: exact=46998
+   -&gt;  BitmapOr  (cost=1164.23..1164.23 rows=101926 width=0) (actual time=25.625..25.626 rows=0 loops=1)
+         -&gt;  Bitmap Index Scan on numbers_a_idx  (cost=0.00..1002.43 rows=92000 width=0) (actual time=24.309..24.309 rows=99602 lo
+ops=1)
+               Index Cond: (a = 50)
+         -&gt;  Bitmap Index Scan on numbers_b_idx  (cost=0.00..110.88 rows=9926 width=0) (actual time=1.313..1.314 rows=9974 loops=1
+)
+               Index Cond: (b = 500)
+ Planning Time: 1.135 ms
+ Execution Time: 604.165 ms</code></pre></figure>
 
 
 		Here, we can analyze the following:
@@ -858,8 +862,8 @@ Let’s delve into two scenarios:</p>
 		First, we need to drop the indexes on both columns <code>a</code> and <code>b</code>, and then create a composite index on columns <code>a</code> and <code>b</code>.
 
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span><span class="w"> </span><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">numbers_a_b_idx</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">numbers</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">);</span>
-<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">postgres=# CREATE INDEX numbers_a_b_idx on numbers(a, b);
+CREATE INDEX</code></pre></figure>
 
 	</li>
 	<ol style="margin-left: 2rem">
@@ -867,19 +871,19 @@ Let’s delve into two scenarios:</p>
 			<b>Select column <code>c</code> for a particular value of column <code>a</code></b>
 
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span><span class="w"> </span><span class="k">EXPLAIN</span><span class="w"> </span><span class="k">ANALYZE</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="k">c</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">numbers</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">70</span><span class="p">;</span>
-<span class="w">							</span><span class="n">QUERY</span><span class="w"> </span><span class="n">PLAN</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">postgres=# EXPLAIN ANALYZE SELECT c FROM numbers WHERE a = 70;
+							QUERY PLAN
 
-<span class="c1">-----------------------------------------------------------------------</span>
-<span class="n">Bitmap</span><span class="w"> </span><span class="n">Heap</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">numbers</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">1189</span><span class="p">.</span><span class="mi">93</span><span class="p">..</span><span class="mi">56830</span><span class="p">.</span><span class="mi">03</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">106000</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">38</span><span class="p">.</span><span class="mi">779</span><span class="p">..</span><span class="mi">610</span><span class="p">.</span><span class="mi">173</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">99789</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="w">	</span><span class="k">Recheck</span><span class="w"> </span><span class="n">Cond</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">70</span><span class="p">)</span>
-<span class="w">	</span><span class="n">Heap</span><span class="w"> </span><span class="n">Blocks</span><span class="p">:</span><span class="w"> </span><span class="n">exact</span><span class="o">=</span><span class="mi">45549</span>
-<span class="w">	</span><span class="o">-&gt;</span><span class="w">  </span><span class="n">Bitmap</span><span class="w"> </span><span class="k">Index</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">numbers_a_b_idx</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">1163</span><span class="p">.</span><span class="mi">43</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">106000</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">27</span><span class="p">.</span><span class="mi">796</span><span class="p">..</span><span class="mi">27</span><span class="p">.</span><span class="mi">797</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">99789</span><span class="w"> </span><span class="n">loops</span>
-<span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="w">		</span><span class="k">Index</span><span class="w"> </span><span class="n">Cond</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">70</span><span class="p">)</span>
-<span class="n">Planning</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">.</span><span class="mi">188</span><span class="w"> </span><span class="n">ms</span>
-<span class="n">Execution</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">613</span><span class="p">.</span><span class="mi">305</span><span class="w"> </span><span class="n">ms</span>
-<span class="p">(</span><span class="mi">7</span><span class="w"> </span><span class="k">rows</span><span class="p">)</span></code></pre></figure>
+-----------------------------------------------------------------------
+Bitmap Heap Scan on numbers  (cost=1189.93..56830.03 rows=106000 width=4) (actual time=38.779..610.173 rows=99789 loops=1)
+	Recheck Cond: (a = 70)
+	Heap Blocks: exact=45549
+	-&gt;  Bitmap Index Scan on numbers_a_b_idx  (cost=0.00..1163.43 rows=106000 width=0) (actual time=27.796..27.797 rows=99789 loops
+=1)
+		Index Cond: (a = 70)
+Planning Time: 5.188 ms
+Execution Time: 613.305 ms
+(7 rows)</code></pre></figure>
 
 		
 			Here, we can analyze the following:
@@ -893,22 +897,22 @@ Let’s delve into two scenarios:</p>
 			<b>Select column <code>c</code> for a particular value of column <code>b</code></b>
 			
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span><span class="w"> </span><span class="k">EXPLAIN</span><span class="w"> </span><span class="k">ANALYZE</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="k">c</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">numbers</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">900</span><span class="p">;</span>
-<span class="w">							</span><span class="n">QUERY</span><span class="w"> </span><span class="n">PLAN</span>
-<span class="c1">-----------------------------------------------------------------------</span>
-<span class="n">Gather</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">1000</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">108130</span><span class="p">.</span><span class="mi">94</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">9926</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">24</span><span class="p">.</span><span class="mi">402</span><span class="p">..</span><span class="mi">395</span><span class="p">.</span><span class="mi">326</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">10027</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="w">	</span><span class="n">Workers</span><span class="w"> </span><span class="n">Planned</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span>
-<span class="w">	</span><span class="n">Workers</span><span class="w"> </span><span class="n">Launched</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span>
-<span class="w">	</span><span class="o">-&gt;</span><span class="w">  </span><span class="n">Parallel</span><span class="w"> </span><span class="n">Seq</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">numbers</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">106138</span><span class="p">.</span><span class="mi">34</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">4136</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">9</span><span class="p">.</span><span class="mi">913</span><span class="p">..</span><span class="mi">317</span><span class="p">.</span><span class="mi">809</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">3342</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="w">		</span><span class="n">Filter</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">900</span><span class="p">)</span>
-<span class="w">		</span><span class="k">Rows</span><span class="w"> </span><span class="n">Removed</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">Filter</span><span class="p">:</span><span class="w"> </span><span class="mi">3329991</span>
-<span class="n">Planning</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">574</span><span class="w"> </span><span class="n">ms</span>
-<span class="n">JIT</span><span class="p">:</span>
-<span class="w">	</span><span class="n">Functions</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span>
-<span class="w">	</span><span class="k">Options</span><span class="p">:</span><span class="w"> </span><span class="n">Inlining</span><span class="w"> </span><span class="k">false</span><span class="p">,</span><span class="w"> </span><span class="n">Optimization</span><span class="w"> </span><span class="k">false</span><span class="p">,</span><span class="w"> </span><span class="n">Expressions</span><span class="w"> </span><span class="k">true</span><span class="p">,</span><span class="w"> </span><span class="n">Deforming</span><span class="w"> </span><span class="k">true</span>
-<span class="w">	</span><span class="n">Timing</span><span class="p">:</span><span class="w"> </span><span class="n">Generation</span><span class="w"> </span><span class="mi">4</span><span class="p">.</span><span class="mi">899</span><span class="w"> </span><span class="n">ms</span><span class="p">,</span><span class="w"> </span><span class="n">Inlining</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">000</span><span class="w"> </span><span class="n">ms</span><span class="p">,</span><span class="w"> </span><span class="n">Optimization</span><span class="w"> </span><span class="mi">3</span><span class="p">.</span><span class="mi">039</span><span class="w"> </span><span class="n">ms</span><span class="p">,</span><span class="w"> </span><span class="n">Emission</span><span class="w"> </span><span class="mi">25</span><span class="p">.</span><span class="mi">030</span><span class="w"> </span><span class="n">ms</span><span class="p">,</span><span class="w"> </span><span class="n">Total</span><span class="w"> </span><span class="mi">32</span><span class="p">.</span><span class="mi">968</span><span class="w"> </span><span class="n">ms</span>
-<span class="n">Execution</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">398</span><span class="p">.</span><span class="mi">820</span><span class="w"> </span><span class="n">ms</span>
-<span class="p">(</span><span class="mi">12</span><span class="w"> </span><span class="k">rows</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">postgres=# EXPLAIN ANALYZE SELECT c FROM numbers WHERE b = 900;
+							QUERY PLAN
+-----------------------------------------------------------------------
+Gather  (cost=1000.00..108130.94 rows=9926 width=4) (actual time=24.402..395.326 rows=10027 loops=1)
+	Workers Planned: 2
+	Workers Launched: 2
+	-&gt;  Parallel Seq Scan on numbers  (cost=0.00..106138.34 rows=4136 width=4) (actual time=9.913..317.809 rows=3342 loops=3)
+		Filter: (b = 900)
+		Rows Removed by Filter: 3329991
+Planning Time: 0.574 ms
+JIT:
+	Functions: 12
+	Options: Inlining false, Optimization false, Expressions true, Deforming true
+	Timing: Generation 4.899 ms, Inlining 0.000 ms, Optimization 3.039 ms, Emission 25.030 ms, Total 32.968 ms
+Execution Time: 398.820 ms
+(12 rows)</code></pre></figure>
 
 
 			Here, we can analyze the following:
@@ -923,16 +927,16 @@ Let’s delve into two scenarios:</p>
 			<b>Select column c but we are going to query on both <code>A</code> and <code>B</code> with <code>AND</code> operation</b>
 
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span><span class="w"> </span><span class="k">EXPLAIN</span><span class="w"> </span><span class="k">ANALYZE</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="k">C</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">numbers</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">60</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">600</span><span class="p">;</span>
-<span class="w">							</span><span class="n">QUERY</span><span class="w"> </span><span class="n">PLAN</span>
-<span class="c1">-------------------------------------------------------------------------</span>
-<span class="n">Bitmap</span><span class="w"> </span><span class="n">Heap</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">numbers</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">5</span><span class="p">.</span><span class="mi">44</span><span class="p">..</span><span class="mi">386</span><span class="p">.</span><span class="mi">39</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">98</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">732</span><span class="p">..</span><span class="mi">6</span><span class="p">.</span><span class="mi">281</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">102</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="w">	</span><span class="k">Recheck</span><span class="w"> </span><span class="n">Cond</span><span class="p">:</span><span class="w"> </span><span class="p">((</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">60</span><span class="p">)</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="p">(</span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">600</span><span class="p">))</span>
-<span class="w">	</span><span class="n">Heap</span><span class="w"> </span><span class="n">Blocks</span><span class="p">:</span><span class="w"> </span><span class="n">exact</span><span class="o">=</span><span class="mi">101</span>
-<span class="w">	</span><span class="o">-&gt;</span><span class="w">  </span><span class="n">Bitmap</span><span class="w"> </span><span class="k">Index</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">numbers_a_b_idx</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">5</span><span class="p">.</span><span class="mi">42</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">98</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">513</span><span class="p">..</span><span class="mi">0</span><span class="p">.</span><span class="mi">513</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">102</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="w">		</span><span class="k">Index</span><span class="w"> </span><span class="n">Cond</span><span class="p">:</span><span class="w"> </span><span class="p">((</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">60</span><span class="p">)</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="p">(</span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">600</span><span class="p">))</span>
-<span class="n">Planning</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">756</span><span class="w"> </span><span class="n">ms</span>
-<span class="n">Execution</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p">.</span><span class="mi">659</span><span class="w"> </span><span class="n">ms</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">postgres=# EXPLAIN ANALYZE SELECT C FROM numbers WHERE A = 60 AND B = 600;
+							QUERY PLAN
+-------------------------------------------------------------------------
+Bitmap Heap Scan on numbers  (cost=5.44..386.39 rows=98 width=4) (actual time=0.732..6.281 rows=102 loops=1)
+	Recheck Cond: ((a = 60) AND (b = 600))
+	Heap Blocks: exact=101
+	-&gt;  Bitmap Index Scan on numbers_a_b_idx  (cost=0.00..5.42 rows=98 width=0) (actual time=0.513..0.513 rows=102 loops=1)
+		Index Cond: ((a = 60) AND (b = 600))
+Planning Time: 0.756 ms
+Execution Time: 6.659 ms</code></pre></figure>
 
 
 			Here, the situation remains the same as earlier when we had an index on both columns A and B.
@@ -941,21 +945,21 @@ Let’s delve into two scenarios:</p>
 		<li>
 			<b>Select column c but we are going to query on both <code>A</code> and <code>B</code> with <code>OR</code> operation</b>
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span></span><span class="n">postgres</span><span class="o">=#</span><span class="w"> </span><span class="k">EXPLAIN</span><span class="w"> </span><span class="k">ANALYZE</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="k">C</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">numbers</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">60</span><span class="w">  </span><span class="k">or</span><span class="w"> </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">80</span><span class="p">;</span>
-<span class="w">							</span><span class="n">QUERY</span><span class="w"> </span><span class="n">PLAN</span>
-<span class="c1">------------------------------------------------------------------------</span>
-<span class="n">Gather</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">1000</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">128404</span><span class="p">.</span><span class="mi">51</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">108495</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">20</span><span class="p">.</span><span class="mi">721</span><span class="p">..</span><span class="mi">388</span><span class="p">.</span><span class="mi">512</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">109443</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="w">	</span><span class="n">Workers</span><span class="w"> </span><span class="n">Planned</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span>
-<span class="w">	</span><span class="n">Workers</span><span class="w"> </span><span class="n">Launched</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span>
-<span class="w">	</span><span class="o">-&gt;</span><span class="w">  </span><span class="n">Parallel</span><span class="w"> </span><span class="n">Seq</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">numbers</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">116555</span><span class="p">.</span><span class="mi">01</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">45206</span><span class="w"> </span><span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">8</span><span class="p">.</span><span class="mi">325</span><span class="p">..</span><span class="mi">304</span><span class="p">.</span><span class="mi">804</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">36481</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="w">		</span><span class="n">Filter</span><span class="p">:</span><span class="w"> </span><span class="p">((</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">60</span><span class="p">)</span><span class="w"> </span><span class="k">OR</span><span class="w"> </span><span class="p">(</span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">80</span><span class="p">))</span>
-<span class="w">		</span><span class="k">Rows</span><span class="w"> </span><span class="n">Removed</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">Filter</span><span class="p">:</span><span class="w"> </span><span class="mi">3296853</span>
-<span class="n">Planning</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">.</span><span class="mi">009</span><span class="w"> </span><span class="n">ms</span>
-<span class="n">JIT</span><span class="p">:</span>
-<span class="w">	</span><span class="n">Functions</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span>
-<span class="w">	</span><span class="k">Options</span><span class="p">:</span><span class="w"> </span><span class="n">Inlining</span><span class="w"> </span><span class="k">false</span><span class="p">,</span><span class="w"> </span><span class="n">Optimization</span><span class="w"> </span><span class="k">false</span><span class="p">,</span><span class="w"> </span><span class="n">Expressions</span><span class="w"> </span><span class="k">true</span><span class="p">,</span><span class="w"> </span><span class="n">Deforming</span><span class="w"> </span><span class="k">true</span>
-<span class="w">	</span><span class="n">Timing</span><span class="p">:</span><span class="w"> </span><span class="n">Generation</span><span class="w"> </span><span class="mi">5</span><span class="p">.</span><span class="mi">795</span><span class="w"> </span><span class="n">ms</span><span class="p">,</span><span class="w"> </span><span class="n">Inlining</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">000</span><span class="w"> </span><span class="n">ms</span><span class="p">,</span><span class="w"> </span><span class="n">Optimization</span><span class="w"> </span><span class="mi">2</span><span class="p">.</span><span class="mi">561</span><span class="w"> </span><span class="n">ms</span><span class="p">,</span><span class="w"> </span><span class="n">Emission</span><span class="w"> </span><span class="mi">21</span><span class="p">.</span><span class="mi">798</span><span class="w"> </span><span class="n">ms</span><span class="p">,</span><span class="w"> </span><span class="n">Total</span><span class="w"> </span><span class="mi">30</span><span class="p">.</span><span class="mi">154</span><span class="w"> </span><span class="n">ms</span>
-<span class="n">Execution</span><span class="w"> </span><span class="k">Time</span><span class="p">:</span><span class="w"> </span><span class="mi">397</span><span class="p">.</span><span class="mi">675</span><span class="w"> </span><span class="n">ms</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql">postgres=# EXPLAIN ANALYZE SELECT C FROM numbers WHERE A = 60  or B = 80;
+							QUERY PLAN
+------------------------------------------------------------------------
+Gather  (cost=1000.00..128404.51 rows=108495 width=4) (actual time=20.721..388.512 rows=109443 loops=1)
+	Workers Planned: 2
+	Workers Launched: 2
+	-&gt;  Parallel Seq Scan on numbers  (cost=0.00..116555.01 rows=45206 width=4) (actual time=8.325..304.804 rows=36481 loops=3)
+		Filter: ((a = 60) OR (b = 80))
+		Rows Removed by Filter: 3296853
+Planning Time: 1.009 ms
+JIT:
+	Functions: 12
+	Options: Inlining false, Optimization false, Expressions true, Deforming true
+	Timing: Generation 5.795 ms, Inlining 0.000 ms, Optimization 2.561 ms, Emission 21.798 ms, Total 30.154 ms
+Execution Time: 397.675 ms</code></pre></figure>
 
 
 			Here, we can analyze the situation as follows:
@@ -1151,6 +1155,9 @@ Let’s delve into two scenarios:</p>
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 <script src="/blog/assets/js/vendor/forkit.js"></script>
+
+<!-- Prism -->
+<script src="/blog/assets/js/prism.js"></script>
   
 
   </body>

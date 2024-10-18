@@ -144,6 +144,10 @@
 
 <link rel="stylesheet" href="/blog/assets/css/customize.css">
 <link rel="stylesheet" href="/blog/assets/css/forkit.css">
+
+<!-- Prism -->
+<link rel="stylesheet" href="/blog/assets/css/prism.css">
+
 </head>
 
 <body id="post">
@@ -337,34 +341,34 @@
 
 <p>Goes without saying, remove from your <code>Gemfile/gems.rb</code> :</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="n">gem</span><span class="w"> </span><span class="s1">&#39;state_machine&#39;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">gem &#39;state_machine&#39;</code></pre></figure>
 
 <p>and add :</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="n">gem</span><span class="w"> </span><span class="s1">&#39;aasm&#39;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">gem &#39;aasm&#39;</code></pre></figure>
 
 <p><strong>2. Get rid of the state_machine monkey-patch if present</strong></p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="k">module</span><span class="w"> </span><span class="nn">StateMachine</span>
-<span class="w">    </span><span class="k">module</span><span class="w"> </span><span class="nn">Integrations</span>
-<span class="w">      </span><span class="k">module</span><span class="w"> </span><span class="nn">ActiveModel</span>
-<span class="w">        </span><span class="kp">public</span><span class="w"> </span><span class="ss">:around_validation</span>
-<span class="w">      </span><span class="k">end</span>
-<span class="w">      </span><span class="k">module</span><span class="w"> </span><span class="nn">ActiveRecord</span>
-<span class="w">        </span><span class="kp">public</span><span class="w"> </span><span class="ss">:around_save</span>
-<span class="w">        </span><span class="k">def</span><span class="w"> </span><span class="nf">define_state_initializer</span>
-<span class="w">          </span><span class="n">define_helper</span><span class="w"> </span><span class="ss">:instance</span><span class="p">,</span><span class="w"> </span><span class="o">&lt;&lt;-</span><span class="dl">end_eval</span><span class="p">,</span><span class="w"> </span><span class="bp">__FILE__</span><span class="p">,</span><span class="w"> </span><span class="bp">__LINE__</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
-<span class="sh">            def initialize(*)</span>
-<span class="sh">              super do |*args|</span>
-<span class="sh">                self.class.state_machines.initialize_states self</span>
-<span class="sh">                yield(*args) if block_given?</span>
-<span class="sh">              end</span>
-<span class="sh">            end</span>
-<span class="dl">          end_eval</span>
-<span class="w">        </span><span class="k">end</span>
-<span class="w">      </span><span class="k">end</span>
-<span class="w">    </span><span class="k">end</span>
-<span class="w">  </span><span class="k">end</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">module StateMachine
+    module Integrations
+      module ActiveModel
+        public :around_validation
+      end
+      module ActiveRecord
+        public :around_save
+        def define_state_initializer
+          define_helper :instance, &lt;&lt;-end_eval, __FILE__, __LINE__ + 1
+            def initialize(*)
+              super do |*args|
+                self.class.state_machines.initialize_states self
+                yield(*args) if block_given?
+              end
+            end
+          end_eval
+        end
+      end
+    end
+  end</code></pre></figure>
 
 <p>Yes, get rid of this if you have it, most probably in one of your <code>config/initializers</code>.</p>
 
@@ -374,198 +378,198 @@
 
 <p>add <code>include AASM</code> to your model</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">Question</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
-<span class="w">    </span><span class="kp">include</span><span class="w"> </span><span class="no">AASM</span>
-<span class="w">    </span><span class="o">...</span>
-<span class="w">  </span><span class="k">end</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">class Question &lt; ActiveRecord::Base
+    include AASM
+    ...
+  end</code></pre></figure>
 
 <p>specify the column name on which you are observing state transitions, for eg. if the column name is <code>state</code></p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">Question</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
-<span class="w">    </span><span class="kp">include</span><span class="w"> </span><span class="no">AASM</span>
-<span class="w">    </span><span class="o">...</span>
-<span class="w">    </span><span class="n">aasm</span><span class="o">.</span><span class="n">attribute_name</span><span class="w"> </span><span class="ss">:state</span>
-<span class="w">    </span><span class="o">...</span>
-<span class="w">  </span><span class="k">end</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">class Question &lt; ActiveRecord::Base
+    include AASM
+    ...
+    aasm.attribute_name :state
+    ...
+  end</code></pre></figure>
 
 <p>Initiate your state machine block by listing out all your states. The common way is using one line to specify your initial state, and a second line to list all your non-initial states</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">Question</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
-<span class="w">    </span><span class="kp">include</span><span class="w"> </span><span class="no">AASM</span>
-<span class="w">    </span><span class="o">...</span>
-<span class="w">    </span><span class="n">aasm</span><span class="o">.</span><span class="n">attribute_name</span><span class="w"> </span><span class="ss">:state</span>
-<span class="w">    </span><span class="n">aasm</span><span class="w"> </span><span class="k">do</span>
-<span class="w">      </span><span class="n">state</span><span class="w"> </span><span class="ss">:authored</span><span class="p">,</span><span class="w"> </span><span class="ss">initial</span><span class="p">:</span><span class="w"> </span><span class="kp">true</span>
-<span class="w">      </span><span class="n">state</span><span class="w"> </span><span class="ss">:piloted</span><span class="p">,</span><span class="w"> </span><span class="ss">:non_active</span><span class="p">,</span><span class="w"> </span><span class="ss">:active</span><span class="p">,</span><span class="w"> </span><span class="ss">:removed</span>
-<span class="w">      </span><span class="o">...</span>
-<span class="w">    </span><span class="k">end</span>
-<span class="w">    </span><span class="o">...</span>
-<span class="w">  </span><span class="k">end</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">class Question &lt; ActiveRecord::Base
+    include AASM
+    ...
+    aasm.attribute_name :state
+    aasm do
+      state :authored, initial: true
+      state :piloted, :non_active, :active, :removed
+      ...
+    end
+    ...
+  end</code></pre></figure>
 
 <p>Convert your events. All event blocks of the form transition <code>:a =&gt; :b</code> will be replaced by transitions <code>from: :a, to: :b</code></p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">Question</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
-<span class="w">    </span><span class="kp">include</span><span class="w"> </span><span class="no">AASM</span>
-<span class="w">    </span><span class="o">...</span>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">class Question &lt; ActiveRecord::Base
+    include AASM
+    ...
 
-<span class="w">    </span><span class="c1"># State machine code</span>
+    # State machine code
 
-<span class="w">    </span><span class="n">state_machine</span><span class="w"> </span><span class="ss">:state</span><span class="p">,</span><span class="w"> </span><span class="ss">initial</span><span class="p">:</span><span class="w"> </span><span class="ss">:authored</span><span class="w"> </span><span class="k">do</span>
+    state_machine :state, initial: :authored do
 
-<span class="w">      </span><span class="n">event</span><span class="w"> </span><span class="ss">:pilot</span><span class="w"> </span><span class="k">do</span>
-<span class="w">        </span><span class="n">transition</span><span class="w"> </span><span class="ss">:authored</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="ss">:piloted</span>
-<span class="w">      </span><span class="k">end</span>
+      event :pilot do
+        transition :authored =&gt; :piloted
+      end
 
-<span class="w">      </span><span class="n">event</span><span class="w"> </span><span class="ss">:activate</span><span class="w"> </span><span class="k">do</span>
-<span class="w">        </span><span class="n">transition</span><span class="w"> </span><span class="o">[</span><span class="ss">:piloted</span><span class="p">,</span><span class="w"> </span><span class="ss">:non_active</span><span class="o">]</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="ss">:active</span>
-<span class="w">      </span><span class="k">end</span>
+      event :activate do
+        transition [:piloted, :non_active] =&gt; :active
+      end
 
-<span class="w">      </span><span class="o">..</span>
-<span class="w">    </span><span class="k">end</span>
+      ..
+    end
 
 
-<span class="w">   </span><span class="c1"># AASM code</span>
+   # AASM code
 
-<span class="w">    </span><span class="n">aasm</span><span class="o">.</span><span class="n">attribute_name</span><span class="w"> </span><span class="ss">:state</span>
-<span class="w">    </span><span class="n">aasm</span><span class="w"> </span><span class="k">do</span>
-<span class="w">      </span><span class="n">state</span><span class="w"> </span><span class="ss">:authored</span><span class="p">,</span><span class="w"> </span><span class="ss">initial</span><span class="p">:</span><span class="w"> </span><span class="kp">true</span>
-<span class="w">      </span><span class="n">state</span><span class="w"> </span><span class="ss">:piloted</span><span class="p">,</span><span class="w"> </span><span class="ss">:non_active</span><span class="p">,</span><span class="w"> </span><span class="ss">:active</span><span class="p">,</span><span class="w"> </span><span class="ss">:removed</span>
+    aasm.attribute_name :state
+    aasm do
+      state :authored, initial: true
+      state :piloted, :non_active, :active, :removed
 
-<span class="w">      </span><span class="n">event</span><span class="w"> </span><span class="ss">:pilot</span><span class="w"> </span><span class="k">do</span>
-<span class="w">        </span><span class="n">transitions</span><span class="w"> </span><span class="ss">from</span><span class="p">:</span><span class="w"> </span><span class="ss">:authored</span><span class="p">,</span><span class="w"> </span><span class="ss">to</span><span class="p">:</span><span class="w"> </span><span class="ss">:piloted</span>
-<span class="w">      </span><span class="k">end</span>
+      event :pilot do
+        transitions from: :authored, to: :piloted
+      end
 
-<span class="w">      </span><span class="n">event</span><span class="w"> </span><span class="ss">:activate</span><span class="w"> </span><span class="k">do</span>
-<span class="w">        </span><span class="n">transitions</span><span class="w"> </span><span class="ss">from</span><span class="p">:</span><span class="w"> </span><span class="o">[</span><span class="ss">:piloted</span><span class="p">,</span><span class="w"> </span><span class="ss">:non_active</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="ss">to</span><span class="p">:</span><span class="w"> </span><span class="ss">:active</span>
-<span class="w">      </span><span class="k">end</span>
+      event :activate do
+        transitions from: [:piloted, :non_active], to: :active
+      end
 
-<span class="w">      </span><span class="o">...</span>
-<span class="w">    </span><span class="k">end</span>
-<span class="w">    </span><span class="o">...</span>
-<span class="w">  </span><span class="k">end</span></code></pre></figure>
+      ...
+    end
+    ...
+  end</code></pre></figure>
 
 <p>Callbacks like <code>before_transition</code> and <code>after_transition</code> from state_machine can be converted like this:</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">Question</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
-<span class="w">    </span><span class="kp">include</span><span class="w"> </span><span class="no">AASM</span>
-<span class="w">    </span><span class="o">...</span>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">class Question &lt; ActiveRecord::Base
+    include AASM
+    ...
 
-<span class="w">    </span><span class="c1"># State machine code</span>
+    # State machine code
 
-<span class="w">    </span><span class="n">state_machine</span><span class="w"> </span><span class="ss">:state</span><span class="p">,</span><span class="w"> </span><span class="ss">initial</span><span class="p">:</span><span class="w"> </span><span class="ss">:authored</span><span class="w"> </span><span class="k">do</span>
-<span class="w">      </span><span class="n">before_transition</span><span class="w"> </span><span class="ss">:authored</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="ss">:piloted</span><span class="p">,</span><span class="w"> </span><span class="ss">:do</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="ss">:prepare_cockpit</span>
-<span class="w">      </span><span class="n">after_transition</span><span class="w"> </span><span class="ss">:authored</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="ss">:piloted</span><span class="p">,</span><span class="w"> </span><span class="ss">:do</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="ss">:fly_the_plane</span>
+    state_machine :state, initial: :authored do
+      before_transition :authored =&gt; :piloted, :do =&gt; :prepare_cockpit
+      after_transition :authored =&gt; :piloted, :do =&gt; :fly_the_plane
 
-<span class="w">      </span><span class="n">event</span><span class="w"> </span><span class="ss">:pilot</span><span class="w"> </span><span class="k">do</span>
-<span class="w">        </span><span class="n">transition</span><span class="w"> </span><span class="ss">:authored</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="ss">:piloted</span>
-<span class="w">      </span><span class="k">end</span>
-<span class="w">      </span><span class="o">...</span>
-<span class="w">    </span><span class="k">end</span>
+      event :pilot do
+        transition :authored =&gt; :piloted
+      end
+      ...
+    end
 
-<span class="w">    </span><span class="c1"># AASM code</span>
+    # AASM code
 
-<span class="w">    </span><span class="n">aasm</span><span class="o">.</span><span class="n">attribute_name</span><span class="w"> </span><span class="ss">:state</span>
-<span class="w">    </span><span class="n">aasm</span><span class="w"> </span><span class="k">do</span>
-<span class="w">      </span><span class="n">state</span><span class="w"> </span><span class="ss">:authored</span><span class="p">,</span><span class="w"> </span><span class="ss">initial</span><span class="p">:</span><span class="w"> </span><span class="kp">true</span>
-<span class="w">      </span><span class="n">state</span><span class="w"> </span><span class="ss">:piloted</span><span class="p">,</span><span class="w"> </span><span class="ss">:non_active</span><span class="p">,</span><span class="w"> </span><span class="ss">:active</span><span class="p">,</span><span class="w"> </span><span class="ss">:removed</span>
+    aasm.attribute_name :state
+    aasm do
+      state :authored, initial: true
+      state :piloted, :non_active, :active, :removed
 
-<span class="w">      </span><span class="n">event</span><span class="w"> </span><span class="ss">:pilot</span><span class="w"> </span><span class="k">do</span>
-<span class="w">        </span><span class="n">before</span><span class="w"> </span><span class="k">do</span>
-<span class="w">          </span><span class="n">prepare_cockpit</span>
-<span class="w">        </span><span class="k">end</span>
-<span class="w">        </span><span class="n">transitions</span><span class="w"> </span><span class="ss">from</span><span class="p">:</span><span class="w"> </span><span class="ss">:authored</span><span class="p">,</span><span class="w"> </span><span class="ss">to</span><span class="p">:</span><span class="w"> </span><span class="ss">:piloted</span><span class="p">,</span><span class="w"> </span><span class="ss">after</span><span class="p">:</span><span class="w"> </span><span class="ss">:fly_the_plane</span>
-<span class="w">      </span><span class="k">end</span>
+      event :pilot do
+        before do
+          prepare_cockpit
+        end
+        transitions from: :authored, to: :piloted, after: :fly_the_plane
+      end
 
-<span class="w">      </span><span class="o">...</span>
-<span class="w">    </span><span class="k">end</span>
-<span class="w">    </span><span class="o">...</span>
+      ...
+    end
+    ...
 
-<span class="w">    </span><span class="k">def</span><span class="w"> </span><span class="nf">prepare_cockpit</span>
-<span class="w">      </span><span class="o">...</span>
-<span class="w">    </span><span class="k">end</span>
+    def prepare_cockpit
+      ...
+    end
 
-<span class="w">    </span><span class="k">def</span><span class="w"> </span><span class="nf">fly_the_plane</span>
-<span class="w">      </span><span class="o">...</span>
-<span class="w">    </span><span class="k">end</span>
+    def fly_the_plane
+      ...
+    end
 
 
-<span class="w">  </span><span class="k">end</span></code></pre></figure>
+  end</code></pre></figure>
 
 <p>However, in case of callbacks on a part of a transitions defined inside an event, one needs to define the transitions separately</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">Question</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
-<span class="w">    </span><span class="kp">include</span><span class="w"> </span><span class="no">AASM</span>
-<span class="w">    </span><span class="o">...</span>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">class Question &lt; ActiveRecord::Base
+    include AASM
+    ...
 
-<span class="w">    </span><span class="c1"># State machine code</span>
+    # State machine code
 
-<span class="w">    </span><span class="n">state_machine</span><span class="w"> </span><span class="ss">:state</span><span class="p">,</span><span class="w"> </span><span class="ss">initial</span><span class="p">:</span><span class="w"> </span><span class="ss">:authored</span><span class="w"> </span><span class="k">do</span>
-<span class="w">      </span><span class="n">after_transition</span><span class="w"> </span><span class="ss">:authored</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="ss">:piloted</span><span class="p">,</span><span class="w"> </span><span class="ss">:do</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="ss">:fly</span>
+    state_machine :state, initial: :authored do
+      after_transition :authored =&gt; :piloted, :do =&gt; :fly
 
-<span class="w">      </span><span class="n">event</span><span class="w"> </span><span class="ss">:pilot</span><span class="w"> </span><span class="k">do</span>
-<span class="w">        </span><span class="n">transition</span><span class="w"> </span><span class="o">[</span><span class="ss">:inactive</span><span class="p">,</span><span class="w"> </span><span class="ss">:authored</span><span class="o">]</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="ss">:piloted</span>
-<span class="w">      </span><span class="k">end</span>
-<span class="w">      </span><span class="o">...</span>
-<span class="w">    </span><span class="k">end</span>
+      event :pilot do
+        transition [:inactive, :authored] =&gt; :piloted
+      end
+      ...
+    end
 
-<span class="w">    </span><span class="c1"># AASM code</span>
+    # AASM code
 
-<span class="w">    </span><span class="n">aasm</span><span class="o">.</span><span class="n">attribute_name</span><span class="w"> </span><span class="ss">:state</span>
-<span class="w">    </span><span class="n">aasm</span><span class="w"> </span><span class="k">do</span>
-<span class="w">      </span><span class="n">state</span><span class="w"> </span><span class="ss">:authored</span><span class="p">,</span><span class="w"> </span><span class="ss">initial</span><span class="p">:</span><span class="w"> </span><span class="kp">true</span>
-<span class="w">      </span><span class="n">state</span><span class="w"> </span><span class="ss">:piloted</span><span class="p">,</span><span class="w"> </span><span class="ss">:non_active</span><span class="p">,</span><span class="w"> </span><span class="ss">:active</span><span class="p">,</span><span class="w"> </span><span class="ss">:removed</span>
+    aasm.attribute_name :state
+    aasm do
+      state :authored, initial: true
+      state :piloted, :non_active, :active, :removed
 
-<span class="w">      </span><span class="n">event</span><span class="w"> </span><span class="ss">:pilot</span><span class="w"> </span><span class="k">do</span>
-<span class="w">        </span><span class="n">transitions</span><span class="w"> </span><span class="ss">from</span><span class="p">:</span><span class="w"> </span><span class="ss">:authored</span><span class="p">,</span><span class="w"> </span><span class="ss">to</span><span class="p">:</span><span class="w"> </span><span class="ss">:piloted</span><span class="p">,</span><span class="w"> </span><span class="ss">after</span><span class="p">:</span><span class="w"> </span><span class="ss">:fly</span>
-<span class="w">        </span><span class="n">transitions</span><span class="w"> </span><span class="ss">from</span><span class="p">:</span><span class="w"> </span><span class="ss">:inactive</span><span class="p">,</span><span class="w"> </span><span class="ss">to</span><span class="p">:</span><span class="w"> </span><span class="ss">:piloted</span>
-<span class="w">      </span><span class="k">end</span>
+      event :pilot do
+        transitions from: :authored, to: :piloted, after: :fly
+        transitions from: :inactive, to: :piloted
+      end
 
-<span class="w">      </span><span class="o">...</span>
-<span class="w">    </span><span class="k">end</span>
-<span class="w">    </span><span class="o">...</span>
+      ...
+    end
+    ...
 
-<span class="w">    </span><span class="k">def</span><span class="w"> </span><span class="nf">fly</span>
-<span class="w">      </span><span class="o">...</span>
-<span class="w">    </span><span class="k">end</span>
+    def fly
+      ...
+    end
 
-<span class="w">  </span><span class="k">end</span></code></pre></figure>
+  end</code></pre></figure>
 
 <p><code>if</code> and <code>unless</code> guard blocks on transitions work the same way as in state_machine, and can also be substituted with a guard clause. The guards as well as callbacks can take arguments, <code>lambda</code> as well as <code>Proc</code>, same as the state machine guards</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">Question</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span>
-<span class="w">    </span><span class="kp">include</span><span class="w"> </span><span class="no">AASM</span>
-<span class="w">    </span><span class="o">...</span>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">class Question &lt; ActiveRecord::Base
+    include AASM
+    ...
 
-<span class="w">    </span><span class="c1"># State machine code</span>
+    # State machine code
 
-<span class="w">    </span><span class="n">state_machine</span><span class="w"> </span><span class="ss">:state</span><span class="p">,</span><span class="w"> </span><span class="ss">initial</span><span class="p">:</span><span class="w"> </span><span class="ss">:authored</span><span class="w"> </span><span class="k">do</span>
+    state_machine :state, initial: :authored do
 
-<span class="w">      </span><span class="n">event</span><span class="w"> </span><span class="ss">:pilot</span><span class="w"> </span><span class="k">do</span>
-<span class="w">        </span><span class="n">transition</span><span class="w"> </span><span class="ss">:authored</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="ss">:piloted</span><span class="p">,</span><span class="w"> </span><span class="k">if</span><span class="p">:</span><span class="w"> </span><span class="ss">:can_fly?</span>
-<span class="w">      </span><span class="k">end</span>
-<span class="w">      </span><span class="o">...</span>
-<span class="w">    </span><span class="k">end</span>
+      event :pilot do
+        transition :authored =&gt; :piloted, if: :can_fly?
+      end
+      ...
+    end
 
-<span class="w">    </span><span class="c1"># AASM code</span>
+    # AASM code
 
-<span class="w">    </span><span class="n">aasm</span><span class="o">.</span><span class="n">attribute_name</span><span class="w"> </span><span class="ss">:state</span>
-<span class="w">    </span><span class="n">aasm</span><span class="w"> </span><span class="k">do</span>
-<span class="w">      </span><span class="n">state</span><span class="w"> </span><span class="ss">:authored</span><span class="p">,</span><span class="w"> </span><span class="ss">initial</span><span class="p">:</span><span class="w"> </span><span class="kp">true</span>
-<span class="w">      </span><span class="n">state</span><span class="w"> </span><span class="ss">:piloted</span><span class="p">,</span><span class="w"> </span><span class="ss">:non_active</span><span class="p">,</span><span class="w"> </span><span class="ss">:active</span><span class="p">,</span><span class="w"> </span><span class="ss">:removed</span>
+    aasm.attribute_name :state
+    aasm do
+      state :authored, initial: true
+      state :piloted, :non_active, :active, :removed
 
-<span class="w">      </span><span class="n">event</span><span class="w"> </span><span class="ss">:pilot</span><span class="w"> </span><span class="k">do</span>
-<span class="w">        </span><span class="n">transitions</span><span class="w"> </span><span class="ss">from</span><span class="p">:</span><span class="w"> </span><span class="ss">:authored</span><span class="p">,</span><span class="w"> </span><span class="ss">to</span><span class="p">:</span><span class="w"> </span><span class="ss">:piloted</span><span class="p">,</span><span class="w"> </span><span class="ss">guard</span><span class="p">:</span><span class="w"> </span><span class="ss">:can_fly?</span>
-<span class="w">      </span><span class="k">end</span>
+      event :pilot do
+        transitions from: :authored, to: :piloted, guard: :can_fly?
+      end
 
-<span class="w">      </span><span class="o">...</span>
-<span class="w">    </span><span class="k">end</span>
-<span class="w">    </span><span class="o">...</span>
+      ...
+    end
+    ...
 
-<span class="w">    </span><span class="k">def</span><span class="w"> </span><span class="nf">can_fly?</span>
-<span class="w">      </span><span class="o">...</span>
-<span class="w">    </span><span class="k">end</span>
+    def can_fly?
+      ...
+    end
 
-<span class="w">  </span><span class="k">end</span></code></pre></figure>
+  end</code></pre></figure>
 
 <p>Yes, that’s it for the models. You can take a detailed look at the docs if you have more complex needs.</p>
 
@@ -581,24 +585,24 @@
   <li>All of the above helpers will produce an object list that contains name as the name of object, so appending <code>.map(&amp;:name)</code> will give a symbol array of the name of objects, that will come handy in drop-downs. Eg.</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="n">pry</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="o">&gt;</span><span class="w"> </span><span class="no">Question</span><span class="o">.</span><span class="n">last</span><span class="o">.</span><span class="n">aasm</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:name</span><span class="p">)</span>
-<span class="w">  </span><span class="o">=&gt;</span><span class="w"> </span><span class="o">[</span><span class="ss">:pilot</span><span class="p">,</span><span class="w"> </span><span class="ss">:deactivate</span><span class="o">]</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">pry(main)&gt; Question.last.aasm.events.map(&amp;:name)
+  =&gt; [:pilot, :deactivate]</code></pre></figure>
 
 <p>Another great point in favor of <code>state_machine</code> is its <code>state_event</code> attribute over the instance. For eg.</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="n">pry</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="o">&gt;</span><span class="w"> </span><span class="n">question</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Question</span><span class="o">.</span><span class="n">first</span>
-<span class="w">  </span><span class="n">pry</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="o">&gt;</span><span class="w"> </span><span class="n">question</span><span class="o">.</span><span class="n">state_event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">:deactivate</span>
-<span class="w">  </span><span class="n">pry</span><span class="p">(</span><span class="n">main</span><span class="p">)</span><span class="o">&gt;</span><span class="w"> </span><span class="n">question</span><span class="o">.</span><span class="n">save</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">pry(main)&gt; question = Question.first
+  pry(main)&gt; question.state_event = :deactivate
+  pry(main)&gt; question.save</code></pre></figure>
 
 <p>The code above will end up saving the question after calling the <code>deactivate</code> event over it. This attribute is highly useful in rails forms where one can easily pass what event to call from, and the transition will happen without extra hassle. Unfortunately, there’s no equivalent attribute cum method in aasm . But one can always write a common <code>ActiveRecord::Base</code> helper for the same.</p>
 
 <p>On another note, the not-so-good-looking <code>with_state</code> / <code>with_states</code> scope methods of <code>state_machine</code> can be replaced by the enum equivalent syntax of <code>aasm</code> . For eg.</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="no">Question</span><span class="o">.</span><span class="n">with_state</span><span class="p">(</span><span class="ss">:active</span><span class="p">)</span><span class="w"> </span><span class="c1"># state_machine</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">Question.with_state(:active) # state_machine</code></pre></figure>
 
 <p>gets replaced by a much cleaner :</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="no">Question</span><span class="o">.</span><span class="n">active</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">Question.active</code></pre></figure>
 
 <p>So yes, a couple of tweaks here and there, and a good pool of existing test cases which run green, you are done and production ready. This will get you started, but do back yourself up with the aasm docs.</p>
 
@@ -784,6 +788,9 @@
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 <script src="/blog/assets/js/vendor/forkit.js"></script>
+
+<!-- Prism -->
+<script src="/blog/assets/js/prism.js"></script>
   
 
   </body>

@@ -144,6 +144,10 @@
 
 <link rel="stylesheet" href="/blog/assets/css/customize.css">
 <link rel="stylesheet" href="/blog/assets/css/forkit.css">
+
+<!-- Prism -->
+<link rel="stylesheet" href="/blog/assets/css/prism.css">
+
 </head>
 
 <body id="post">
@@ -355,45 +359,45 @@
 
 <p><strong>Transaction A</strong></p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>BEGIN<span class="p">;</span>
-DELETE<span class="w"> </span>FROM<span class="w"> </span>table2<span class="w"> </span>WHERE<span class="w"> </span>table2.table1_id<span class="o">=</span><span class="m">127</span><span class="p">;</span>
-Query<span class="w"> </span>OK,<span class="w"> </span><span class="m">1</span><span class="w"> </span>row<span class="w"> </span>affected<span class="w"> </span><span class="o">(</span><span class="m">0</span>.00<span class="w"> </span>sec<span class="o">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">BEGIN;
+DELETE FROM table2 WHERE table2.table1_id=127;
+Query OK, 1 row affected (0.00 sec)</code></pre></figure>
 
 <p>Resulting data locks</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>mysql&gt;<span class="w"> </span>SELECT<span class="w"> </span>INDEX_NAME,<span class="w"> </span>LOCK_TYPE,LOCK_DATA,LOCK_MODE,LOCK_STATUS,<span class="w"> </span>EVENT_ID<span class="w"> </span>FROM<span class="w"> </span>performance_schema.data_locks<span class="p">;</span>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">mysql&gt; SELECT INDEX_NAME, LOCK_TYPE,LOCK_DATA,LOCK_MODE,LOCK_STATUS, EVENT_ID FROM performance_schema.data_locks;
 +-----------------------------------------+-----------+-----------+---------------+-------------+----------+
-<span class="p">|</span><span class="w"> </span>INDEX_NAME<span class="w">                </span><span class="p">|</span><span class="w"> </span>LOCK_TYPE<span class="w"> </span><span class="p">|</span><span class="w"> </span>LOCK_DATA<span class="w"> </span><span class="p">|</span><span class="w"> </span>LOCK_MODE<span class="w">     </span><span class="p">|</span><span class="w"> </span>LOCK_STATUS<span class="w"> </span><span class="p">|</span><span class="w"> </span>EVENT_ID<span class="w"> </span><span class="p">|</span>
+| INDEX_NAME                | LOCK_TYPE | LOCK_DATA | LOCK_MODE     | LOCK_STATUS | EVENT_ID |
 +-----------------------------------------+-----------+-----------+---------------+-------------+----------+
-<span class="p">|</span><span class="w"> </span>NULL<span class="w">                      </span><span class="p">|</span><span class="w"> </span>TABLE<span class="w">     </span><span class="p">|</span><span class="w"> </span>NULL<span class="w">      </span><span class="p">|</span><span class="w"> </span>IX<span class="w">            </span><span class="p">|</span><span class="w"> </span>GRANTED<span class="w">     </span><span class="p">|</span><span class="w">      </span><span class="m">408</span><span class="w"> </span><span class="p">|</span>
-<span class="p">|</span><span class="w"> </span>index_table2_on_table1_id<span class="w"> </span><span class="p">|</span><span class="w"> </span>RECORD<span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="m">127</span>,<span class="w"> </span><span class="m">92</span><span class="w">   </span><span class="p">|</span><span class="w"> </span>X<span class="w">             </span><span class="p">|</span><span class="w"> </span>GRANTED<span class="w">     </span><span class="p">|</span><span class="w">      </span><span class="m">408</span><span class="w"> </span><span class="p">|</span>
-<span class="p">|</span><span class="w"> </span>PRIMARY<span class="w">                   </span><span class="p">|</span><span class="w"> </span>RECORD<span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="m">92</span><span class="w">        </span><span class="p">|</span><span class="w"> </span>X,REC_NOT_GAP<span class="w"> </span><span class="p">|</span><span class="w"> </span>GRANTED<span class="w">     </span><span class="p">|</span><span class="w">      </span><span class="m">408</span><span class="w"> </span><span class="p">|</span>
-<span class="p">|</span><span class="w"> </span>index_table2_on_table1_id<span class="w"> </span><span class="p">|</span><span class="w"> </span>RECORD<span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="m">128</span>,<span class="w"> </span><span class="m">93</span><span class="w">   </span><span class="p">|</span><span class="w"> </span>X,GAP<span class="w">         </span><span class="p">|</span><span class="w"> </span>GRANTED<span class="w">     </span><span class="p">|</span><span class="w">      </span><span class="m">408</span><span class="w"> </span><span class="p">|</span>
+| NULL                      | TABLE     | NULL      | IX            | GRANTED     |      408 |
+| index_table2_on_table1_id | RECORD    | 127, 92   | X             | GRANTED     |      408 |
+| PRIMARY                   | RECORD    | 92        | X,REC_NOT_GAP | GRANTED     |      408 |
+| index_table2_on_table1_id | RECORD    | 128, 93   | X,GAP         | GRANTED     |      408 |
 +-----------------------------------------+-----------+-----------+---------------+-------------+----------+
-<span class="m">4</span><span class="w"> </span>rows<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="o">(</span><span class="m">0</span>.00<span class="w"> </span>sec<span class="o">)</span></code></pre></figure>
+4 rows in set (0.00 sec)</code></pre></figure>
 
 <p>This query acquires a gap lock on table2 and an insert intention lock on table1_id values 126 and 127.</p>
 
 <p><strong>Transaction B</strong></p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>BEGIN<span class="p">;</span>
-INSERT<span class="w"> </span>INTO<span class="w"> </span>table2<span class="o">(</span>table1_id<span class="o">)</span><span class="w"> </span>VALUES<span class="o">(</span><span class="m">126</span><span class="o">)</span><span class="p">;</span>
-ERROR<span class="w"> </span><span class="m">1205</span><span class="w"> </span><span class="o">(</span>HY000<span class="o">)</span>:<span class="w"> </span>Lock<span class="w"> </span><span class="nb">wait</span><span class="w"> </span>timeout<span class="w"> </span>exceeded<span class="p">;</span><span class="w"> </span>try<span class="w"> </span>restarting<span class="w"> </span>transaction</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">BEGIN;
+INSERT INTO table2(table1_id) VALUES(126);
+ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction</code></pre></figure>
 
 <p>Resulting data locks</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>mysql&gt;<span class="w"> </span>SELECT<span class="w"> </span>INDEX_NAME,LOCK_TYPE,LOCK_DATA,LOCK_MODE,LOCK_STATUS,<span class="w"> </span>EVENT_ID<span class="w"> </span>FROM<span class="w"> </span>performance_schema.data_locks<span class="p">;</span>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">mysql&gt; SELECT INDEX_NAME,LOCK_TYPE,LOCK_DATA,LOCK_MODE,LOCK_STATUS, EVENT_ID FROM performance_schema.data_locks;
 +-----------------------------------------+-----------+-----------+------------------------+-------------+----------+
-<span class="p">|</span><span class="w"> </span>INDEX_NAME<span class="w">                  </span><span class="p">|</span><span class="w"> </span>LOCK_TYPE<span class="w"> </span><span class="p">|</span><span class="w"> </span>LOCK_DATA<span class="w"> </span><span class="p">|</span><span class="w"> </span>LOCK_MODE<span class="w">              </span><span class="p">|</span><span class="w"> </span>LOCK_STATUS<span class="w"> </span><span class="p">|</span><span class="w"> </span>EVENT_ID<span class="w"> </span><span class="p">|</span>
+| INDEX_NAME                  | LOCK_TYPE | LOCK_DATA | LOCK_MODE              | LOCK_STATUS | EVENT_ID |
 +-----------------------------------------+-----------+-----------+------------------------+-------------+----------+
-<span class="p">|</span><span class="w"> </span>NULL<span class="w">                        </span><span class="p">|</span><span class="w"> </span>TABLE<span class="w">     </span><span class="p">|</span><span class="w"> </span>NULL<span class="w">      </span><span class="p">|</span><span class="w"> </span>IX<span class="w">                     </span><span class="p">|</span><span class="w"> </span>GRANTED<span class="w">     </span><span class="p">|</span><span class="w">      </span><span class="m">351</span><span class="w"> </span><span class="p">|</span>
-<span class="p">|</span><span class="w"> </span>index_table2_on_table1_id<span class="w">   </span><span class="p">|</span><span class="w"> </span>RECORD<span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="m">127</span>,<span class="w"> </span><span class="m">92</span><span class="w">   </span><span class="p">|</span><span class="w"> </span>X,GAP,INSERT_INTENTION<span class="w"> </span><span class="p">|</span><span class="w"> </span>WAITING<span class="w">     </span><span class="p">|</span><span class="w">      </span><span class="m">351</span><span class="w"> </span><span class="p">|</span>
-<span class="p">|</span><span class="w"> </span>NULL<span class="w">                        </span><span class="p">|</span><span class="w"> </span>TABLE<span class="w">     </span><span class="p">|</span><span class="w"> </span>NULL<span class="w">      </span><span class="p">|</span><span class="w"> </span>IX<span class="w">                     </span><span class="p">|</span><span class="w"> </span>GRANTED<span class="w">     </span><span class="p">|</span><span class="w">      </span><span class="m">408</span><span class="w"> </span><span class="p">|</span>
-<span class="p">|</span><span class="w"> </span>index_table2_on_table1_id<span class="w">   </span><span class="p">|</span><span class="w"> </span>RECORD<span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="m">127</span>,<span class="w"> </span><span class="m">92</span><span class="w">   </span><span class="p">|</span><span class="w"> </span>X<span class="w">                      </span><span class="p">|</span><span class="w"> </span>GRANTED<span class="w">     </span><span class="p">|</span><span class="w">      </span><span class="m">408</span><span class="w"> </span><span class="p">|</span>
-<span class="p">|</span><span class="w"> </span>PRIMARY<span class="w">                     </span><span class="p">|</span><span class="w"> </span>RECORD<span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="m">92</span><span class="w">        </span><span class="p">|</span><span class="w"> </span>X,REC_NOT_GAP<span class="w">          </span><span class="p">|</span><span class="w"> </span>GRANTED<span class="w">     </span><span class="p">|</span><span class="w">      </span><span class="m">408</span><span class="w"> </span><span class="p">|</span>
-<span class="p">|</span><span class="w"> </span>index_table2_on_table1_id<span class="w">   </span><span class="p">|</span><span class="w"> </span>RECORD<span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="m">128</span>,<span class="w"> </span><span class="m">93</span><span class="w">   </span><span class="p">|</span><span class="w"> </span>X,GAP<span class="w">                  </span><span class="p">|</span><span class="w"> </span>GRANTED<span class="w">     </span><span class="p">|</span><span class="w">      </span><span class="m">408</span><span class="w"> </span><span class="p">|</span>
+| NULL                        | TABLE     | NULL      | IX                     | GRANTED     |      351 |
+| index_table2_on_table1_id   | RECORD    | 127, 92   | X,GAP,INSERT_INTENTION | WAITING     |      351 |
+| NULL                        | TABLE     | NULL      | IX                     | GRANTED     |      408 |
+| index_table2_on_table1_id   | RECORD    | 127, 92   | X                      | GRANTED     |      408 |
+| PRIMARY                     | RECORD    | 92        | X,REC_NOT_GAP          | GRANTED     |      408 |
+| index_table2_on_table1_id   | RECORD    | 128, 93   | X,GAP                  | GRANTED     |      408 |
 +-----------------------------------------+-----------+-----------+------------------------+-------------+----------+
-<span class="m">6</span><span class="w"> </span>rows<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="o">(</span><span class="m">0</span>.01<span class="w"> </span>sec<span class="o">)</span></code></pre></figure>
+6 rows in set (0.01 sec)</code></pre></figure>
 
 <p>As Transaction A holds the lock on table1_id 126 due to the gap lock, Transaction B waits for the lock. However, it eventually times out, resulting in a lock wait timeout error.</p>
 
@@ -416,29 +420,29 @@ ERROR<span class="w"> </span><span class="m">1205</span><span class="w"> </span>
 
 <p><strong>table1</strong></p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>+----+
-<span class="p">|</span><span class="w"> </span>id<span class="w"> </span><span class="p">|</span>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">+----+
+| id |
 +----+
-<span class="p">|</span><span class="w"> </span><span class="m">73</span><span class="w"> </span><span class="p">|</span>
-<span class="p">|</span><span class="w"> </span><span class="m">74</span><span class="w"> </span><span class="p">|</span>
-<span class="p">|</span><span class="w"> </span><span class="m">81</span><span class="w"> </span><span class="p">|</span>
-<span class="p">|</span><span class="w"> </span><span class="m">82</span><span class="w"> </span><span class="p">|</span>
+| 73 |
+| 74 |
+| 81 |
+| 82 |
 +----+</code></pre></figure>
 
 <p><strong>table2</strong></p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>+-----+-----------+
-<span class="p">|</span><span class="w"> </span>id<span class="w">  </span><span class="p">|</span><span class="w"> </span>table1_id<span class="w"> </span><span class="p">|</span>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">+-----+-----------+
+| id  | table1_id |
 +-----+-----------+
-<span class="p">|</span><span class="w"> </span><span class="m">1</span><span class="w">   </span><span class="p">|</span><span class="w"> </span><span class="m">73</span><span class="w">        </span><span class="p">|</span><span class="w"> </span>
-<span class="p">|</span><span class="w"> </span><span class="m">2</span><span class="w">   </span><span class="p">|</span><span class="w"> </span><span class="m">82</span><span class="w">        </span><span class="p">|</span>
+| 1   | 73        | 
+| 2   | 82        |
 +-----+-----------+</code></pre></figure>
 
 <p><strong>Transaction A</strong></p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>BEGIN<span class="p">;</span>
-DELETE<span class="w"> </span>from<span class="w"> </span>table2<span class="w"> </span>where<span class="w"> </span><span class="nv">table1_id</span><span class="o">=</span><span class="m">75</span><span class="p">;</span>
-Query<span class="w"> </span>OK,<span class="w"> </span><span class="m">0</span><span class="w"> </span>rows<span class="w"> </span>affected<span class="w"> </span><span class="o">(</span><span class="m">0</span>.00<span class="w"> </span>sec<span class="o">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">BEGIN;
+DELETE from table2 where table1_id=75;
+Query OK, 0 rows affected (0.00 sec)</code></pre></figure>
 
 <p>This transaction will aquire a gap lock on range from 74-80.
 this means if we try to insert new values in table2(in another session) with table1_id ranging from 74-80 it will wait until delete transaction commits.</p>
@@ -448,12 +452,12 @@ this means if we try to insert new values in table2(in another session) with tab
 
 <p><strong>Model dummy code</strong></p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>aasm<span class="w"> </span><span class="k">do</span>
-<span class="w">  </span>state<span class="w"> </span>:active,<span class="w"> </span>initial:<span class="w"> </span><span class="nb">true</span>
-<span class="w">  </span>state<span class="w"> </span>:complete
-<span class="w">  </span>event<span class="w"> </span>:complete,<span class="w"> </span>after:<span class="w"> </span><span class="o">[</span>:method1,<span class="w"> </span>:method2,<span class="w"> </span>:method3<span class="o">]</span><span class="w"> </span><span class="k">do</span>
-<span class="w">      </span>transitions<span class="w"> </span>from:<span class="w"> </span>:active,<span class="w"> </span>to:<span class="w"> </span>:complete
-<span class="w">  </span>end
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">aasm do
+  state :active, initial: true
+  state :complete
+  event :complete, after: [:method1, :method2, :method3] do
+      transitions from: :active, to: :complete
+  end
 end</code></pre></figure>
 
 <p>When the test is marked as complete and the state changes, all the MySQL-related queries are executed as part of a single transaction.</p>
@@ -660,6 +664,9 @@ end</code></pre></figure>
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 <script src="/blog/assets/js/vendor/forkit.js"></script>
+
+<!-- Prism -->
+<script src="/blog/assets/js/prism.js"></script>
   
 
   </body>

@@ -144,6 +144,10 @@
 
 <link rel="stylesheet" href="/blog/assets/css/customize.css">
 <link rel="stylesheet" href="/blog/assets/css/forkit.css">
+
+<!-- Prism -->
+<link rel="stylesheet" href="/blog/assets/css/prism.css">
+
 </head>
 
 <body id="post">
@@ -339,42 +343,42 @@
   <li>Create a function to track the website. Here is an example:</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="k">function</span><span class="w"> </span>myFunction<span class="o">()</span><span class="w"> </span><span class="o">{</span>
-<span class="w">   </span>const<span class="w"> </span><span class="nv">initialUrls</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span>
-<span class="w">     </span><span class="o">{</span><span class="w"> </span>uri:<span class="w"> </span><span class="s1">&#39;https://mock.codes/200&#39;</span>,<span class="w"> </span>status:<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="o">}</span>,
-<span class="w">     </span><span class="o">{</span><span class="w"> </span>uri:<span class="w"> </span><span class="s1">&#39;https://mock.codes/500&#39;</span>,<span class="w"> </span>status:<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="o">}</span>
-<span class="w">   </span><span class="o">]</span><span class="p">;</span>
-<span class="w"> </span>
-<span class="w"> </span>const<span class="w"> </span><span class="nv">properties</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>PropertiesService.getScriptProperties<span class="o">()</span><span class="p">;</span>
-<span class="w"> </span><span class="nb">let</span><span class="w"> </span><span class="nv">urls</span><span class="w"> </span><span class="o">=</span><span class="w">  </span>JSON.parse<span class="o">(</span>properties.getProperty<span class="o">(</span><span class="s1">&#39;URL_LIST&#39;</span><span class="o">))</span><span class="w"> </span><span class="o">||</span><span class="w"> </span>initialUrls<span class="p">;</span>
-<span class="w"> </span>const<span class="w"> </span><span class="nv">errorResponseCodes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="m">500</span>,<span class="w"> </span><span class="m">502</span>,<span class="w"> </span><span class="m">503</span>,<span class="w"> </span><span class="m">504</span><span class="o">]</span><span class="p">;</span>
-<span class="w"> </span>const<span class="w"> </span><span class="nv">alertEmail</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;alertmail@gmail.com&#39;</span><span class="p">;</span>
-<span class="w"> </span>
-<span class="w"> </span>const<span class="w"> </span><span class="nv">options</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="w"> </span>muteHttpExceptions:<span class="w"> </span><span class="nb">true</span><span class="w"> </span><span class="o">}</span><span class="p">;</span>
-<span class="w"> </span>
-<span class="w"> </span>urls.forEach<span class="o">((</span>url<span class="o">)</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span><span class="o">{</span>
-<span class="w">   </span><span class="nb">let</span><span class="w"> </span><span class="nv">responseCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>UrlFetchApp.fetch<span class="o">(</span>url.uri,<span class="w"> </span>options<span class="o">)</span>.getResponseCode<span class="o">()</span><span class="p">;</span>
-<span class="w"> </span>
-<span class="w">   </span>const<span class="w"> </span><span class="nv">isErrorResponse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>errorResponseCodes.includes<span class="o">(</span>responseCode<span class="o">)</span><span class="p">;</span>
-<span class="w">   </span>const<span class="w"> </span><span class="nv">wasPreviouslyDown</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>url.status<span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">&#39;down&#39;</span><span class="p">;</span>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">function myFunction() {
+   const initialUrls = [
+     { uri: &#39;https://mock.codes/200&#39;, status: &#39;&#39;},
+     { uri: &#39;https://mock.codes/500&#39;, status: &#39;&#39;}
+   ];
+ 
+ const properties = PropertiesService.getScriptProperties();
+ let urls =  JSON.parse(properties.getProperty(&#39;URL_LIST&#39;)) || initialUrls;
+ const errorResponseCodes = [500, 502, 503, 504];
+ const alertEmail = &#39;alertmail@gmail.com&#39;;
+ 
+ const options = { muteHttpExceptions: true };
+ 
+ urls.forEach((url) =&gt; {
+   let responseCode = UrlFetchApp.fetch(url.uri, options).getResponseCode();
+ 
+   const isErrorResponse = errorResponseCodes.includes(responseCode);
+   const wasPreviouslyDown = url.status === &#39;down&#39;;
 
-<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="o">(</span>isErrorResponse<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>!wasPreviouslyDown<span class="o">)</span><span class="w"> </span><span class="o">{</span>
-<span class="w">     </span>//<span class="w"> </span>Site<span class="w"> </span>is<span class="w"> </span>now<span class="w"> </span>down<span class="w"> </span><span class="k">for</span><span class="w"> </span>the<span class="w"> </span>first<span class="w"> </span><span class="nb">time</span>
-<span class="w">     </span>const<span class="w"> </span><span class="nv">subject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`</span>Alert:<span class="w"> </span>Your<span class="w"> </span>site<span class="w"> </span><span class="si">${</span><span class="nv">url</span><span class="p">.uri</span><span class="si">}</span><span class="w"> </span>is<span class="w"> </span>currently<span class="w"> </span>down<span class="sb">`</span><span class="p">;</span>
-<span class="w">     </span>const<span class="w"> </span><span class="nv">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nv">url</span><span class="p">.uri</span><span class="si">}</span><span class="w"> </span>has<span class="w"> </span>encountered<span class="w"> </span>an<span class="w"> </span>error<span class="w"> </span>with<span class="w"> </span>status<span class="w"> </span>code<span class="w"> </span><span class="si">${</span><span class="nv">responseCode</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
-<span class="w">     </span>MailApp.sendEmail<span class="o">(</span>alertEmail,<span class="w"> </span>subject,<span class="w"> </span>body<span class="o">)</span><span class="p">;</span>
-<span class="w">     </span>url.status<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;down&#39;</span><span class="p">;</span>
-<span class="w">   </span><span class="o">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="o">(</span>!isErrorResponse<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>wasPreviouslyDown<span class="o">)</span><span class="w"> </span><span class="o">{</span>
-<span class="w">     </span>//<span class="w"> </span>Site<span class="w"> </span>was<span class="w"> </span>previously<span class="w"> </span>down,<span class="w"> </span>but<span class="w"> </span>is<span class="w"> </span>now<span class="w"> </span>back<span class="w"> </span>up
-<span class="w">     </span>const<span class="w"> </span><span class="nv">subject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`</span>Your<span class="w"> </span>site<span class="w"> </span><span class="si">${</span><span class="nv">url</span><span class="p">.uri</span><span class="si">}</span><span class="w"> </span>is<span class="w"> </span>now<span class="w"> </span>back<span class="w"> </span>up<span class="sb">`</span><span class="p">;</span>
-<span class="w">     </span>const<span class="w"> </span><span class="nv">body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nv">url</span><span class="p">.uri</span><span class="si">}</span><span class="w"> </span>has<span class="w"> </span>recovered<span class="w"> </span>and<span class="w"> </span>is<span class="w"> </span>now<span class="w"> </span>back<span class="w"> </span>up<span class="sb">`</span><span class="p">;</span>
-<span class="w">     </span>MailApp.sendEmail<span class="o">(</span>alertEmail,<span class="w"> </span>subject,<span class="w"> </span>body<span class="o">)</span><span class="p">;</span>
-<span class="w">     </span>url.status<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">;</span>
-<span class="w">   </span><span class="o">}</span>
-<span class="w"> </span><span class="o">})</span><span class="p">;</span>
+   if (isErrorResponse &amp;&amp; !wasPreviouslyDown) {
+     // Site is now down for the first time
+     const subject = `Alert: Your site ${url.uri} is currently down`;
+     const body = `${url.uri} has encountered an error with status code ${responseCode}`;
+     MailApp.sendEmail(alertEmail, subject, body);
+     url.status = &#39;down&#39;;
+   } else if (!isErrorResponse &amp;&amp; wasPreviouslyDown) {
+     // Site was previously down, but is now back up
+     const subject = `Your site ${url.uri} is now back up`;
+     const body = `${url.uri} has recovered and is now back up`;
+     MailApp.sendEmail(alertEmail, subject, body);
+     url.status = &#39;&#39;;
+   }
+ });
 
-<span class="w"> </span>properties.setProperty<span class="o">(</span><span class="s1">&#39;URL_LIST&#39;</span>,<span class="w"> </span>JSON.stringify<span class="o">(</span>urls<span class="o">))</span><span class="p">;</span>
-<span class="o">}</span></code></pre></figure>
+ properties.setProperty(&#39;URL_LIST&#39;, JSON.stringify(urls));
+}</code></pre></figure>
 
 <ul>
   <li>Go to the “Triggers” menu in the left sidebar of the Google App Script project.</li>
@@ -582,6 +586,9 @@
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 <script src="/blog/assets/js/vendor/forkit.js"></script>
+
+<!-- Prism -->
+<script src="/blog/assets/js/prism.js"></script>
   
 
   </body>

@@ -142,6 +142,10 @@
 
 <link rel="stylesheet" href="/blog/assets/css/customize.css">
 <link rel="stylesheet" href="/blog/assets/css/forkit.css">
+
+<!-- Prism -->
+<link rel="stylesheet" href="/blog/assets/css/prism.css">
+
 </head>
 
 <body id="post">
@@ -440,49 +444,48 @@
 
 <p>Create a file in <code>app &gt; controllers &gt; sns_notification_controller.rb</code></p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">    </span>class<span class="w"> </span>SnsNotificationController<span class="w"> </span>&lt;<span class="w"> </span>ApplicationController
-<span class="w">      </span>skip_before_action<span class="w"> </span>:verify_authenticity_token
-<span class="w">      </span>before_action<span class="w"> </span>:authenticate_request
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">class SnsNotificationController &lt; ApplicationController
+      skip_before_action :verify_authenticity_token
+      before_action :authenticate_request
 
-<span class="w">      </span>def<span class="w"> </span>ses_reputation_notifier
-<span class="w">        </span><span class="k">case</span><span class="w"> </span>message_body<span class="o">[</span><span class="s1">&#39;Type&#39;</span><span class="o">]</span>
-<span class="w">        </span>when<span class="w"> </span><span class="s1">&#39;SubscriptionConfirmation&#39;</span>
-<span class="w">          </span>Rails.logger.error<span class="o">(</span>message_body<span class="o">[</span><span class="s1">&#39;SubscribeURL&#39;</span><span class="o">])</span>
-<span class="w">        </span>when<span class="w"> </span><span class="s1">&#39;Notification&#39;</span>
-<span class="w">          </span><span class="nv">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>JSON.parse<span class="o">(</span>message_body<span class="o">[</span><span class="s1">&#39;Message&#39;</span><span class="o">])</span>
+      def ses_reputation_notifier
+        case message_body[&#39;Type&#39;]
+        when &#39;SubscriptionConfirmation&#39;
+          Rails.logger.error(message_body[&#39;SubscribeURL&#39;])
+        when &#39;Notification&#39;
+          message = JSON.parse(message_body[&#39;Message&#39;])
 
-<span class="w">          </span><span class="nv">alarm_active</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>message<span class="o">[</span><span class="s1">&#39;NewStateValue&#39;</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;ALARM&#39;</span>
-<span class="w">          </span>//<span class="w"> </span>Your<span class="w"> </span>logic<span class="w"> </span>based<span class="w"> </span>on<span class="w"> </span>alarm<span class="w"> </span>status
-<span class="w">        </span>end
+          alarm_active = message[&#39;NewStateValue&#39;] == &#39;ALARM&#39;
+          // Your logic based on alarm status
+        end
 
-<span class="w">        </span>head<span class="w"> </span>:ok
-<span class="w">      </span>end
+        head :ok
+      end
 
-<span class="w">      </span>private
+      private
 
-<span class="w">        </span>def<span class="w"> </span>authenticate_request
-<span class="w">          </span>head<span class="w"> </span>:unauthorized<span class="w"> </span><span class="k">if</span><span class="w"> </span>raw_post.blank?<span class="w"> </span><span class="o">||</span><span class="w"> </span>!message_verifier.authentic?<span class="o">(</span>raw_post<span class="o">)</span>
-<span class="w">        </span>end
+        def authenticate_request
+          head :unauthorized if raw_post.blank? || !message_verifier.authentic?(raw_post)
+        end
 
-<span class="w">        </span>def<span class="w"> </span>raw_post
-<span class="w">          </span>@raw_post<span class="w"> </span><span class="o">||=</span><span class="w"> </span>request.raw_post
-<span class="w">        </span>end
+        def raw_post
+          @raw_post ||= request.raw_post
+        end
 
-<span class="w">        </span>def<span class="w"> </span>message_body
-<span class="w">          </span>@message_body<span class="w"> </span><span class="o">||=</span><span class="w"> </span>JSON.parse<span class="o">(</span>raw_post<span class="o">)</span>
-<span class="w">        </span>end
+        def message_body
+          @message_body ||= JSON.parse(raw_post)
+        end
 
-<span class="w">        </span>def<span class="w"> </span>message_verifier
-<span class="w">          </span>@message_verifier<span class="w"> </span><span class="o">||=</span><span class="w"> </span>Aws::SNS::MessageVerifier.new
-<span class="w">        </span>end
-<span class="w">    </span>end
-<span class="w">  </span></code></pre></figure>
+        def message_verifier
+          @message_verifier ||= Aws::SNS::MessageVerifier.new
+        end
+    end</code></pre></figure>
 
 <p>The code above uses the official <a href="https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SNS/Client.html" target="_blank" style="color: blue;">AWS SNS SDK</a>.</p>
 
 <p>Add a route for the <strong><em>ses_reputation_notifier</em></strong> action in the <strong><em>sns_notification</em></strong> within the <code>config/routes.rb</code> file.</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>post<span class="w"> </span><span class="s1">&#39;/ses_reputation_notifier&#39;</span>,<span class="w"> </span>to:<span class="w"> </span><span class="s1">&#39;sns_notification#ses_reputation_notifier&#39;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">post &#39;/ses_reputation_notifier&#39;, to: &#39;sns_notification#ses_reputation_notifier&#39;</code></pre></figure>
 
 <p>The API endpoint needs to be a public endpoint so that SNS can send notifications without requiring any token. Since it’s a public endpoint, we need to verify the authenticity of the request to ensure it comes from SNS.</p>
 
@@ -701,6 +704,9 @@
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 <script src="/blog/assets/js/vendor/forkit.js"></script>
+
+<!-- Prism -->
+<script src="/blog/assets/js/prism.js"></script>
   
 
   </body>

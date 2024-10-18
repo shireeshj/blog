@@ -144,6 +144,10 @@
 
 <link rel="stylesheet" href="/blog/assets/css/customize.css">
 <link rel="stylesheet" href="/blog/assets/css/forkit.css">
+
+<!-- Prism -->
+<link rel="stylesheet" href="/blog/assets/css/prism.css">
+
 </head>
 
 <body id="post">
@@ -328,9 +332,9 @@
 
 <p><strong>Demo Code</strong></p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>visit<span class="w"> </span>submit_page
-click_on<span class="w"> </span><span class="s1">&#39;Submit&#39;</span>
-assert<span class="w"> </span>page.has_content<span class="w"> </span><span class="s1">&#39;Some content after clicking on submit&#39;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">visit submit_page
+click_on &#39;Submit&#39;
+assert page.has_content &#39;Some content after clicking on submit&#39;</code></pre></figure>
 
 <p>In most cases, this test will run without any issues. However, occasionally the test may fail on the third line with the error “Expected false to be truthy”. This error can occur when the page is visited and the JavaScript on the page takes a few seconds to load. During this time, the submit button may be clicked, but because there is no JavaScript associated with the button yet, the button click does not do anything. As a result, the test is still on the submit page when it tries to assert that the expected content is present, causing the test to fail.</p>
 
@@ -342,22 +346,22 @@ assert<span class="w"> </span>page.has_content<span class="w"> </span><span clas
 
 <p>To use the execute_script method to click the button, you can use the following code:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>page.find_button<span class="o">(</span><span class="s1">&#39;Submit&#39;</span><span class="o">)</span>.execute_script<span class="o">(</span><span class="s1">&#39;this.click()&#39;</span><span class="o">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">page.find_button(&#39;Submit&#39;).execute_script(&#39;this.click()&#39;)</code></pre></figure>
 
 <p>This way we can ensure that click method will run only after the page javascript is fully loaded.</p>
 
 <p><strong>Browser Call Stack</strong></p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">          </span><span class="p">|</span><span class="w">               </span><span class="p">|</span>
-<span class="w">          </span><span class="p">|</span><span class="w">               </span><span class="p">|</span>
-<span class="w">          </span><span class="p">|</span><span class="w">   </span>JavaScript<span class="w">  </span><span class="p">|</span><span class="w">  </span>&lt;--<span class="w"> </span>existing<span class="w"> </span>code<span class="w"> </span>on<span class="w"> </span>the<span class="w"> </span>page<span class="o">(</span><span class="m">1</span><span class="o">)</span>
-<span class="w">          </span><span class="p">|</span>_______________<span class="p">|</span>
-<span class="w">          </span><span class="p">|</span><span class="w">               </span><span class="p">|</span>
-<span class="w">          </span><span class="p">|</span><span class="w">   </span>JavaScript<span class="w">  </span><span class="p">|</span><span class="w">  </span>&lt;--<span class="w"> </span>existing<span class="w"> </span>code<span class="w"> </span>on<span class="w"> </span>the<span class="w"> </span>page<span class="o">(</span><span class="m">2</span><span class="o">)</span>
-<span class="w">          </span><span class="p">|</span>_______________<span class="p">|</span>
-<span class="w">          </span><span class="p">|</span><span class="w">               </span><span class="p">|</span>
-<span class="w">          </span><span class="p">|</span><span class="w">  </span>click<span class="w"> </span>action<span class="w"> </span><span class="p">|</span><span class="w">  </span>&lt;--<span class="w"> </span>added<span class="w"> </span>by<span class="w"> </span>execute_script<span class="w"> </span>method<span class="o">(</span><span class="m">3</span><span class="o">)</span>
-<span class="w">          </span><span class="p">|</span>_______________<span class="p">|</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">|               |
+          |               |
+          |   JavaScript  |  &lt;-- existing code on the page(1)
+          |_______________|
+          |               |
+          |   JavaScript  |  &lt;-- existing code on the page(2)
+          |_______________|
+          |               |
+          |  click action |  &lt;-- added by execute_script method(3)
+          |_______________|</code></pre></figure>
 
 
               </div>
@@ -542,6 +546,9 @@ assert<span class="w"> </span>page.has_content<span class="w"> </span><span clas
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 <script src="/blog/assets/js/vendor/forkit.js"></script>
+
+<!-- Prism -->
+<script src="/blog/assets/js/prism.js"></script>
   
 
   </body>

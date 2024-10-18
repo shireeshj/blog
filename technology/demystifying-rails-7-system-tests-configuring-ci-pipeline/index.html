@@ -144,6 +144,10 @@
 
 <link rel="stylesheet" href="/blog/assets/css/customize.css">
 <link rel="stylesheet" href="/blog/assets/css/forkit.css">
+
+<!-- Prism -->
+<link rel="stylesheet" href="/blog/assets/css/prism.css">
+
 </head>
 
 <body id="post">
@@ -397,12 +401,11 @@
   </li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="nb">require</span><span class="w"> </span><span class="s2">&quot;test_helper&quot;</span>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">require &quot;test_helper&quot;
 
-<span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">ApplicationSystemTestCase</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="no">ActionDispatch</span><span class="o">::</span><span class="no">SystemTestCase</span>
-<span class="w">    </span><span class="n">driven_by</span><span class="w"> </span><span class="ss">:selenium</span><span class="p">,</span><span class="w"> </span><span class="ss">using</span><span class="p">:</span><span class="w"> </span><span class="ss">:chrome</span><span class="p">,</span><span class="w"> </span><span class="ss">screen_size</span><span class="p">:</span><span class="w"> </span><span class="o">[</span><span class="mi">1400</span><span class="p">,</span><span class="w"> </span><span class="mi">1400</span><span class="o">]</span>
-<span class="w">  </span><span class="k">end</span>
-<span class="w">  </span></code></pre></figure>
+  class ApplicationSystemTestCase &lt; ActionDispatch::SystemTestCase
+    driven_by :selenium, using: :chrome, screen_size: [1400, 1400]
+  end</code></pre></figure>
 
 <ul style="margin-left: 2rem">
   <li>In <code>ActionDispatch::SystemTestCase</code> we require the <code>capybara/minitest</code> library.</li>
@@ -423,11 +426,10 @@
   </li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="n">visit</span><span class="p">(</span><span class="s1">&#39;/login&#39;</span><span class="p">)</span>
-<span class="w">  </span><span class="n">fill_in</span><span class="p">(</span><span class="s1">&#39;email&#39;</span><span class="p">,</span><span class="w"> </span><span class="ss">with</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;user@example.com&#39;</span><span class="p">)</span>
-<span class="w">  </span><span class="n">fill_in</span><span class="p">(</span><span class="s1">&#39;password&#39;</span><span class="p">,</span><span class="w"> </span><span class="ss">with</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;password&#39;</span><span class="p">)</span>
-<span class="w">  </span><span class="n">click_button</span><span class="p">(</span><span class="s1">&#39;Login&#39;</span><span class="p">)</span>
-<span class="w">  </span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">visit(&#39;/login&#39;)
+  fill_in(&#39;email&#39;, with: &#39;user@example.com&#39;)
+  fill_in(&#39;password&#39;, with: &#39;password&#39;)
+  click_button(&#39;Login&#39;)</code></pre></figure>
 
 <ul>
   <li>
@@ -439,19 +441,18 @@
   </li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="nb">require</span><span class="w"> </span><span class="s2">&quot;selenium-webdriver&quot;</span>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">require &quot;selenium-webdriver&quot;
 
-<span class="w">  </span><span class="n">driver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">Selenium</span><span class="o">::</span><span class="no">WebDriver</span><span class="o">.</span><span class="n">for</span><span class="w"> </span><span class="ss">:firefox</span>
-<span class="w">  </span><span class="n">driver</span><span class="o">.</span><span class="n">navigate</span><span class="o">.</span><span class="n">to</span><span class="w"> </span><span class="s2">&quot;http://google.com&quot;</span>
+  driver = Selenium::WebDriver.for :firefox
+  driver.navigate.to &quot;http://google.com&quot;
 
-<span class="w">  </span><span class="n">element</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">driver</span><span class="o">.</span><span class="n">find_element</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;q&#39;</span><span class="p">)</span>
-<span class="w">  </span><span class="n">element</span><span class="o">.</span><span class="n">send_keys</span><span class="w"> </span><span class="s2">&quot;Hello WebDriver!&quot;</span>
-<span class="w">  </span><span class="n">element</span><span class="o">.</span><span class="n">submit</span>
+  element = driver.find_element(name: &#39;q&#39;)
+  element.send_keys &quot;Hello WebDriver!&quot;
+  element.submit
 
-<span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="n">driver</span><span class="o">.</span><span class="n">title</span>
+  puts driver.title
 
-<span class="w">  </span><span class="no">Driver</span><span class="o">.</span><span class="n">quit</span>
-<span class="w">  </span></code></pre></figure>
+  Driver.quit</code></pre></figure>
 
 <ul style="margin-left: 2rem">
   <li>You can see how it’s a bit lower-level than the Capybara example further up. The selenium-webdriver library translates these calls into WebDriver Protocol, which it speaks to a webdriver executable.</li>
@@ -470,24 +471,21 @@
   </li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">  </span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s1">&#39;http://127.0.0.1:9515/session&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;capabilities&quot;:{&quot;firstMatch&quot;:[{&quot;browserName&quot;:&quot;firefox&quot;}]}}&#39;</span>
-<span class="w">  </span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">curl -X POST &#39;http://127.0.0.1:9515/session&#39; -d &#39;{&quot;capabilities&quot;:{&quot;firstMatch&quot;:[{&quot;browserName&quot;:&quot;firefox&quot;}]}}&#39;</code></pre></figure>
 
 <ul style="margin-left: 2rem">
 
   <li>This return a session id along with data</li>
   </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">  </span><span class="o">{</span><span class="w"> </span>...<span class="w"> </span><span class="s2">&quot;sessionId&quot;</span>:<span class="s2">&quot;f1776ba558e28309299dc5f62864e977&quot;</span><span class="w"> </span>...<span class="w"> </span><span class="o">}</span>
-<span class="w">  </span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">{ ... &quot;sessionId&quot;:&quot;f1776ba558e28309299dc5f62864e977&quot; ... }</code></pre></figure>
 
 <ul style="margin-left: 2rem">
 
   <li>Then we make another post request with a session id. And url in data parameters</li>
   </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">  </span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span><span class="s1">&#39;http://127.0.0.1:9515/session/f1776ba558e28309299dc5f62864e977/url&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;url&quot;: &quot;https://google.com&quot;}&#39;</span>
-<span class="w">  </span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">curl -X POST &#39;http://127.0.0.1:9515/session/f1776ba558e28309299dc5f62864e977/url&#39; -d &#39;{&quot;url&quot;: &quot;https://google.com&quot;}&#39;</code></pre></figure>
 
 <ul>
   <li><strong>Webdriver</strong>
@@ -524,54 +522,49 @@
   <li>Run the command below to generate a very basic Ruby on Rails 7 app:</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>rails<span class="w"> </span>new<span class="w"> </span>minitest-rails-app</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">rails new minitest-rails-app</code></pre></figure>
 
 <ul>
   <li>Go ahead and open up the project in your favourite editor and proceed to the Gemfile, specifically to the test block:</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="n">group</span><span class="w"> </span><span class="ss">:test</span><span class="w"> </span><span class="k">do</span>
-<span class="w">    </span><span class="c1"># Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]</span>
-<span class="w">    </span><span class="n">gem</span><span class="w"> </span><span class="s2">&quot;capybara&quot;</span>
-<span class="w">    </span><span class="n">gem</span><span class="w"> </span><span class="s2">&quot;selenium-webdriver&quot;</span>
-<span class="w">    </span><span class="n">gem</span><span class="w"> </span><span class="s2">&quot;webdrivers&quot;</span>
-<span class="w">  </span><span class="k">end</span>
-<span class="w">  </span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">group :test do
+    # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
+    gem &quot;capybara&quot;
+    gem &quot;selenium-webdriver&quot;
+    gem &quot;webdrivers&quot;
+  end</code></pre></figure>
 
 <ul>
   <li>Next, let’s do a quick scaffold generation to have something to work with:</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">  </span>rails<span class="w"> </span>generate<span class="w"> </span>scaffold<span class="w"> </span>Blog<span class="w"> </span>title:string<span class="w"> </span>body:text
-<span class="w">  </span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">rails generate scaffold Blog title:string body:text</code></pre></figure>
 
 <ul>
   <li>Usually, generating a scaffold will automatically generate the <code>application_system_test_case.rb</code> and everything you need for the system tests</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="n">application_system_test_case</span><span class="o">.</span><span class="n">rb</span><span class="w"> </span><span class="p">(</span><span class="n">default</span><span class="p">)</span><span class="w"> </span>
-<span class="w">  </span>
-<span class="w">  </span><span class="nb">require</span><span class="w"> </span><span class="s2">&quot;test_helper&quot;</span>
-<span class="w">  </span>
-<span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">ApplicationSystemTestCase</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="no">ActionDispatch</span><span class="o">::</span><span class="no">SystemTestCase</span>
-<span class="w">    </span><span class="n">driven_by</span><span class="w"> </span><span class="ss">:selenium</span><span class="p">,</span><span class="w"> </span><span class="ss">using</span><span class="p">:</span><span class="w"> </span><span class="ss">:chrome</span><span class="p">,</span><span class="w"> </span><span class="ss">screen_size</span><span class="p">:</span><span class="w"> </span><span class="o">[</span><span class="mi">1400</span><span class="p">,</span><span class="w"> </span><span class="mi">1400</span><span class="o">]</span>
-<span class="w">  </span><span class="k">end</span>
-<span class="w">  </span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">application_system_test_case.rb (default) 
+  
+  require &quot;test_helper&quot;
+  
+  class ApplicationSystemTestCase &lt; ActionDispatch::SystemTestCase
+    driven_by :selenium, using: :chrome, screen_size: [1400, 1400]
+  end</code></pre></figure>
 
 <ul>
   <li>Run the database commands</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">  </span>rails<span class="w"> </span>db:setup
-<span class="w">  </span>rails<span class="w"> </span>db:migrate
-<span class="w">  </span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">rails db:setup
+  rails db:migrate</code></pre></figure>
 
 <ul>
   <li>Running a Basic System For the First Time</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">  </span>rails<span class="w"> </span>test:system
-<span class="w">  </span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">rails test:system</code></pre></figure>
 
 <p><strong>Step 2: Exclude the gem webdrivers from the list of dependencies</strong></p>
 <ul>
@@ -581,13 +574,12 @@
   <li>After change, <code>Gemfile</code> looks like this</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="n">group</span><span class="w"> </span><span class="ss">:test</span><span class="w"> </span><span class="k">do</span>
-<span class="w">  </span><span class="c1"># Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]</span>
-<span class="w">  </span><span class="n">gem</span><span class="w"> </span><span class="s2">&quot;capybara&quot;</span>
-<span class="w">  </span><span class="n">gem</span><span class="w"> </span><span class="s2">&quot;selenium-webdriver&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;~&gt; 4.11&quot;</span>
-<span class="w">  </span><span class="c1">#gem &quot;webdrivers&quot;</span>
-<span class="w">  </span><span class="k">end</span>
-<span class="w">  </span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">group :test do
+  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
+  gem &quot;capybara&quot;
+  gem &quot;selenium-webdriver&quot;, &quot;~&gt; 4.11&quot;
+  #gem &quot;webdrivers&quot;
+  end</code></pre></figure>
 
 <p><strong>Step 3: Point the Selenium-webdriver to use the firefox browser</strong></p>
 <ul>
@@ -595,14 +587,13 @@
   <li>We need to change the browser to the firefox.</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="c1">#application_system_test_case.rb (change driver to Firefox)</span>
-<span class="w"> </span>
-<span class="w">  </span><span class="nb">require</span><span class="w"> </span><span class="s2">&quot;test_helper&quot;</span>
-<span class="w">  </span>
-<span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">ApplicationSystemTestCase</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="no">ActionDispatch</span><span class="o">::</span><span class="no">SystemTestCase</span>
-<span class="w">    </span><span class="n">driven_by</span><span class="w"> </span><span class="ss">:selenium</span><span class="p">,</span><span class="w"> </span><span class="ss">using</span><span class="p">:</span><span class="w"> </span><span class="ss">:firefox</span><span class="p">,</span><span class="w"> </span><span class="ss">screen_size</span><span class="p">:</span><span class="w"> </span><span class="o">[</span><span class="mi">1400</span><span class="p">,</span><span class="w"> </span><span class="mi">1400</span><span class="o">]</span>
-<span class="w">  </span><span class="k">end</span>
-<span class="w">  </span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">#application_system_test_case.rb (change driver to Firefox)
+ 
+  require &quot;test_helper&quot;
+  
+  class ApplicationSystemTestCase &lt; ActionDispatch::SystemTestCase
+    driven_by :selenium, using: :firefox, screen_size: [1400, 1400]
+  end</code></pre></figure>
 
 <p><strong>Step 4: Prepare the docker image</strong></p>
 
@@ -610,24 +601,23 @@
   <li>Create <code>Dockerfile</code></li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">  </span>FROM<span class="w"> </span>ruby:3.1.2-slim-buster
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">FROM ruby:3.1.2-slim-buster
 
-<span class="w">  </span>RUN<span class="w"> </span>apt-get<span class="w"> </span>update
-<span class="w">  </span>RUN<span class="w"> </span>apt-get<span class="w"> </span>-y<span class="w"> </span>install<span class="w"> </span>gnupg<span class="w"> </span>curl<span class="w"> </span>wget<span class="w"> </span>xvfb<span class="w"> </span>unzip
+  RUN apt-get update
+  RUN apt-get -y install gnupg curl wget xvfb unzip
 
-<span class="w">  </span>ENV<span class="w"> </span>NODE_VERSION<span class="w"> </span><span class="m">19</span>
+  ENV NODE_VERSION 19
 
-<span class="w">  </span>RUN<span class="w"> </span>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://deb.nodesource.com/setup_<span class="si">${</span><span class="nv">NODE_VERSION</span><span class="si">}</span>.x<span class="w"> </span><span class="p">|</span><span class="w"> </span>bash<span class="w"> </span>-<span class="w">  </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>apt-get<span class="w"> </span>install<span class="w"> </span>--yes<span class="w"> </span>nodejs<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>apt-get<span class="w"> </span>install<span class="w"> </span>--yes<span class="w"> </span>libxss1<span class="w"> </span>libappindicator1<span class="w"> </span>libindicator7<span class="w"> </span>python2
+  RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash -  &amp;&amp; \
+  apt-get install --yes nodejs &amp;&amp; \
+  apt-get install --yes libxss1 libappindicator1 libindicator7 python2
 
-<span class="w">  </span>RUN<span class="w"> </span>apt-get<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>apt-get<span class="w"> </span>install<span class="w"> </span>--yes<span class="w"> </span>software-properties-common<span class="w"> </span>build-essential<span class="w"> </span>libssl-dev<span class="w"> </span>sqlite3<span class="w"> </span>libsqlite3-dev<span class="w"> </span>pkg-config<span class="w"> </span>ca-certificates<span class="w"> </span>firefox-esr
+  RUN apt-get update &amp;&amp; \
+  apt-get install --yes software-properties-common build-essential libssl-dev sqlite3 libsqlite3-dev pkg-config ca-certificates firefox-esr
 
-<span class="w">  </span>RUN<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>git-all
-<span class="w">  </span>RUN<span class="w"> </span>npm<span class="w"> </span>install<span class="w"> </span>yarn<span class="w"> </span>-g
-<span class="w">  </span>ADD<span class="w"> </span>.<span class="w"> </span>/data
-<span class="w">  </span></code></pre></figure>
+  RUN apt-get install -y git-all
+  RUN npm install yarn -g
+  ADD . /data</code></pre></figure>
 
 <ul>
   <li>
@@ -638,8 +628,7 @@
   </li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">  </span>docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>dockermanishelitmus/systemtest-rails-app:latest1.0<span class="w"> </span>.<span class="w"> </span>--platform<span class="w"> </span>linux/amd64,linux/arm64<span class="w"> </span>--push
-<span class="w">  </span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">docker buildx build -t dockermanishelitmus/systemtest-rails-app:latest1.0 . --platform linux/amd64,linux/arm64 --push</code></pre></figure>
 
 <ul>
   <li>Command is building a Docker image using the buildx extension, targeting two different platforms (Intel/AMD 64-bit and ARM 64-bit), tagging the image as latest1.0, and pushing the resulting image to a container registry.</li>
@@ -651,72 +640,72 @@
   <li>In the project root directory create a file <code>.gitlab-ci.yml</code> with content</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span></span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;dockermanishelitmus/systemtest-rails-app:latest1.0&quot;</span>
-<span class="nt">services</span><span class="p">:</span>
-<span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">redis:latest</span>
-<span class="nt">variables</span><span class="p">:</span>
-<span class="w"> </span><span class="nt">RAILS_ENV</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;test&quot;</span>
+<figure class="highlight"><pre><code class="language-yaml" data-lang="yaml">image: &quot;dockermanishelitmus/systemtest-rails-app:latest1.0&quot;
+services:
+ - redis:latest
+variables:
+ RAILS_ENV: &quot;test&quot;
 
-<span class="nt">cache</span><span class="p">:</span>
-<span class="w"> </span><span class="nt">paths</span><span class="p">:</span>
-<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">vendor/ruby</span>
-<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">node_modules/</span>
+cache:
+ paths:
+   - vendor/ruby
+   - node_modules/
 
-<span class="nt">before_script</span><span class="p">:</span>
-<span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gem install bundler  --no-document</span>
-<span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bundle config set force_ruby_platform true</span>
-<span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bundle install</span>
-<span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bin/rake db:drop</span>
-<span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bin/rake db:setup</span>
-<span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bin/rake db:migrate</span>
+before_script:
+ - gem install bundler  --no-document
+ - bundle config set force_ruby_platform true
+ - bundle install
+ - bin/rake db:drop
+ - bin/rake db:setup
+ - bin/rake db:migrate
 
-<span class="nt">stages</span><span class="p">:</span>
-<span class="w"> </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tests</span>
+stages:
+ - tests
 
-<span class="nt">SystemTests</span><span class="p">:</span>
-<span class="w"> </span><span class="nt">stage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tests</span>
-<span class="w"> </span><span class="nt">script</span><span class="p">:</span>
-<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yarn install</span>
-<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bin/rake assets:precompile</span>
-<span class="w">   </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bin/rails test:system</span>
-<span class="w"> </span><span class="nt">artifacts</span><span class="p">:</span>
-<span class="w">   </span><span class="nt">when</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">on_failure</span>
-<span class="w">   </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;$CI_JOB_NAME-$CI_COMMIT_REF_NAME&quot;</span>
-<span class="w">   </span><span class="nt">paths</span><span class="p">:</span>
-<span class="w">     </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">coverage/</span>
-<span class="w">   </span><span class="nt">expire_in</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1 day</span></code></pre></figure>
+SystemTests:
+ stage: tests
+ script:
+   - yarn install
+   - bin/rake assets:precompile
+   - bin/rails test:system
+ artifacts:
+   when: on_failure
+   name: &quot;$CI_JOB_NAME-$CI_COMMIT_REF_NAME&quot;
+   paths:
+     - coverage/
+   expire_in: 1 day</code></pre></figure>
 
 <ul>
   <li>Finally run your test suite</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>gitlab-runner<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>docker<span class="w"> </span>SystemTests</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">gitlab-runner exec docker SystemTests</code></pre></figure>
 
 <ul>
   <li>Output</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">  </span>$<span class="w"> </span>bin/rails<span class="w"> </span>test:system
-<span class="w">  </span>Running<span class="w"> </span><span class="m">4</span><span class="w"> </span>tests<span class="w"> </span><span class="k">in</span><span class="w"> </span>a<span class="w"> </span>single<span class="w"> </span>process<span class="w"> </span><span class="o">(</span>parallelization<span class="w"> </span>threshold<span class="w"> </span>is<span class="w"> </span><span class="m">50</span><span class="o">)</span>
-<span class="w">  </span>Run<span class="w"> </span>options:<span class="w"> </span>--seed<span class="w"> </span><span class="m">13031</span>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">$ bin/rails test:system
+  Running 4 tests in a single process (parallelization threshold is 50)
+  Run options: --seed 13031
 
-<span class="w">  </span><span class="c1"># Running:</span>
+  # Running:
 
-<span class="w">  </span>Capybara<span class="w"> </span>starting<span class="w"> </span>Puma...
-<span class="w">  </span>*<span class="w"> </span>Version<span class="w"> </span><span class="m">5</span>.6.7<span class="w"> </span>,<span class="w"> </span>codename:<span class="w"> </span>Birdie<span class="err">&#39;</span>s<span class="w"> </span>Version
-<span class="w">  </span>*<span class="w"> </span>Min<span class="w"> </span>threads:<span class="w"> </span><span class="m">0</span>,<span class="w"> </span>max<span class="w"> </span>threads:<span class="w"> </span><span class="m">4</span>
-<span class="w">  </span>*<span class="w"> </span>Listening<span class="w"> </span>on<span class="w"> </span>http://127.0.0.1:33385
-<span class="w">  </span>....
+  Capybara starting Puma...
+  * Version 5.6.7 , codename: Birdie&#39;s Version
+  * Min threads: 0, max threads: 4
+  * Listening on http://127.0.0.1:33385
+  ....
 
-<span class="w">  </span>Finished<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">7</span>.865541s,<span class="w"> </span><span class="m">0</span>.5085<span class="w"> </span>runs/s,<span class="w"> </span><span class="m">0</span>.5085<span class="w"> </span>assertions/s.
-<span class="w">  </span><span class="m">4</span><span class="w"> </span>runs,<span class="w"> </span><span class="m">4</span><span class="w"> </span>assertions,<span class="w"> </span><span class="m">0</span><span class="w"> </span>failures,<span class="w"> </span><span class="m">0</span><span class="w"> </span>errors,<span class="w"> </span><span class="m">0</span><span class="w"> </span>skips
-<span class="w">  </span>Saving<span class="w"> </span>cache<span class="w"> </span><span class="k">for</span><span class="w"> </span>successful<span class="w"> </span>job
-<span class="w">  </span>Creating<span class="w"> </span>cache<span class="w"> </span>SystemTests/main...
-<span class="w">  </span>WARNING:<span class="w"> </span>vendor/ruby:<span class="w"> </span>no<span class="w"> </span>matching<span class="w"> </span>files.<span class="w"> </span>Ensure<span class="w"> </span>that<span class="w"> </span>the<span class="w"> </span>artifact<span class="w"> </span>path<span class="w"> </span>is<span class="w"> </span>relative<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>working<span class="w"> </span>directory
-<span class="w">  </span>node_modules/:<span class="w"> </span>found<span class="w"> </span><span class="m">2</span><span class="w"> </span>matching<span class="w"> </span>files<span class="w"> </span>and<span class="w"> </span>directories
-<span class="w">  </span>No<span class="w"> </span>URL<span class="w"> </span>provided,<span class="w"> </span>cache<span class="w"> </span>will<span class="w"> </span>not<span class="w"> </span>be<span class="w"> </span>uploaded<span class="w"> </span>to<span class="w"> </span>shared<span class="w"> </span>cache<span class="w"> </span>server.<span class="w"> </span>Cache<span class="w"> </span>will<span class="w"> </span>be<span class="w"> </span>stored<span class="w"> </span>only<span class="w"> </span>locally.
-<span class="w">  </span>Created<span class="w"> </span>cache
-<span class="w">  </span>Job<span class="w"> </span>succeeded</code></pre></figure>
+  Finished in 7.865541s, 0.5085 runs/s, 0.5085 assertions/s.
+  4 runs, 4 assertions, 0 failures, 0 errors, 0 skips
+  Saving cache for successful job
+  Creating cache SystemTests/main...
+  WARNING: vendor/ruby: no matching files. Ensure that the artifact path is relative to the working directory
+  node_modules/: found 2 matching files and directories
+  No URL provided, cache will not be uploaded to shared cache server. Cache will be stored only locally.
+  Created cache
+  Job succeeded</code></pre></figure>
 
 <h3 id="conclusion"><strong>Conclusion</strong></h3>
 
@@ -904,6 +893,9 @@
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 <script src="/blog/assets/js/vendor/forkit.js"></script>
+
+<!-- Prism -->
+<script src="/blog/assets/js/prism.js"></script>
   
 
   </body>

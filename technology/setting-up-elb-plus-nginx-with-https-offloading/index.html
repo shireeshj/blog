@@ -136,6 +136,10 @@
 
 <link rel="stylesheet" href="/blog/assets/css/customize.css">
 <link rel="stylesheet" href="/blog/assets/css/forkit.css">
+
+<!-- Prism -->
+<link rel="stylesheet" href="/blog/assets/css/prism.css">
+
 </head>
 
 <body id="post">
@@ -428,7 +432,7 @@ We went ahead with this choice. Using <a href="https://docs.chef.io/chef_solo.ht
 
 <p>For <a href="https://www.nginx.com/resources/wiki/">NGINX</a>, we do it like this:</p>
 
-<figure class="highlight"><pre><code class="language-nginx" data-lang="nginx"><span></span><span class="w">  </span><span class="k">proxy_set_header</span><span class="w"> </span><span class="s">X-Forwarded-Proto</span><span class="w"> </span><span class="s">https</span><span class="p">;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-nginx" data-lang="nginx">proxy_set_header X-Forwarded-Proto https;</code></pre></figure>
 
 <p>Voila, Rails is happy and things are back to normal!</p>
 
@@ -447,7 +451,7 @@ We went ahead with this choice. Using <a href="https://docs.chef.io/chef_solo.ht
 
 <p>In <strong><em>Rails environment config</em></strong>.</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="w">  </span><span class="n">config</span><span class="o">.</span><span class="n">force_ssl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kp">true</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">config.force_ssl = true</code></pre></figure>
 
 <p>This does the trick, but doesn’t seem like a good idea to enable this option in Rails because, we offload https at <a href="https://www.nginx.com/resources/wiki/">NGINX</a>. For Rails, request came in http, so it does a permanent redirect to https, which ends in a infinite loop.</p>
 
@@ -473,13 +477,13 @@ We went ahead with this choice. Using <a href="https://docs.chef.io/chef_solo.ht
 
 <p><a href="https://github.com/intridea/omniauth/blob/ed1f9a8994e6b660e2eed3f85bb87c81229480fa/lib/omniauth/strategy.rb#L493-L499" target="_blank">lib/omniauth/strategy.rb#L493-L499</a></p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="k">def</span><span class="w"> </span><span class="nf">ssl?</span>
-<span class="w">  </span><span class="n">request</span><span class="o">.</span><span class="n">env</span><span class="o">[</span><span class="s1">&#39;HTTPS&#39;</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;on&#39;</span><span class="w"> </span><span class="o">||</span>
-<span class="w">  </span><span class="n">request</span><span class="o">.</span><span class="n">env</span><span class="o">[</span><span class="s1">&#39;HTTP_X_FORWARDED_SSL&#39;</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;on&#39;</span><span class="w"> </span><span class="o">||</span>
-<span class="w">  </span><span class="n">request</span><span class="o">.</span><span class="n">env</span><span class="o">[</span><span class="s1">&#39;HTTP_X_FORWARDED_SCHEME&#39;</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;https&#39;</span><span class="w"> </span><span class="o">||</span>
-<span class="w">  </span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">env</span><span class="o">[</span><span class="s1">&#39;HTTP_X_FORWARDED_PROTO&#39;</span><span class="o">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">request</span><span class="o">.</span><span class="n">env</span><span class="o">[</span><span class="s1">&#39;HTTP_X_FORWARDED_PROTO&#39;</span><span class="o">].</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;https&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">||</span>
-<span class="w">  </span><span class="n">request</span><span class="o">.</span><span class="n">env</span><span class="o">[</span><span class="s1">&#39;rack.url_scheme&#39;</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s1">&#39;https&#39;</span>
-<span class="k">end</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">def ssl?
+  request.env[&#39;HTTPS&#39;] == &#39;on&#39; ||
+  request.env[&#39;HTTP_X_FORWARDED_SSL&#39;] == &#39;on&#39; ||
+  request.env[&#39;HTTP_X_FORWARDED_SCHEME&#39;] == &#39;https&#39; ||
+  (request.env[&#39;HTTP_X_FORWARDED_PROTO&#39;] &amp;&amp; request.env[&#39;HTTP_X_FORWARDED_PROTO&#39;].split(&#39;,&#39;)[0] == &#39;https&#39;) ||
+  request.env[&#39;rack.url_scheme&#39;] == &#39;https&#39;
+end</code></pre></figure>
 
 <p>This is where we found that setting up <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Proto">X_FORWARDED_PROTO</a> to https should fix our problems.</p>
 
@@ -727,6 +731,9 @@ We went ahead with this choice. Using <a href="https://docs.chef.io/chef_solo.ht
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 <script src="/blog/assets/js/vendor/forkit.js"></script>
+
+<!-- Prism -->
+<script src="/blog/assets/js/prism.js"></script>
   
 
   </body>

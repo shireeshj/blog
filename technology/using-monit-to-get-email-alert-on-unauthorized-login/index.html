@@ -140,6 +140,10 @@
 
 <link rel="stylesheet" href="/blog/assets/css/customize.css">
 <link rel="stylesheet" href="/blog/assets/css/forkit.css">
+
+<!-- Prism -->
+<link rel="stylesheet" href="/blog/assets/css/prism.css">
+
 </head>
 
 <body id="post">
@@ -354,35 +358,35 @@
               <div class="post-content-justify">
                 <p>For a long time, we had our own custom written perl script to alert us whenever someone logged into our production servers from an ip address we do not recognize (not whitelisted). The script looked somewhat like this…</p>
 
-<figure class="highlight"><pre><code class="language-perl" data-lang="perl"><span></span><span class="ch">#!/usr/bin/perl</span>
-<span class="c1"># script file: alert_on_login.pl</span>
-<span class="c1">#</span>
-<span class="k">my</span><span class="w"> </span><span class="nv">$login_str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Accepted publickey&quot;</span><span class="p">;</span>
-<span class="k">my</span><span class="w"> </span><span class="nv">$whitelist_ip</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;122.123.123.111&quot;</span><span class="p">;</span>
+<figure class="highlight"><pre><code class="language-perl" data-lang="perl">#!/usr/bin/perl
+# script file: alert_on_login.pl
+#
+my $login_str = &quot;Accepted publickey&quot;;
+my $whitelist_ip = &quot;122.123.123.111&quot;;
 
-<span class="k">sub</span><span class="w"> </span><span class="nf">sendEmail</span>
-<span class="p">{</span>
-<span class="w">        </span><span class="k">my</span><span class="w"> </span><span class="p">(</span><span class="nv">$to</span><span class="p">,</span><span class="w"> </span><span class="nv">$from</span><span class="p">,</span><span class="w"> </span><span class="nv">$subject</span><span class="p">,</span><span class="w"> </span><span class="nv">$message</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">@_</span><span class="p">;</span>
-<span class="w">        </span><span class="k">my</span><span class="w"> </span><span class="nv">$sendmail</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#39;/usr/lib/sendmail&#39;</span><span class="p">;</span>
-<span class="w">        </span><span class="nb">open</span><span class="p">(</span><span class="n">MAIL</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;|$sendmail -oi -t&quot;</span><span class="p">);</span>
-<span class="w">        </span><span class="k">print</span><span class="w"> </span><span class="n">MAIL</span><span class="w"> </span><span class="s">&quot;From: $from\n&quot;</span><span class="p">;</span>
-<span class="w">        </span><span class="k">print</span><span class="w"> </span><span class="n">MAIL</span><span class="w"> </span><span class="s">&quot;To: $to\n&quot;</span><span class="p">;</span>
-<span class="w">        </span><span class="k">print</span><span class="w"> </span><span class="n">MAIL</span><span class="w"> </span><span class="s">&quot;Subject: $subject\n\n&quot;</span><span class="p">;</span>
-<span class="w">        </span><span class="k">print</span><span class="w"> </span><span class="n">MAIL</span><span class="w"> </span><span class="s">&quot;$message\n&quot;</span><span class="p">;</span>
-<span class="w">        </span><span class="nb">close</span><span class="p">(</span><span class="n">MAIL</span><span class="p">);</span>
-<span class="p">}</span>
+sub sendEmail
+{
+        my ($to, $from, $subject, $message) = @_;
+        my $sendmail = &#39;/usr/lib/sendmail&#39;;
+        open(MAIL, &quot;|$sendmail -oi -t&quot;);
+        print MAIL &quot;From: $from\n&quot;;
+        print MAIL &quot;To: $to\n&quot;;
+        print MAIL &quot;Subject: $subject\n\n&quot;;
+        print MAIL &quot;$message\n&quot;;
+        close(MAIL);
+}
 
-<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">&lt;&gt;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">grep</span><span class="p">(</span><span class="sr">/$login_str/</span><span class="p">,</span><span class="w"> </span><span class="nv">$_</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="nb">grep</span><span class="p">(</span><span class="sr">/$whitelist_ip/</span><span class="p">,</span><span class="w"> </span><span class="nv">$_</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="k">print</span><span class="w"> </span><span class="nv">$_</span><span class="p">;</span>
-<span class="w">                </span><span class="nb">chomp</span><span class="w"> </span><span class="nv">$_</span><span class="p">;</span>
-<span class="w">                </span><span class="nv">@arr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">split</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span><span class="w"> </span><span class="nv">$_</span><span class="p">);</span>
-<span class="w">                </span><span class="n">sendEmail</span><span class="p">(</span><span class="s">&#39;recepient1@elitmus.com, recepient2@elitmus.com&#39;</span><span class="p">,</span>
-<span class="w">                          </span><span class="s">&#39;monit@elitmus.com&#39;</span><span class="p">,</span>
-<span class="w">                          </span><span class="s">&#39;Server login from &#39;</span><span class="w"> </span><span class="o">.</span><span class="w"> </span><span class="nv">$arr</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span>
-<span class="w">                          </span><span class="nv">$_</span><span class="p">);</span>
-<span class="w">        </span><span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
+while (&lt;&gt;) {
+        if (grep(/$login_str/, $_) &amp;&amp; !grep(/$whitelist_ip/, $_)) {
+                print $_;
+                chomp $_;
+                @arr = split(&#39; &#39;, $_);
+                sendEmail(&#39;recepient1@elitmus.com, recepient2@elitmus.com&#39;,
+                          &#39;monit@elitmus.com&#39;,
+                          &#39;Server login from &#39; . $arr[10],
+                          $_);
+        }
+}</code></pre></figure>
 
 <p>All we needed to do was to run this script in the background as a daemon, and it would send us an email alert whenever someone logged in successfully. As root user start the script like this:</p>
 
@@ -397,36 +401,36 @@
 
 <p><a href="https://mmonit.com/monit/">Monit’s</a> global configuration file is usually /etc/monit/monitrc. Here is what <a href="https://mmonit.com/monit/">monit</a> needs to be told about how to send email alerts:</p>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span></span>...
-<span class="c1"># This is our SMTP server settings. The complete syntax is</span>
-<span class="c1"># SET MAILSERVER &lt;hostname [PORT] [USERNAME] [PASSWORD] [using SSLAUTO|SSLV2|SSLV3|TLSV11|TLSV12] [CERTMD5 checksum]&gt;, ...</span>
-<span class="c1">#          [with TIMEOUT X SECONDS]</span>
-<span class="c1">#          [using HOSTNAME hostname]</span>
-<span class="c1">#</span>
-<span class="c1"># But for our purpose, localhost is good enough</span>
-SET<span class="w"> </span>mailserver<span class="w"> </span>localhost
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">...
+# This is our SMTP server settings. The complete syntax is
+# SET MAILSERVER &lt;hostname [PORT] [USERNAME] [PASSWORD] [using SSLAUTO|SSLV2|SSLV3|TLSV11|TLSV12] [CERTMD5 checksum]&gt;, ...
+#          [with TIMEOUT X SECONDS]
+#          [using HOSTNAME hostname]
+#
+# But for our purpose, localhost is good enough
+SET mailserver localhost
 
-<span class="c1"># This is the email template for alert messages</span>
-SET<span class="w"> </span>mail-format<span class="w"> </span><span class="o">{</span>
-<span class="w">  </span>from:<span class="w"> </span>monit@elitmus.com
-<span class="w">  </span>subject:<span class="w"> </span><span class="nv">$SERVICE</span><span class="w"> </span><span class="nv">$EVENT</span><span class="w"> </span>at<span class="w"> </span><span class="nv">$DATE</span>
-<span class="w">  </span>message:<span class="w"> </span>Monit<span class="w"> </span><span class="nv">$ACTION</span><span class="w"> </span><span class="nv">$SERVICE</span><span class="w"> </span>at<span class="w"> </span><span class="nv">$DATE</span><span class="w"> </span>on<span class="w"> </span><span class="nv">$HOST</span>:<span class="w"> </span><span class="nv">$DESCRIPTION</span>.
-<span class="w">           </span>Yours<span class="w"> </span>sincerely,
-<span class="w">           </span>monit
-<span class="o">}</span>
+# This is the email template for alert messages
+SET mail-format {
+  from: monit@elitmus.com
+  subject: $SERVICE $EVENT at $DATE
+  message: Monit $ACTION $SERVICE at $DATE on $HOST: $DESCRIPTION.
+           Yours sincerely,
+           monit
+}
 
-<span class="c1"># Alerts can be triggered for various reasons. Successful ssh login is just one of those reasons.</span>
-<span class="c1"># Since this is a global configuration, we can tell monit to not send alerts for certain events</span>
-<span class="c1">#  We also specify the email address of the recepient who will receive the alerts</span>
+# Alerts can be triggered for various reasons. Successful ssh login is just one of those reasons.
+# Since this is a global configuration, we can tell monit to not send alerts for certain events
+#  We also specify the email address of the recepient who will receive the alerts
 
-<span class="nb">set</span><span class="w"> </span>alert<span class="w"> </span>recepient1@elitmus.com<span class="w"> </span>NOT<span class="w"> </span>ON<span class="w"> </span><span class="o">{</span><span class="w"> </span>action,<span class="w"> </span>instance,<span class="w"> </span>pid,<span class="w"> </span>ppid,<span class="w"> </span>nonexist<span class="w"> </span><span class="o">}</span>
+set alert recepient1@elitmus.com NOT ON { action, instance, pid, ppid, nonexist }
 ...</code></pre></figure>
 
 <p>And then we add this config file <code>ssh_logins.conf</code> specific to sshd related stuff:</p>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span></span>check<span class="w"> </span>file<span class="w"> </span>ssh_logins<span class="w"> </span>with<span class="w"> </span>path<span class="w"> </span>/var/log/auth.log
-<span class="w">  </span>ignore<span class="w"> </span>match<span class="w"> </span><span class="s2">&quot;/etc/monit/whitelist_ips.regex&quot;</span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span>match<span class="w"> </span><span class="s2">&quot;Accepted publickey&quot;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span>alert</code></pre></figure>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">check file ssh_logins with path /var/log/auth.log
+  ignore match &quot;/etc/monit/whitelist_ips.regex&quot;
+  if match &quot;Accepted publickey&quot; then alert</code></pre></figure>
 
 <p>Notice how we tell <a href="https://mmonit.com/monit/">monit</a> to ignore logins from known ip addresses. We can now store all whitelist ip addresses in a separate file <code>/etc/monit/whitelist_ips.regex</code>, one address per line.</p>
 
@@ -624,6 +628,9 @@ SET<span class="w"> </span>mail-format<span class="w"> </span><span class="o">{<
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 <script src="/blog/assets/js/vendor/forkit.js"></script>
+
+<!-- Prism -->
+<script src="/blog/assets/js/prism.js"></script>
   
 
   </body>

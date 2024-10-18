@@ -146,6 +146,10 @@ We have three options to go with systemd, upstart, and foreman. We decided to go
 
 <link rel="stylesheet" href="/blog/assets/css/customize.css">
 <link rel="stylesheet" href="/blog/assets/css/forkit.css">
+
+<!-- Prism -->
+<link rel="stylesheet" href="/blog/assets/css/prism.css">
+
 </head>
 
 <body id="post">
@@ -339,51 +343,51 @@ We have three options to go with systemd, upstart, and foreman. We decided to go
 <li>
 To manage Sidekiq we need to create a service file for Sidekiq which can be used to start, stop or restart the Sidekiq process.
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>Sudo<span class="w"> </span>nano<span class="w"> </span>/lib/systemd/system/sidekiq.service</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">Sudo nano /lib/systemd/system/sidekiq.service</code></pre></figure>
 
 
 </li>
 <li>
 Content in the Sidekiq.service. Sidekiq has provided us with the template for the service file here <a href="https://github.com/mperham/sidekiq/blob/main/examples/systemd/sidekiq.service">Sidekiq.service</a>. We modified it according to our use case
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="o">[</span>Unit<span class="o">]</span>
-<span class="nv">Description</span><span class="o">=</span>sidekiq
-<span class="nv">After</span><span class="o">=</span>syslog.target<span class="w"> </span>network.target
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">[Unit]
+Description=sidekiq
+After=syslog.target network.target
 
-<span class="o">[</span>Service<span class="o">]</span>
+[Service]
 
-<span class="nv">Type</span><span class="o">=</span>simple
-<span class="c1"># If your Sidekiq process locks up, systemd&#39;s watchdog will restart it within seconds.</span>
-<span class="c1">#WatchdogSec=10</span>
+Type=simple
+# If your Sidekiq process locks up, systemd&#39;s watchdog will restart it within seconds.
+#WatchdogSec=10
 
-<span class="nv">WorkingDirectory</span><span class="o">=</span>/opt/myapp/current
+WorkingDirectory=/opt/myapp/current
 
-<span class="nv">ExecStart</span><span class="o">=</span>/usr/local/bin/bundle<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>sidekiq<span class="w"> </span>-C<span class="w"> </span>/opt/myapp/shared/config/sidekiq.yml<span class="w"> </span>-e<span class="w"> </span>production
-<span class="nv">ExecStop</span><span class="o">=</span>/bin/kill<span class="w"> </span>-TSTP<span class="w"> </span><span class="nv">$MAINPID</span>
-<span class="nv">ExecStartPost</span><span class="o">=</span>/bin/sh<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;/bin/echo $MAINPID &gt; /opt/myapp/shared/pids/sidekiq.pid&#39;</span>
-<span class="nv">ExecStopPost</span><span class="o">=</span>/bin/sh<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;rm /opt/myapp/shared/pids/sidekiq.pid&#39;</span>
+ExecStart=/usr/local/bin/bundle exec sidekiq -C /opt/myapp/shared/config/sidekiq.yml -e production
+ExecStop=/bin/kill -TSTP $MAINPID
+ExecStartPost=/bin/sh -c &#39;/bin/echo $MAINPID &gt; /opt/myapp/shared/pids/sidekiq.pid&#39;
+ExecStopPost=/bin/sh -c &#39;rm /opt/myapp/shared/pids/sidekiq.pid&#39;
 
-<span class="nv">User</span><span class="o">=</span>deploy
-<span class="nv">Group</span><span class="o">=</span>deploy
-<span class="nv">UMask</span><span class="o">=</span><span class="m">0002</span>
+User=deploy
+Group=deploy
+UMask=0002
 
-<span class="c1"># Greatly reduce Ruby memory fragmentation and heap usage</span>
-<span class="c1"># https://www.mikeperham.com/2018/04/25/taming-rails-memory-bloat/</span>
-<span class="nv">Environment</span><span class="o">=</span><span class="nv">MALLOC_ARENA_MAX</span><span class="o">=</span><span class="m">2</span>
+# Greatly reduce Ruby memory fragmentation and heap usage
+# https://www.mikeperham.com/2018/04/25/taming-rails-memory-bloat/
+Environment=MALLOC_ARENA_MAX=2
 
-<span class="c1"># if we crash, restart</span>
-<span class="nv">RestartSec</span><span class="o">=</span><span class="m">10</span>
-<span class="nv">Restart</span><span class="o">=</span>on-failure
+# if we crash, restart
+RestartSec=10
+Restart=on-failure
 
-<span class="c1"># output goes to /var/log/syslog (Ubuntu) or /var/log/messages (CentOS)</span>
-<span class="nv">StandardOutput</span><span class="o">=</span>syslog
-<span class="nv">StandardError</span><span class="o">=</span>syslog
+# output goes to /var/log/syslog (Ubuntu) or /var/log/messages (CentOS)
+StandardOutput=syslog
+StandardError=syslog
 
-<span class="c1"># This will default to &quot;bundler&quot; if we don&#39;t specify it</span>
-<span class="nv">SyslogIdentifier</span><span class="o">=</span>sidekiq
+# This will default to &quot;bundler&quot; if we don&#39;t specify it
+SyslogIdentifier=sidekiq
 
-<span class="o">[</span>Install<span class="o">]</span>
-<span class="nv">WantedBy</span><span class="o">=</span>multi-user.target</code></pre></figure>
+[Install]
+WantedBy=multi-user.target</code></pre></figure>
 
 
 </li>
@@ -394,7 +398,7 @@ Content in the Sidekiq.service. Sidekiq has provided us with the template for th
       As we were using system ruby and using Sidekiq with some custom configurations. To start Sidekiq we used.
 
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="nv">ExecStart</span><span class="o">=</span>/usr/local/bin/bundle<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>sidekiq<span class="w"> </span>-C<span class="w"> </span>/opt/myapp/shared/config/sidekiq.yml<span class="w"> </span>-e<span class="w"> </span>production</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">ExecStart=/usr/local/bin/bundle exec sidekiq -C /opt/myapp/shared/config/sidekiq.yml -e production</code></pre></figure>
 
     </li>
 
@@ -402,24 +406,24 @@ Content in the Sidekiq.service. Sidekiq has provided us with the template for th
     To stop Sidekiq we need to send a TSTP signal to process all the busy jobs before terminating Sidekiq.
 
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="nv">ExecStop</span><span class="o">=</span>/bin/kill<span class="w"> </span>-TSTP<span class="w"> </span><span class="nv">$MAINPID</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">ExecStop=/bin/kill -TSTP $MAINPID</code></pre></figure>
 
     </li>
     <li>
     For Managing with Monit we need the process id, After starting or stopping the service we were maintaining the process id file.
 
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="nv">ExecStartPost</span><span class="o">=</span>/bin/sh<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;/bin/echo $MAINPID &gt; /opt/myapp/shared/pids/sidekiq.pid&#39;</span>
-<span class="nv">ExecStopPost</span><span class="o">=</span>/bin/sh<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;rm /opt/myapp/shared/pids/sidekiq.pid&#39;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">ExecStartPost=/bin/sh -c &#39;/bin/echo $MAINPID &gt; /opt/myapp/shared/pids/sidekiq.pid&#39;
+ExecStopPost=/bin/sh -c &#39;rm /opt/myapp/shared/pids/sidekiq.pid&#39;</code></pre></figure>
 
     </li>
     <li>
     As we want to use our app user to run this service.
 
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="nv">User</span><span class="o">=</span>deploy
-<span class="nv">Group</span><span class="o">=</span>deploy
-<span class="nv">UMask</span><span class="o">=</span><span class="m">0002</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">User=deploy
+Group=deploy
+UMask=0002</code></pre></figure>
 
     </li>
 
@@ -428,9 +432,9 @@ Content in the Sidekiq.service. Sidekiq has provided us with the template for th
 
 
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="c1"># if we crash, restart</span>
-<span class="nv">RestartSec</span><span class="o">=</span><span class="m">10</span>
-<span class="nv">Restart</span><span class="o">=</span>on-failure</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"># if we crash, restart
+RestartSec=10
+Restart=on-failure</code></pre></figure>
 
     </li>
   </ul>
@@ -438,7 +442,7 @@ Content in the Sidekiq.service. Sidekiq has provided us with the template for th
 <li>
 Reload the systemctl daemon for the new created service
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>Sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">Sudo systemctl daemon-reload</code></pre></figure>
 
  
 </li>
@@ -446,7 +450,7 @@ Reload the systemctl daemon for the new created service
  Now we can start the Sidekiq service:
 
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="p">|</span>stop<span class="p">|</span>restart<span class="w"> </span>sidekiq</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">sudo systemctl start|stop|restart sidekiq</code></pre></figure>
 
 </li>
 </ol>
@@ -463,21 +467,21 @@ Reload the systemctl daemon for the new created service
 <li>
 Modified monitrc
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>check<span class="w"> </span>process<span class="w"> </span>sidekiq<span class="w"> </span>with<span class="w"> </span>pidfile<span class="w"> </span><span class="s2">&quot;/opt/myapp/shared/pids/sidekiq.pid&quot;</span>
-<span class="w">  </span>start<span class="w"> </span><span class="nv">program</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;/bin/bash -l -c  &#39;sudo systemctl start sidekiq&#39; as uid deploy and gid deploy&quot;</span>
-<span class="w">    </span>with<span class="w"> </span>timeout<span class="w"> </span><span class="m">20</span><span class="w"> </span>seconds
-<span class="w">  </span>stop<span class="w"> </span><span class="nv">program</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;/bin/bash -l -c  &#39;sudo systemctl stop sidekiq&#39; as uid deploy and gid deploy&quot;</span>
-<span class="w">    </span>with<span class="w"> </span>timeout<span class="w"> </span><span class="m">20</span><span class="w"> </span>seconds
-<span class="w">  </span><span class="k">if</span><span class="w"> </span>totalmem<span class="w"> </span>is<span class="w"> </span>greater<span class="w"> </span>than<span class="w"> </span><span class="m">800</span><span class="w"> </span>MB<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="m">3</span><span class="w"> </span>cycles<span class="w"> </span><span class="k">then</span><span class="w"> </span>restart
-<span class="w">  </span><span class="k">if</span><span class="w"> </span>changed<span class="w"> </span>pid<span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="nb">exec</span><span class="w"> </span><span class="s2">&quot;/etc/monit/slack_notifier.sh&quot;</span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span>cpu<span class="w"> </span>is<span class="w"> </span>greater<span class="w"> </span>than<span class="w"> </span><span class="m">65</span>%<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="m">2</span><span class="w"> </span>cycles<span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="nb">exec</span><span class="w"> </span><span class="s2">&quot;/etc/monit/slack_notifier.sh&quot;</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span>succeeded<span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="nb">exec</span><span class="w"> </span><span class="s2">&quot;/etc/monit/slack_notifier.sh&quot;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">check process sidekiq with pidfile &quot;/opt/myapp/shared/pids/sidekiq.pid&quot;
+  start program = &quot;/bin/bash -l -c  &#39;sudo systemctl start sidekiq&#39; as uid deploy and gid deploy&quot;
+    with timeout 20 seconds
+  stop program  = &quot;/bin/bash -l -c  &#39;sudo systemctl stop sidekiq&#39; as uid deploy and gid deploy&quot;
+    with timeout 20 seconds
+  if totalmem is greater than 800 MB for 3 cycles then restart
+  if changed pid then exec &quot;/etc/monit/slack_notifier.sh&quot;
+  if cpu is greater than 65% for 2 cycles then exec &quot;/etc/monit/slack_notifier.sh&quot; else if succeeded then exec &quot;/etc/monit/slack_notifier.sh&quot;</code></pre></figure>
 
 </li>
 <li>
 We can check if sidekiq is up and running:
 
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span>sudo<span class="w"> </span>monit<span class="w"> </span>summary<span class="w"> </span>sidekiq</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">sudo monit summary sidekiq</code></pre></figure>
 
 </li>
 </ol>
@@ -669,6 +673,9 @@ We can check if sidekiq is up and running:
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 <script src="/blog/assets/js/vendor/forkit.js"></script>
+
+<!-- Prism -->
+<script src="/blog/assets/js/prism.js"></script>
   
 
   </body>

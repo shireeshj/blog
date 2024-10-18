@@ -142,6 +142,10 @@
 
 <link rel="stylesheet" href="/blog/assets/css/customize.css">
 <link rel="stylesheet" href="/blog/assets/css/forkit.css">
+
+<!-- Prism -->
+<link rel="stylesheet" href="/blog/assets/css/prism.css">
+
 </head>
 
 <body id="post">
@@ -345,35 +349,35 @@
 From android studio, you can generate a new keystore, a jks file. <a href="https://developer.android.com/studio/publish/app-signing">Help?</a>
 Copy the keystore file details in a <em>config.yaml</em> file like below:</p>
 
-<figure class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span></span><span class="nt">key_store</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/xyz/xyz.jks</span>
-<span class="w">  </span><span class="nt">alias</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">key0</span>
-<span class="w">  </span><span class="nt">store_password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wuhoo</span>
-<span class="w">  </span><span class="nt">key_password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nibataunga</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-yaml" data-lang="yaml">key_store:
+  key: /xyz/xyz.jks
+  alias: key0
+  store_password: wuhoo
+  key_password: nibataunga</code></pre></figure>
 
 <p>Studio will take care of signing, but to generate signed apk from command line, you’ll need to make some changes in your build.gradle. The credentials we have put in above yaml file will be passed as command line args to gradle(Build stage[2]).</p>
 
-<figure class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span></span><span class="n">android</span><span class="w"> </span><span class="o">{</span>
-<span class="w">    </span><span class="o">...</span>
-<span class="w">    </span><span class="n">signingConfigs</span><span class="w"> </span><span class="o">{</span>
-<span class="w">        </span><span class="n">release</span><span class="w"> </span><span class="o">{</span>
-<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="o">(</span><span class="n">project</span><span class="o">.</span><span class="na">hasProperty</span><span class="o">(</span><span class="s1">&#39;APP_RELEASE_STORE_FILE&#39;</span><span class="o">))</span><span class="w"> </span><span class="o">{</span>
-<span class="w">                </span><span class="n">storeFile</span><span class="w"> </span><span class="n">file</span><span class="o">(</span><span class="s2">&quot;$APP_RELEASE_STORE_FILE&quot;</span><span class="o">)</span>
-<span class="w">                </span><span class="n">storePassword</span><span class="w"> </span><span class="s2">&quot;$APP_RELEASE_STORE_PASSWORD&quot;</span>
-<span class="w">                </span><span class="n">keyAlias</span><span class="w"> </span><span class="s2">&quot;$APP_RELEASE_KEY_ALIAS&quot;</span>
-<span class="w">                </span><span class="n">keyPassword</span><span class="w"> </span><span class="s2">&quot;$APP_RELEASE_KEY_PASSWORD&quot;</span>
-<span class="w">            </span><span class="o">}</span>
-<span class="w">        </span><span class="o">}</span>
-<span class="w">    </span><span class="o">}</span>
-<span class="w">    </span><span class="n">buildTypes</span><span class="w"> </span><span class="o">{</span>
-<span class="w">        </span><span class="n">release</span><span class="w"> </span><span class="o">{</span>
-<span class="w">          </span><span class="o">...</span>
-<span class="w">          </span><span class="k">if</span><span class="w"> </span><span class="o">(</span><span class="n">project</span><span class="o">.</span><span class="na">hasProperty</span><span class="o">(</span><span class="s1">&#39;APP_RELEASE_STORE_FILE&#39;</span><span class="o">))</span><span class="w"> </span><span class="o">{</span>
-<span class="w">              </span><span class="n">signingConfig</span><span class="w"> </span><span class="n">signingConfigs</span><span class="o">.</span><span class="na">release</span>
-<span class="w">          </span><span class="o">}</span>
-<span class="w">        </span><span class="o">}</span>
-<span class="w">    </span><span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-groovy" data-lang="groovy">android {
+    ...
+    signingConfigs {
+        release {
+            if (project.hasProperty(&#39;APP_RELEASE_STORE_FILE&#39;)) {
+                storeFile file(&quot;$APP_RELEASE_STORE_FILE&quot;)
+                storePassword &quot;$APP_RELEASE_STORE_PASSWORD&quot;
+                keyAlias &quot;$APP_RELEASE_KEY_ALIAS&quot;
+                keyPassword &quot;$APP_RELEASE_KEY_PASSWORD&quot;
+            }
+        }
+    }
+    buildTypes {
+        release {
+          ...
+          if (project.hasProperty(&#39;APP_RELEASE_STORE_FILE&#39;)) {
+              signingConfig signingConfigs.release
+          }
+        }
+    }
+}</code></pre></figure>
 
 <h3 id="stage-2-release-versioning-digging-git"><em>Stage 2</em>: Release Versioning, Digging Git</h3>
 
@@ -386,50 +390,50 @@ It counts the number of commits from git, so you’ll get incremental values eve
 
 <p>We’ll put the below code in build.gradle[app]</p>
 
-<figure class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span></span><span class="kt">def</span><span class="w"> </span><span class="n">getGitRevision</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="o">-&gt;</span>
-<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="o">{</span>
-<span class="w">        </span><span class="kt">def</span><span class="w"> </span><span class="n">stdout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ByteArrayOutputStream</span><span class="o">()</span>
-<span class="w">        </span><span class="n">exec</span><span class="w"> </span><span class="o">{</span>
-<span class="w">            </span><span class="n">standardOutput</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stdout</span>
-<span class="w">            </span><span class="n">commandLine</span><span class="w"> </span><span class="s1">&#39;git&#39;</span><span class="o">,</span><span class="w"> </span><span class="s1">&#39;rev-list&#39;</span><span class="o">,</span><span class="w"> </span><span class="s1">&#39;--first-parent&#39;</span><span class="o">,</span><span class="w"> </span><span class="s1">&#39;--count&#39;</span><span class="o">,</span><span class="w"> </span><span class="s1">&#39;master&#39;</span>
-<span class="w">        </span><span class="o">}</span>
-<span class="w">        </span><span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s2">&quot;Building revision #&quot;</span><span class="o">+</span><span class="n">stdout</span><span class="o">)</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">stdout</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="s2">&quot;ASCII&quot;</span><span class="o">).</span><span class="na">trim</span><span class="o">().</span><span class="na">toInteger</span><span class="o">()</span>
-<span class="w">    </span><span class="o">}</span>
-<span class="w">    </span><span class="k">catch</span><span class="w"> </span><span class="o">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="o">)</span><span class="w"> </span><span class="o">{</span>
-<span class="w">        </span><span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="o">;</span>
-<span class="w">    </span><span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-groovy" data-lang="groovy">def getGitRevision = { -&gt;
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            standardOutput = stdout
+            commandLine &#39;git&#39;, &#39;rev-list&#39;, &#39;--first-parent&#39;, &#39;--count&#39;, &#39;master&#39;
+        }
+        logger.info(&quot;Building revision #&quot;+stdout)
+        return stdout.toString(&quot;ASCII&quot;).trim().toInteger()
+    }
+    catch (Exception e) {
+        e.printStackTrace();
+        return 0;
+    }
+}</code></pre></figure>
 
 <p>And in build.gradle[app]</p>
 
-<figure class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span></span><span class="w">    </span><span class="n">defaultConfig</span><span class="w"> </span><span class="o">{</span>
-<span class="w">        </span><span class="o">...</span>
-<span class="w">        </span><span class="n">versionCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10000000</span><span class="o">*</span><span class="n">majorVersion</span><span class="o">+</span><span class="mi">10000</span><span class="o">*</span><span class="n">minorVersion</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">10</span><span class="o">*</span><span class="n">revision</span>
-<span class="w">        </span><span class="n">versionName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;v&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">majorVersion</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;.&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">minorVersion</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s1">&#39;.&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">revision</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">patch</span>
-<span class="w">    </span><span class="o">}</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-groovy" data-lang="groovy">defaultConfig {
+        ...
+        versionCode = 10000000*majorVersion+10000*minorVersion + 10*revision
+        versionName = &#39;v&#39; + majorVersion + &#39;.&#39; + minorVersion + &#39;.&#39; + revision + patch
+    }</code></pre></figure>
 
 <h3 id="docker-image-savage">Docker Image, Savage</h3>
 
 <p>We first need to build a docker image with minimum libraries and dependencies required.</p>
 
-<figure class="highlight"><pre><code class="language-docker" data-lang="docker"><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">openjdk:8</span>
-<span class="k">RUN</span><span class="w"> </span>apt-get<span class="w"> </span>update
-<span class="k">RUN</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>/opt/
-<span class="k">RUN</span><span class="w"> </span>wget<span class="w"> </span>-nc<span class="w"> </span>https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip
-<span class="k">ENV</span><span class="w"> </span>ANDROID_HOME<span class="w"> </span>/opt/android-sdk-linux
-<span class="k">RUN</span><span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="si">${</span><span class="nv">ANDROID_HOME</span><span class="si">}</span>
-<span class="k">RUN</span><span class="w"> </span>unzip<span class="w"> </span>-n<span class="w"> </span>-d<span class="w"> </span><span class="si">${</span><span class="nv">ANDROID_HOME</span><span class="si">}</span><span class="w"> </span>sdk-tools-linux-4333796.zip
-<span class="k">ENV</span><span class="w"> </span>PATH<span class="w"> </span><span class="si">${</span><span class="nv">PATH</span><span class="si">}</span>:<span class="si">${</span><span class="nv">ANDROID_HOME</span><span class="si">}</span>/tools:<span class="si">${</span><span class="nv">ANDROID_HOME</span><span class="si">}</span>/tools/bin:<span class="si">${</span><span class="nv">ANDROID_HOME</span><span class="si">}</span>/platform-tools
-<span class="k">RUN</span><span class="w"> </span>yes<span class="w"> </span><span class="p">|</span><span class="w"> </span>sdkmanager<span class="w"> </span>--licenses
-<span class="k">RUN</span><span class="w"> </span>yes<span class="w"> </span><span class="p">|</span><span class="w"> </span>sdkmanager<span class="w"> </span><span class="se">\</span>
-<span class="w">      </span><span class="s2">&quot;platform-tools&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">      </span><span class="s2">&quot;build-tools;27.0.3&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">      </span><span class="s2">&quot;platforms;android-27&quot;</span>
+<figure class="highlight"><pre><code class="language-docker" data-lang="docker">FROM openjdk:8
+RUN apt-get update
+RUN cd /opt/
+RUN wget -nc https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip
+ENV ANDROID_HOME /opt/android-sdk-linux
+RUN mkdir -p ${ANDROID_HOME}
+RUN unzip -n -d ${ANDROID_HOME} sdk-tools-linux-4333796.zip
+ENV PATH ${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/platform-tools
+RUN yes | sdkmanager --licenses
+RUN yes | sdkmanager \
+      &quot;platform-tools&quot; \
+      &quot;build-tools;27.0.3&quot; \
+      &quot;platforms;android-27&quot;
 
-<span class="k">RUN</span><span class="w"> </span>apt-get<span class="w"> </span>-y<span class="w"> </span>install<span class="w"> </span>ruby
-<span class="k">RUN</span><span class="w"> </span>gem<span class="w"> </span>install<span class="w"> </span>trollop</code></pre></figure>
+RUN apt-get -y install ruby
+RUN gem install trollop</code></pre></figure>
 
 <p>Trollop will be helpful in compiling scripts, spicing the boring command line args.</p>
 
@@ -437,32 +441,32 @@ It counts the number of commits from git, so you’ll get incremental values eve
 
 <h4 id="building-the-image">Building the image:</h4>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span></span>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span><span class="si">${</span><span class="nv">docker_image</span><span class="si">}</span><span class="w"> </span>-f<span class="w"> </span>./scripts/Dockerfile<span class="w"> </span>.</code></pre></figure>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">docker build -t ${docker_image} -f ./scripts/Dockerfile .</code></pre></figure>
 
 <p>Or you can directly pull my latest base image.</p>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span></span>docker<span class="w"> </span>pull<span class="w"> </span>mukarramali98/androidbase</code></pre></figure>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">docker pull mukarramali98/androidbase</code></pre></figure>
 
 <h3 id="docker-container-on-the-way">Docker container on the way</h3>
 
 <p>To automate the process, let’s dig into a small script:</p>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span></span><span class="ch">#!/usr/bin/env bash</span>
-<span class="nb">set</span><span class="w"> </span>-xeuo<span class="w"> </span>pipefail
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">#!/usr/bin/env bash
+set -xeuo pipefail
 
-<span class="nv">app_name</span><span class="o">=</span>xyz
-<span class="nv">container_name</span><span class="o">=</span>androidcontainer
+app_name=xyz
+container_name=androidcontainer
 
-<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>!<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>docker<span class="w"> </span>ps<span class="w"> </span>-q<span class="w"> </span>-f<span class="w"> </span><span class="nv">name</span><span class="o">=</span><span class="si">${</span><span class="nv">container_name</span><span class="si">}</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>docker<span class="w"> </span>ps<span class="w"> </span>-aq<span class="w"> </span>-f<span class="w"> </span><span class="nv">status</span><span class="o">=</span>exited<span class="w"> </span>-f<span class="w"> </span><span class="nv">name</span><span class="o">=</span><span class="si">${</span><span class="nv">container_name</span><span class="si">}</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
-<span class="w">        </span><span class="c1"># cleanup</span>
-<span class="w">        </span>docker<span class="w"> </span>rm<span class="w"> </span><span class="nv">$container_name</span>
-<span class="w">    </span><span class="k">fi</span>
-<span class="w">    </span><span class="c1"># run your container</span>
-<span class="w">    </span>docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">PWD</span><span class="si">}</span>:/<span class="si">${</span><span class="nv">app_name</span><span class="si">}</span>/<span class="w"> </span>--name<span class="w"> </span><span class="si">${</span><span class="nv">container_name</span><span class="si">}</span><span class="w"> </span>-w<span class="w"> </span>/<span class="si">${</span><span class="nv">app_name</span><span class="si">}</span><span class="w"> </span>-d<span class="w"> </span>-i<span class="w"> </span>-t<span class="w"> </span>mukarramali98/androidbase
-<span class="k">fi</span>
+if [ ! &quot;$(docker ps -q -f name=${container_name})&quot; ]; then
+    if [ &quot;$(docker ps -aq -f status=exited -f name=${container_name})&quot; ]; then
+        # cleanup
+        docker rm $container_name
+    fi
+    # run your container
+    docker run -v ${PWD}:/${app_name}/ --name ${container_name} -w /${app_name} -d -i -t mukarramali98/androidbase
+fi
 
-docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span><span class="si">${</span><span class="nv">container_name</span><span class="si">}</span><span class="w"> </span>ruby<span class="w"> </span>/<span class="si">${</span><span class="nv">app_name</span><span class="si">}</span>/scripts/compile.rb<span class="w"> </span>-k<span class="w"> </span>/<span class="si">${</span><span class="nv">app_name</span><span class="si">}</span>/config.yaml</code></pre></figure>
+docker exec ${container_name} ruby /${app_name}/scripts/compile.rb -k /${app_name}/config.yaml</code></pre></figure>
 
 <p>Here we first check if the container already exists. Then create accordingly.
 While creating the container, we <em>mount</em> our current project directory. So next time we run this container, our updated project will already be there in the container.</p>
@@ -471,47 +475,47 @@ While creating the container, we <em>mount</em> our current project directory. S
 
 <p>We run the container, with our compile script. Pass the signing config file we created earlier.</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="n">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">YAML</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="n">key_config_file</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">config = YAML.load_file(key_config_file)
 
-<span class="n">key_store</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config</span><span class="o">[</span><span class="s1">&#39;key_store&#39;</span><span class="o">]</span>
-<span class="n">output_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;app/build/outputs/apk/release/app-release.apk&#39;</span>
-<span class="sb">`rm </span><span class="si">#{</span><span class="n">output_file</span><span class="si">}</span><span class="sb">`</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="no">File</span><span class="o">.</span><span class="n">exists?output_file</span>
+key_store = config[&#39;key_store&#39;]
+output_file = &#39;app/build/outputs/apk/release/app-release.apk&#39;
+`rm #{output_file}` if File.exists?output_file
 
-<span class="nb">puts</span><span class="w"> </span><span class="sb">`</span><span class="si">#{</span><span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">__FILE__</span><span class="p">)</span><span class="si">}</span><span class="sb">/../gradlew assembleRelease --stacktrace \</span>
-<span class="sb">    -PAPP_RELEASE_STORE_FILE=</span><span class="si">#{</span><span class="n">key_store</span><span class="o">[</span><span class="s1">&#39;key&#39;</span><span class="o">]</span><span class="si">}</span><span class="sb"> \</span>
-<span class="sb">    -PAPP_RELEASE_KEY_ALIAS=</span><span class="si">#{</span><span class="n">key_store</span><span class="o">[</span><span class="s1">&#39;alias&#39;</span><span class="o">]</span><span class="si">}</span><span class="sb"> \</span>
-<span class="sb">    -PAPP_RELEASE_STORE_PASSWORD=&#39;</span><span class="si">#{</span><span class="n">key_store</span><span class="o">[</span><span class="s1">&#39;store_password&#39;</span><span class="o">]</span><span class="si">}</span><span class="sb">&#39; \</span>
-<span class="sb">    -PAPP_RELEASE_KEY_PASSWORD=&#39;</span><span class="si">#{</span><span class="n">key_store</span><span class="o">[</span><span class="s1">&#39;key_password&#39;</span><span class="o">]</span><span class="si">}</span><span class="sb">&#39;`</span></code></pre></figure>
+puts `#{File.dirname(__FILE__)}/../gradlew assembleRelease --stacktrace \
+    -PAPP_RELEASE_STORE_FILE=#{key_store[&#39;key&#39;]} \
+    -PAPP_RELEASE_KEY_ALIAS=#{key_store[&#39;alias&#39;]} \
+    -PAPP_RELEASE_STORE_PASSWORD=&#39;#{key_store[&#39;store_password&#39;]}&#39; \
+    -PAPP_RELEASE_KEY_PASSWORD=&#39;#{key_store[&#39;key_password&#39;]}&#39;`</code></pre></figure>
 
 <h3 id="stage-4-pushing-to-s3"><em>Stage 4</em>: Pushing to S3</h3>
 
 <p>So, now we have build a signed apk from a docker container. It’s time to push them.
 Connect with your s3 bucket and generate <em>$HOME/.s3cfg</em> file, and pass it to ruby script below:</p>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="k">if</span><span class="w"> </span><span class="no">File</span><span class="o">.</span><span class="n">file?</span><span class="p">(</span><span class="n">s3_config</span><span class="p">)</span>
-<span class="w">  </span><span class="c1"># Push the generate apk file with the app and version name</span>
-<span class="w">  </span><span class="sb">`s3cmd put app/build/outputs/apk/release/app-release.apk s3://</span><span class="si">#{</span><span class="n">bucket</span><span class="si">}</span><span class="sb">/</span><span class="si">#{</span><span class="n">app_name</span><span class="si">}</span><span class="sb">-</span><span class="si">#{</span><span class="n">version_name</span><span class="si">}</span><span class="sb">.apk -m application/vnd.android.package-archive -f -P -c </span><span class="si">#{</span><span class="n">s3_config</span><span class="si">}</span><span class="sb">`</span>
-<span class="w">  </span><span class="c1"># application/vnd.android.package-archive is an apk file format descriptor</span>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">if File.file?(s3_config)
+  # Push the generate apk file with the app and version name
+  `s3cmd put app/build/outputs/apk/release/app-release.apk s3://#{bucket}/#{app_name}-#{version_name}.apk -m application/vnd.android.package-archive -f -P -c #{s3_config}`
+  # application/vnd.android.package-archive is an apk file format descriptor
 
-<span class="w">  </span><span class="c1"># Replace the previous production file</span>
-<span class="w">  </span><span class="sb">`s3cmd put app/build/outputs/apk/release/app-release.apk s3://</span><span class="si">#{</span><span class="n">bucket</span><span class="si">}</span><span class="sb">/</span><span class="si">#{</span><span class="n">app_name</span><span class="si">}</span><span class="sb">.apk -m application/vnd.android.package-archive -f -P -c </span><span class="si">#{</span><span class="n">s3_config</span><span class="si">}</span><span class="sb">`</span>
+  # Replace the previous production file
+  `s3cmd put app/build/outputs/apk/release/app-release.apk s3://#{bucket}/#{app_name}.apk -m application/vnd.android.package-archive -f -P -c #{s3_config}`
 
-<span class="w">  </span><span class="c1"># To keep the track of latest release</span>
-<span class="w">  </span><span class="sb">`echo </span><span class="si">#{</span><span class="n">version_code</span><span class="si">}</span><span class="sb">&gt; latest_version.txt`</span>
-<span class="w">  </span><span class="sb">`s3cmd put latest_version.txt s3://</span><span class="si">#{</span><span class="n">bucket</span><span class="si">}</span><span class="sb">/latest_version.txt -f -P -c </span><span class="si">#{</span><span class="n">s3_config</span><span class="si">}</span><span class="sb">`</span>
-<span class="w">  </span><span class="sb">`rm latest_version.txt`</span>
-<span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;Successfully released new app version.&quot;</span>
-<span class="k">end</span></code></pre></figure>
+  # To keep the track of latest release
+  `echo #{version_code}&gt; latest_version.txt`
+  `s3cmd put latest_version.txt s3://#{bucket}/latest_version.txt -f -P -c #{s3_config}`
+  `rm latest_version.txt`
+  puts &quot;Successfully released new app version.&quot;
+end</code></pre></figure>
 
 <p><code>application/vnd.android.package-archive</code> is the apk file type descriptor.</p>
 
 <h3 id="stage-5-finally-git-tagging-the-new-release-version-hashtag"><em>Stage 5</em>: Finally, Git Tagging The New Release Version, <em>#hashtag</em></h3>
 
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span></span><span class="k">def</span><span class="w"> </span><span class="nf">push_new_tag</span><span class="w"> </span><span class="n">version_name</span>
-<span class="w">  </span><span class="sb">`git tag </span><span class="si">#{</span><span class="n">version_name</span><span class="si">}</span><span class="sb">`</span>
-<span class="w">  </span><span class="sb">`git push origin </span><span class="si">#{</span><span class="n">version_name</span><span class="si">}</span><span class="sb">`</span>
-<span class="w">  </span><span class="nb">puts</span><span class="w"> </span><span class="s2">&quot;New tag pushed to repo.&quot;</span>
-<span class="k">end</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">def push_new_tag version_name
+  `git tag #{version_name}`
+  `git push origin #{version_name}`
+  puts &quot;New tag pushed to repo.&quot;
+end</code></pre></figure>
 
 <p><a href="https://github.com/mukarramali/android_deployment_example.git">Demo Application</a></p>
 
@@ -693,6 +697,9 @@ Connect with your s3 bucket and generate <em>$HOME/.s3cfg</em> file, and pass it
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 <script src="/blog/assets/js/vendor/forkit.js"></script>
+
+<!-- Prism -->
+<script src="/blog/assets/js/prism.js"></script>
   
 
   </body>

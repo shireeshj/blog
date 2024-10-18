@@ -144,6 +144,10 @@
 
 <link rel="stylesheet" href="/blog/assets/css/customize.css">
 <link rel="stylesheet" href="/blog/assets/css/forkit.css">
+
+<!-- Prism -->
+<link rel="stylesheet" href="/blog/assets/css/prism.css">
+
 </head>
 
 <body id="post">
@@ -411,16 +415,16 @@
   </li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">  </span>&lt;Route<span class="w"> </span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/jobs&quot;</span><span class="w"> </span><span class="nv">element</span><span class="o">={</span>&lt;JobsAndInterviews<span class="w"> </span>/&gt;<span class="o">}</span>&gt;
-<span class="w">    </span>&lt;Route<span class="w"> </span>index<span class="w"> </span><span class="nv">element</span><span class="o">={</span>&lt;AllJobs<span class="w"> </span>/&gt;<span class="o">}</span><span class="w"> </span>/&gt;
-<span class="w">    </span>&lt;Route<span class="w"> </span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;my_jobs&quot;</span><span class="w"> </span><span class="nv">element</span><span class="o">={</span>&lt;MyJobs<span class="w"> </span>/&gt;<span class="o">}</span>&gt;
-<span class="w">      </span>&lt;Route<span class="w"> </span>index<span class="w"> </span><span class="nv">element</span><span class="o">={</span>&lt;ActiveJobs<span class="w"> </span>/&gt;<span class="o">}</span><span class="w"> </span>/&gt;
-<span class="w">      </span>&lt;Route<span class="w"> </span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;active&quot;</span><span class="w"> </span><span class="nv">element</span><span class="o">={</span>&lt;ActiveJobs<span class="w"> </span>/&gt;<span class="o">}</span><span class="w"> </span>/&gt;
-<span class="w">      </span>&lt;Route<span class="w"> </span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;inactive&quot;</span><span class="w"> </span><span class="nv">element</span><span class="o">={</span>&lt;InActiveJobs<span class="w"> </span>/&gt;<span class="o">}</span><span class="w"> </span>/&gt;
-<span class="w">      </span>&lt;Route<span class="w"> </span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;interviews&quot;</span><span class="w"> </span><span class="nv">element</span><span class="o">={</span>&lt;Interviews<span class="w"> </span>/&gt;<span class="o">}</span><span class="w"> </span>/&gt;
-<span class="w">    </span>&lt;/Route&gt;
-<span class="w">    </span>&lt;Route<span class="w"> </span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;all_jobs&quot;</span><span class="w"> </span><span class="nv">element</span><span class="o">={</span>&lt;AllJobs<span class="w"> </span>/&gt;<span class="o">}</span><span class="w"> </span>/&gt;
-<span class="w">  </span>&lt;/Route&gt;</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">&lt;Route path=&quot;/jobs&quot; element={&lt;JobsAndInterviews /&gt;}&gt;
+    &lt;Route index element={&lt;AllJobs /&gt;} /&gt;
+    &lt;Route path=&quot;my_jobs&quot; element={&lt;MyJobs /&gt;}&gt;
+      &lt;Route index element={&lt;ActiveJobs /&gt;} /&gt;
+      &lt;Route path=&quot;active&quot; element={&lt;ActiveJobs /&gt;} /&gt;
+      &lt;Route path=&quot;inactive&quot; element={&lt;InActiveJobs /&gt;} /&gt;
+      &lt;Route path=&quot;interviews&quot; element={&lt;Interviews /&gt;} /&gt;
+    &lt;/Route&gt;
+    &lt;Route path=&quot;all_jobs&quot; element={&lt;AllJobs /&gt;} /&gt;
+  &lt;/Route&gt;</code></pre></figure>
 
 <p>Like in this example snippet, we have a parent route for job and under that my_jobs and inside that we have active, inactive, interviews.</p>
 <ul>
@@ -436,64 +440,64 @@
   </li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">  </span>//<span class="w"> </span>Jobs<span class="w"> </span>Page<span class="w"> </span>Routes
-<span class="w">  </span><span class="nb">export</span><span class="w"> </span>const<span class="w"> </span><span class="nv">JobsAndInterviews</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>lazy<span class="o">(()</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>import<span class="o">(</span><span class="s1">&#39;../pages/Jobs&#39;</span><span class="o">))</span><span class="p">;</span>
-<span class="w">  </span><span class="nb">export</span><span class="w"> </span>const<span class="w"> </span><span class="nv">AllJobs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>lazy<span class="o">(()</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>import<span class="o">(</span><span class="s1">&#39;../pages/Jobs/AllJobs&#39;</span><span class="o">))</span><span class="p">;</span>
-<span class="w">  </span><span class="nb">export</span><span class="w"> </span>const<span class="w"> </span><span class="nv">ApplyJob</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>lazy<span class="o">(()</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>import<span class="o">(</span><span class="s1">&#39;../pages/Jobs/ApplyJob&#39;</span><span class="o">))</span><span class="p">;</span>
-<span class="w">  </span><span class="nb">export</span><span class="w"> </span>const<span class="w"> </span><span class="nv">JobDetails</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>lazy<span class="o">(()</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>import<span class="o">(</span><span class="s1">&#39;../pages/Jobs/JobDetails&#39;</span><span class="o">))</span><span class="p">;</span>
-<span class="w">  </span><span class="nb">export</span><span class="w"> </span>const<span class="w"> </span><span class="nv">MyJobs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>lazy<span class="o">(()</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>import<span class="o">(</span><span class="s1">&#39;../pages/Jobs/MyJobs&#39;</span><span class="o">))</span><span class="p">;</span>
-<span class="w">  </span><span class="nb">export</span><span class="w"> </span>const<span class="w"> </span><span class="nv">ActiveJobs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>lazy<span class="o">(()</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>import<span class="o">(</span><span class="s1">&#39;../pages/Jobs/MyJobs/Active&#39;</span><span class="o">))</span><span class="p">;</span>
-<span class="w">  </span><span class="nb">export</span><span class="w"> </span>const<span class="w"> </span><span class="nv">InActiveJobs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>lazy<span class="o">(()</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>import<span class="o">(</span><span class="s1">&#39;../pages/Jobs/MyJobs/Inactive&#39;</span><span class="o">))</span><span class="p">;</span>
-<span class="w">  </span><span class="nb">export</span><span class="w"> </span>const<span class="w"> </span><span class="nv">Interviews</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>lazy<span class="o">(()</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>import<span class="o">(</span><span class="s1">&#39;../pages/Jobs/MyJobs/Interviews&#39;</span><span class="o">))</span><span class="p">;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">// Jobs Page Routes
+  export const JobsAndInterviews = lazy(() =&gt; import(&#39;../pages/Jobs&#39;));
+  export const AllJobs = lazy(() =&gt; import(&#39;../pages/Jobs/AllJobs&#39;));
+  export const ApplyJob = lazy(() =&gt; import(&#39;../pages/Jobs/ApplyJob&#39;));
+  export const JobDetails = lazy(() =&gt; import(&#39;../pages/Jobs/JobDetails&#39;));
+  export const MyJobs = lazy(() =&gt; import(&#39;../pages/Jobs/MyJobs&#39;));
+  export const ActiveJobs = lazy(() =&gt; import(&#39;../pages/Jobs/MyJobs/Active&#39;));
+  export const InActiveJobs = lazy(() =&gt; import(&#39;../pages/Jobs/MyJobs/Inactive&#39;));
+  export const Interviews = lazy(() =&gt; import(&#39;../pages/Jobs/MyJobs/Interviews&#39;));</code></pre></figure>
 
 <p>This above snippet shows how to import the components dynamically. But for this thing to work, we need to wrap the Routes in a Suspense Component which takes fallback.
   The component given inside the fallback is rendered in between the dynamic loads. So, we can put our page loader here. Below is the snippet showing how to do it.</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">  </span>import<span class="w"> </span>jobsRoutes<span class="w"> </span>from<span class="w"> </span><span class="s1">&#39;./routes/jobsRoutes&#39;</span><span class="p">;</span>
-<span class="w">  </span>const<span class="w"> </span><span class="nv">App</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">()</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span><span class="o">(</span>
-<span class="w">  </span>&lt;Router&gt;
-<span class="w">    </span>&lt;Provider<span class="w"> </span><span class="nv">store</span><span class="o">={</span>store<span class="o">}</span>&gt;
-<span class="w">      </span>&lt;Layout&gt;
-<span class="w">        </span>&lt;Suspense<span class="w"> </span><span class="nv">fallback</span><span class="o">={()</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>&lt;Loader<span class="w"> </span>/&gt;<span class="o">}</span>&gt;
-<span class="w">          </span>&lt;Routes&gt;
-<span class="w">            </span><span class="o">{</span>jobsRoutes<span class="o">}</span>
-<span class="w">          </span>&lt;/Routes&gt;
-<span class="w">        </span>&lt;/Suspense&gt;
-<span class="w">      </span>&lt;/Layout&gt;
-<span class="w">    </span>&lt;/Provider&gt;
-<span class="w">  </span>&lt;/Router&gt;
-<span class="w">  </span><span class="o">)</span><span class="p">;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">import jobsRoutes from &#39;./routes/jobsRoutes&#39;;
+  const App = () =&gt; (
+  &lt;Router&gt;
+    &lt;Provider store={store}&gt;
+      &lt;Layout&gt;
+        &lt;Suspense fallback={() =&gt; &lt;Loader /&gt;}&gt;
+          &lt;Routes&gt;
+            {jobsRoutes}
+          &lt;/Routes&gt;
+        &lt;/Suspense&gt;
+      &lt;/Layout&gt;
+    &lt;/Provider&gt;
+  &lt;/Router&gt;
+  );</code></pre></figure>
 
 <p>Now, this makes the website immensely faster than before.</p>
 <ul>
   <li><strong>Intuitive File and Folder Organization</strong> -&gt; Organizing the files and folders properly is a very important task because it significantly helps the new developers. It lowers the learning curve for the new fellas.</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">  </span>/src
-<span class="w">    </span>/__tests__
-<span class="w">      </span>/categoryA
-<span class="w">        </span>/page1.test.js
-<span class="w">        </span>/page2.test.js
-<span class="w">      </span>/categoryB
-<span class="w">        </span>/page1.test.js
-<span class="w">        </span>/page2.test.js
-<span class="w">    </span>/assets
-<span class="w">    </span>/components
-<span class="w">      </span>/customElements
-<span class="w">      </span>/Layout
-<span class="w">    </span>/features
-<span class="w">      </span>/redux_slices.js
-<span class="w">    </span>/pages
-<span class="w">      </span>/categoryA
-<span class="w">        </span>/page1.jsx
-<span class="w">        </span>/page2.jsx
-<span class="w">      </span>/categoryB
-<span class="w">        </span>/page1.jsx
-<span class="w">        </span>/page2.jsx
-<span class="w">    </span>/routes
-<span class="w">    </span>/store
-<span class="w">      </span>/redux_store.js
-<span class="w">    </span>/styles</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">/src
+    /__tests__
+      /categoryA
+        /page1.test.js
+        /page2.test.js
+      /categoryB
+        /page1.test.js
+        /page2.test.js
+    /assets
+    /components
+      /customElements
+      /Layout
+    /features
+      /redux_slices.js
+    /pages
+      /categoryA
+        /page1.jsx
+        /page2.jsx
+      /categoryB
+        /page1.jsx
+        /page2.jsx
+    /routes
+    /store
+      /redux_store.js
+    /styles</code></pre></figure>
 
 <p>That’s how we can improve our codebase even more.</p>
 
@@ -524,28 +528,28 @@
   <li><strong>Dockerfile</strong> → contains environment and installation instructions for the app.</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">  </span>FROM<span class="w"> </span>node:18<span class="w"> </span>as<span class="w"> </span>builder
-<span class="w">  </span>WORKDIR<span class="w"> </span>/app
-<span class="w">  </span>COPY<span class="w"> </span>package.json<span class="w"> </span>.
-<span class="w">  </span>RUN<span class="w"> </span>npm<span class="w"> </span>install
-<span class="w">  </span>COPY<span class="w"> </span>.<span class="w"> </span>.
-<span class="w">  </span>RUN<span class="w"> </span>npm<span class="w"> </span>run<span class="w"> </span>build
-<span class="w">  </span>FROM<span class="w"> </span>nginx
-<span class="w">  </span>EXPOSE<span class="w"> </span><span class="m">80</span>
-<span class="w">  </span>COPY<span class="w"> </span>--from<span class="o">=</span>builder<span class="w"> </span>/app/build<span class="w"> </span>/usr/share/nginx/html</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">FROM node:18 as builder
+  WORKDIR /app
+  COPY package.json .
+  RUN npm install
+  COPY . .
+  RUN npm run build
+  FROM nginx
+  EXPOSE 80
+  COPY --from=builder /app/build /usr/share/nginx/html</code></pre></figure>
 
 <ul>
   <li><strong>docker-compose.yml</strong> → contain commands to run our docker container.</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">  </span>version:<span class="w"> </span><span class="s1">&#39;3&#39;</span>
-<span class="w">  </span>services:
-<span class="w">    </span>web:
-<span class="w">      </span>build:
-<span class="w">        </span>context:<span class="w"> </span>.
-<span class="w">        </span>dockerfile:<span class="w"> </span>Dockerfile
-<span class="w">      </span>ports:
-<span class="w">        </span>-<span class="w"> </span><span class="s1">&#39;80:80&#39;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">version: &#39;3&#39;
+  services:
+    web:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      ports:
+        - &#39;80:80&#39;</code></pre></figure>
 
 <p>Now, we have successfully containerized our react application. Finally, we need to deploy it to some cloud services such as AWS.</p>
 
@@ -553,19 +557,19 @@
   <li>We can first push our docker image to docker hub</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">  </span>docker<span class="w"> </span>push<span class="w"> </span>iamsmruti/elitmus-frontend</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">docker push iamsmruti/elitmus-frontend</code></pre></figure>
 
 <ul>
   <li>Then we can login to EC2 instance and then pull the docker image</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">  </span>docker<span class="w"> </span>pull<span class="w"> </span>iamsmruti/elitmus-frontend</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">docker pull iamsmruti/elitmus-frontend</code></pre></figure>
 
 <ul>
   <li>Finally, we can run the docker image</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span></span><span class="w">  </span>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>-p<span class="w"> </span><span class="m">5000</span>:5000<span class="w"> </span>iamsmruti/elitmus-frontend</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">docker run -d -p 5000:5000 iamsmruti/elitmus-frontend</code></pre></figure>
 
 <p>That wraps up our frontend application which can now be live. It is fully capable of consuming the APIs from the backend. Now, the business logic is in the backend and doesn’t put much load on the frontend and hence it is performant and reliable.</p>
 
@@ -783,6 +787,9 @@
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 <script src="/blog/assets/js/vendor/forkit.js"></script>
+
+<!-- Prism -->
+<script src="/blog/assets/js/prism.js"></script>
   
 
   </body>
