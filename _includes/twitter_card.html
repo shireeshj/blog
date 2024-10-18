@@ -1,7 +1,8 @@
 <meta name="twitter:card" content="summary">    
 <meta name="twitter:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}">
-<meta name="twitter:description" content="{% if page.tldr %} {{ page.tldr }}{% else %}{{ page.excerpt }}{% endif %}">
+<meta name="twitter:description" content="{% if page.tldr %} {{ page.tldr }}{% else %}{{ page.excerpt | strip_html }}{% endif %}">
 <meta name="twitter:site" content="@{{ site.owner.twitter }}">
+<meta name="twitter:image" content="{% if page.image.feature %}{{ site.url }}{{ site.baseurl }}/images/{{ page.image.feature }}{% else %}{{ site.url }}{{ site.baseurl }}/images/{{ site.default_og }}{% endif %}">
 {% for post_author in site.data.authors %}
     {% if post_author.id == page.author %}
         {% if post_author.twitter %}
