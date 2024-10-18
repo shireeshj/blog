@@ -28,3 +28,5 @@ gem 'activesupport'
 gem 'pygments.rb'
 # gem 'nokogiri'
 # gem 'iconv'
+
+gem "webrick", "~> 1.8"
