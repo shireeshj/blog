@@ -114,7 +114,8 @@
    github: maniSHarma7575
    stackexchange:
    linkedin: heymanish
-   bio: "Manish Sharma is a member of Technology at eLitmus. He is passionate about building stuffs. Loves to spend time with nature and swimming."
+   website: https://sharmamanish.netlify.app/
+   bio: "Manish Sharma works in the Technology team at eLitmus and loves building things. Outside of work, he enjoys spending time in nature and swimming."
 -  id: nikhil
    name: Nikhil Bhatt
    avatar: nikhil.jpg
@@ -143,5 +144,69 @@
    github: rajat-gith
    linkedin: rajat-kumar-nayak-a4aa84204
    bio: 'Rajat Nayak is an Full Stack Intern at eLitmus. He loves building softwares and has a great inclination towards contributing to tech communities and collaborations.'
+-  id: Mahesh
+   name: Mahesh Alyana
+   avatar: mahesh.png
+   email: mahesh.alyana@elitmus.com 
+   twitter: Maheshm85268053
+   github: Mahesh-Alyana
+   stackexchange: 
+   linkedin: mahesh-alyana
+   instagram: ___mr____mahi
+   tumblr: 
+   flickr: 
+   bio: "Mahesh Alyana is a full-stack developer intern at eLitmus. He is an enthusiastic techie, interested in startups, and active in participating and winning innovation hackathons. Love towards music, movies and chess"
+-  id: bhushan
+   name: Bhushan Wanjari
+   avatar: bhushan.jpg
+   email: bhushnwanjari21z@gmail.com
+   twitter: BHUSHANWANJARI9
+   github: bhushan21z
+   stackexchange:
+   linkedin: bhushan-wanjari-952042213
+   bio: "Bhushan Wanjari is an intern at eLitmus. He is passionate about competitive programming and Web development. Loves to watch anime and Movies."
+-  id: smruti
+   name: Smruti Ranjan Badatya
+   avatar: smruti.jpg
+   email: smrutiranjanbadatya2@gmail.com
+   twitter: __iamsmruti
+   github: iamsmruti
+   stackexchange: 
+   linkedin: iamsmruti
+   instagram: __iamsmruti
+   tumblr: 
+   flickr: 
+   bio: "Smruti Ranjan is a Full Stack Dev Intern at eLitmus. He is very much interested in newer technologies and enthusiastic to solve problems. Has a hobby of exploring new places and domains."
+-  id: manav
+   name: Manavkumar Patel
+   avatar: manav.jpg
+   email: mav.biz7@gmail.com
+   github: masterMav
+   linkedin: manavkumar-patel-69802b202
+   bio: "Manavkumar Patel is an intern at eLitmus. He is passionate about Algorithmic Problem-solving and web-development. In his free time he likes to study more about history and competitive programming."
+-  id: vikastiwari14
+   name: Vikas Tiwari
+   avatar: vikastiwari14.jpg
+   email: tiwarivikas1407@gmail.com
+   twitter: 
+   github: VikasTiwari14
+   stackexchange: 
+   linkedin: vikastiwari14
+   instagram: vikastiwari14_
+   tumblr: 
+   flickr: 
+   bio: "Vikas Tiwari is a member of technology at eLitmus who loves taking on new challenges. Beyond the tech world, he's a fitness enthusiast and love to explore new places."
+-  id: kabir
+   name: Kabir Pathak
+   avatar: kabir.jpg
+   email: kabir.pathak@elitmus.com
+   twitter:
+   github: kabirpathak
+   stackexchange: 
+   linkedin: kabir-pathak-0507a4187
+   instagram: _kabir_pathak_
+   tumblr: 
+   flickr: 
+   bio: "Kabir is a member of the eLitmus tech team. He enjoys playing football and badminton. However, if going out and playing isn't an option, you will find him dabbling in competitive programming or watching motorsports."
 
 
