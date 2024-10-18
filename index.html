@@ -10,7 +10,7 @@ tags: [eLitmus, recent]
 {% for post in site.posts limit:10 %} 
   
 <li class="single-post">
-	<span class="entry-date date published">
+	<span class="date published entry-date">
 		<time datetime="{{ post.date | date_to_xmlschema }}">
 			<i class="fa fa-calendar"></i> {{ post.date | date: "%B %d, %Y" }}
 		</time>
@@ -26,15 +26,23 @@ tags: [eLitmus, recent]
 				{% endfor %}
 			</span>
 			<div class="mt-2">
-	  		{% if post.excerpt %} 
-	    		{% capture full_url %} 
-	      			{{ site.url }}{{ site.baseurl }}{{ post.url }} 
-	    		{% endcapture %}
-	    	{{ post.excerpt | remove: '<p>' | remove: '</p>' }} 
-	    
-			<a href="{{ full_url }}" rel="nofollow" class="read-more pull-right"> read more &raquo;</a>
-	  		{% endif %}
+				<p class="post-excerpt">
+					{% if post.excerpt %} 
+						{% capture full_url %} 
+								{{ site.url }}{{ site.baseurl }}{{ post.url }} 
+						{% endcapture %}
+					{{ post.excerpt | remove: '<p>' | remove: '</p>' }} 
+				</p>
 
+				<div class="post-card-footer">
+					<p class="read-more">- By 
+						{% assign author = site.data.authors | where: "id", post.author | first %}
+						<a href="https://www.linkedin.com/in/{{ author.linkedin }}" target="_blank" rel="noopener noreferrer">{{ author.name }}</a>
+					</p>
+					<a href="{{ full_url }}" rel="nofollow" class="read-more pull-right"> read more &raquo;</a>
+				</div>
+				
+	  		{% endif %}
 			</div>
 		</header>
 	</article>
