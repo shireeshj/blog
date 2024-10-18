@@ -136,6 +136,14 @@
    tumblr: 
    flickr: 
    bio: "Madhav Jha is an intern at eLitmus. He has a keen inclination towards competitive programming and actively participates in hackathons. Loves music and badminton."
+-  id: rajat
+   name: Rajat Kumar Nayak
+   avatar: rajat.jpg
+   email: rajatnayak1582002@gmail.com	
+   twitter: https://twitter.com/its_rajat_dev
+   github: rajat-gith
+   linkedin: rajat-kumar-nayak-a4aa84204
+   bio: 'Rajat Nayak is an Full Stack Intern at eLitmus. He loves building softwares and has a great inclination towards contributing to tech communities and collaborations.'
 -  id: Mahesh
    name: Mahesh Alyana
    avatar: mahesh.png
@@ -200,4 +208,5 @@
    tumblr: 
    flickr: 
    bio: "Kabir is a member of the eLitmus tech team. He enjoys playing football and badminton. However, if going out and playing isn't an option, you will find him dabbling in competitive programming or watching motorsports."
+
 
