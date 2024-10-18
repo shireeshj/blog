@@ -141,11 +141,19 @@
     </url>
     
     <url>
+        <loc>https://www.elitmus.com/blog/technology/building-a-collaborative-code-editor-and-whiteboard-for-tech-interviews/</loc>
+    </url>
+    
+    <url>
         <loc>https://www.elitmus.com/blog/technology/puma-from-daemonization-to-process-control-with-systemctl-and-monit/</loc>
     </url>
     
     <url>
         <loc>https://www.elitmus.com/blog/technology/demystifying-rails-7-system-tests-configuring-ci-pipeline/</loc>
+    </url>
+    
+    <url>
+        <loc>https://www.elitmus.com/blog/technology/interview-platform-insights-and-learnings/</loc>
     </url>
     
     <url>

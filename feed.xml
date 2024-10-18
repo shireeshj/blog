@@ -7,7 +7,7 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="/" />
-<updated>2024-10-18T13:29:38+05:30</updated>
+<updated>2024-10-18T15:45:05+05:30</updated>
 <id>/</id>
 <author>
   <name>eLitmus.com</name>
@@ -1676,6 +1676,313 @@ Execution Time: 397.675 ms&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 
 <entry>
+  <title type="html"><![CDATA[Building a Collaborative code-editor &amp; Whiteboard: For tech interviews.]]></title>
+  <link rel="alternate" type="text/html" href="/technology/building-a-collaborative-code-editor-and-whiteboard-for-tech-interviews/"/>
+  <id>/technology/building-a-collaborative-code-editor-and-whiteboard-for-tech-interviews</id>
+  <updated>2023-11-18 14:53:31 +0530T00:00:00-00:00</updated>
+  <published>2023-11-18T00:00:00+05:30</published>
+  
+  <author>
+    <name>eLitmus.com</name>
+    <uri></uri>
+    <email>site-admin@elitmus.com</email>
+  </author>
+  <category scheme="/tags/#Concurrency%20Management" term="Concurrency Management" /><category scheme="/tags/#Websockets" term="Websockets" /><category scheme="/tags/#Multifile%20Navigation" term="Multifile Navigation" /><category scheme="/tags/#YJS" term="YJS" /><category scheme="/tags/#tldraw" term="tldraw" /><category scheme="/tags/#OT%20Vs%20CRDT" term="OT Vs CRDT" /><category scheme="/tags/#CodeMirror%206" term="CodeMirror 6" /><category scheme="/tags/#Docker" term="Docker" /><category scheme="/tags/#AWS" term="AWS" />
+  <content type="html">
+  
+    &lt;p&gt;A Collaborative code-editor and Whiteboard aims to diversify the current interviewing scenario to Live - Coding, Sketching, Crafting, and Conceptualisation of ideas between the Interviewer and Interviewee for better communication which was until now only limited to Video and audio chats.&lt;/p&gt;
+
+&lt;h1 id=&quot;the-blog-blueprint&quot;&gt;The Blog Blueprint:&lt;/h1&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Need for collaboration: Unveiling the Why&lt;/li&gt;
+  &lt;li&gt;Cracking the Code: Research and Concluded Solutions
+    &lt;ul&gt;
+      &lt;li&gt;    Collaborative conflict management.&lt;/li&gt;
+      &lt;li&gt;    Code-editor research&lt;/li&gt;
+      &lt;li&gt;    Existing code-editors&lt;/li&gt;
+      &lt;li&gt;    Existing whiteboards&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Feature Showcase&lt;/li&gt;
+  &lt;li&gt;Architecture&lt;/li&gt;
+  &lt;li&gt;Actors: Use case diagram&lt;/li&gt;
+  &lt;li&gt;Dockerization, Deployment and scale&lt;/li&gt;
+  &lt;li&gt;Conclusion&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;need-for-collaboration-unveiling-the-why&quot;&gt;Need for Collaboration: Unveiling the Why&lt;/h1&gt;
+
+&lt;p&gt;In the post-pandemic landscape, the majority of tech interviews and initial screening rounds have transitioned to virtual formats through platforms like Google Meet, Zoom, or Microsoft Teams. While these platforms excel in facilitating video and audio interactions, they fall short when it comes to assessing candidates’ coding problem-solving skills in a live, interview-pressure setting. Typically, recruiters resort to screen sharing candidates’ local code editors, but this approach presents limitations.&lt;/p&gt;
+
+&lt;p&gt;Recruiters lack the ability to actively edit the code or navigate through different code files seamlessly. Simple tasks such as pointing out errors, saving code for later review, brainstorming designs, and optimizing code quality become cumbersome, relying on manual instructions for candidates to scroll up or down.&lt;/p&gt;
+
+&lt;p&gt;As a result, the demand for a collaborative code editor and whiteboard becomes not just beneficial but critical in addressing these challenges efficiently.&lt;/p&gt;
+
+&lt;h1 id=&quot;cracking-the-code-research-and-concluded-solutions&quot;&gt;Cracking the Code: Research and Concluded Solutions&lt;/h1&gt;
+
+&lt;h2 id=&quot;what-if-two-users-press-two-different-letters-on-the-same-line-at-the-exact-same-time&quot;&gt;What if two users press two different letters on the same line at the exact same time?&lt;/h2&gt;
+
+&lt;p&gt;This conflict is a major problem that all collaborative and distributed softwares have to address. Therefore, when the user makes a change to the document that change needs to be synchronised with other users as well and if the user has to wait for this synchronisation for every letter they type this will make the application very slow. So in order to get a near real-time collaborative editing experience every client maintains a local replica of the document and the main issue now is just to maintain consistency with other clients local replica.&lt;/p&gt;
+
+&lt;p&gt;Consider the following example -
+In an empty line, Alice inserts letter ‘A’ at index 0 and Bob inserts letter ‘B’ at index 0 at the exact same time. Now how should we combine these changes together? Should we prefer Alice’s changes over Bob’s or vice-versa?&lt;/p&gt;
+
+&lt;p&gt;Well there is no logical answer and quite frankly it doesn’t matter, what actually matters is that at the end of combining these operations it should “Converge to an identical state” i.e both Alice and Bob should get the same text as soon as possible and if they are not satisfied they will re-edit just like in git you would have merge conflicts and you would have to merge manually but here we can automate this merging using various concurrency control and consistency models.&lt;/p&gt;
+
+&lt;p&gt;There are two conceptual protocols when dealing with such problems -&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;Consensus based protocol&lt;/strong&gt; - Pick one &amp;amp; reject the rest. In this case it will select any one between Alice and Bob, thereby losing one client’s data completely. This is mainly used in decentralised blockchain applications.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Collaboration based protocol&lt;/strong&gt; - Merge &amp;amp; Keep them all.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;But that’s not the end of the story as we can take advantage of commutative operations like consider a double insertion situation - the text initially is “APP”, Alice inserts “H” at the beginning and Bob inserts “Y” at the end at the exact same time as Alice. In such a situation there is a line conflict but since insertions at different positions are commutative we can merge these operations automatically to get the final text “HAPPY”.
+Thereby not discarding Alice’s changes or Bob’s changes, providing a real-time conflict-free editing experience and there is no need for someone to manually merge these changes for us.&lt;/p&gt;
+
+&lt;p&gt;The concurrency control algorithms are widely studied for collaborative tools and a lot of research is currently going into such algorithms to attain distributed concurrency. The two most widely used ones are OT and CRDT.&lt;/p&gt;
+
+&lt;h3 id=&quot;operational-transformation-ot&quot;&gt;Operational Transformation (OT)&lt;/h3&gt;
+
+&lt;p&gt;Also known as &lt;strong&gt;Event passing&lt;/strong&gt;. Any key event happening on the client-side will be sent to the server. Events can be inserting/deleting a character. The operation received by the server from the client is transformed against its operation which results in a new operation to be performed on the client-side. OT implementations are used in Google docs and many more such collaborative applications pre-2018 ( before CRDT optimisations started to outperform their OT counterparts ).&lt;/p&gt;
+
+&lt;p&gt;This can be better understood with the help of an example -&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/images/collaborative_editor_and_whiteboard/ot.png&quot; alt=&quot;ot&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;There are many models based on Operational Transformation that are used in prod addressing different issues and there is a plethora of dense academic research whose references can be found in the Documentation. As this blog is written mainly from a developer point of view but academic references are also mentioned wherever needed.&lt;/p&gt;
+
+&lt;h3 id=&quot;conflict-free-replicated-data-type-crdt&quot;&gt;Conflict-free Replicated Data Type (CRDT)&lt;/h3&gt;
+
+&lt;p&gt;CRDT works on two core principles -&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;Commutative&lt;/strong&gt; - Re-ordering different operations will not change the final result.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Idempotency&lt;/strong&gt; - No matter how many times an operation is performed the final result remains the same.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Here, every character in the document is assigned a unique ID, and when a new character is
+inserted, the new character would get an ID based on the average of its neighbours (ideally could even take non-integer IDs), which helps to make the algorithm less complex in conflict resolution.&lt;/p&gt;
+
+&lt;p&gt;Just like OT had its own various models, CRDTs too have different implementations developed &amp;amp; optimised over time. To get a conceptual understanding consider the example below - using Lagoot’s CRDT Algorithm&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/images/collaborative_editor_and_whiteboard/crdt.png&quot; alt=&quot;crdt&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;CRDTs have a lenient approach to the order of operations. In theory, this reduces the design complexity of distribution mechanisms since there is no need for strict serialisation protocols. By tolerating out-of-order updates, the distribution mechanism has to meet simpler integrity guarantees.&lt;/p&gt;
+
+&lt;h3 id=&quot;ot-vs-crdt-final-solution&quot;&gt;OT Vs CRDT: Final Solution&lt;/h3&gt;
+
+&lt;p&gt;CRDTs serve our requirements much better because of these two main reasons -&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Speed&lt;/strong&gt;: CRDTs are much much faster than many OT implementations applying operations should be possible with just a &lt;em&gt;O(log(n))&lt;/em&gt; lookup. But in the past the main problem was the large memory overhead. Which is now resolved after significant optimisations in YJS CRDT implementation. ( Exact benchmarks are provided in the references section of Documentation. )&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Flexibility and Usability&lt;/strong&gt;: CRDTs support a wider range of data types. Compared to the OT library, which requires a thorough modelling of business logic as different types of operation data structures, when using the CRDT library, you only need to perform the same operation on common data structures, such as Map and Array.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;code-editor-research&quot;&gt;Code-editor Research&lt;/h2&gt;
+
+&lt;p&gt;The main code-editing component libraries explored were -&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://codemirror.net/&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;CodeMirror 6&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://microsoft.github.io/monaco-editor/&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Monaco Editor&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://ace.c9.io/&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Ace Editor&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Out of which CodeMirror 6 was selected due to the following reasons -&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Highly modular and lightweight&lt;/strong&gt;: seamless integration of only the necessary components, allowing for a tailored and resource-efficient implementation.&lt;/li&gt;
+  &lt;li&gt;Has a modern, extensible API with &lt;strong&gt;excellent documentation.&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;Is easy to customise, style, and reconfigure.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;existing-browser-based-code-editors&quot;&gt;Existing Browser based code-editors&lt;/h2&gt;
+
+&lt;p&gt;Here are some more projects and companies whose products were researched thoroughly, but to prevent this blog from becoming super lengthy only the names with references are mentioned and all the other details are mentioned in the Proof Of Concept given alongside the Documentation:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://gitlab.com/gitlab-org/gitlab-web-ide&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Gitlab Web IDE&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/coder/code-server&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Code-server&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/replit&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Replit&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://codeanywhere.com/solutions/collaborate &quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Codeanywhere&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://codepen.io/&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Codepen&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.codetogether.com/ &quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Codetogether&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.dev/github/dev&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Github.dev&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/features/codespaces&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Github Codespaces&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://vscode.dev/&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Vscode.dev&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;existing-whiteboards&quot;&gt;Existing Whiteboards&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;tldraw&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://docs.tldraw.dev/introduction&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Docs&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/tldraw/tldraw&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Github&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;22k+ stars&lt;/li&gt;
+  &lt;li&gt;130 contributors actively maintaining.&lt;/li&gt;
+  &lt;li&gt;Well funded &lt;a href=&quot;https://tldraw.substack.com/p/tiny-little-seed-round&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;$2.7M seed&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Supports YJS ( Shared-editing framework )&lt;/li&gt;
+  &lt;li&gt;Easy to integrate.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Other options researched:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/excalidraw/excalidraw&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Excalidraw&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://fabricjs.com/&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;fabric.js&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/embiem/react-canvas-draw&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;react-canvas-draw&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;feature-showcase&quot;&gt;Feature Showcase&lt;/h1&gt;
+
+&lt;h3 id=&quot;client-workspace&quot;&gt;Client Workspace&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/images/collaborative_editor_and_whiteboard/client_workspace.png&quot; style=&quot;width: 810px;&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;multifile-navigation--room-info&quot;&gt;Multifile Navigation &amp;amp; Room info&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/images/collaborative_editor_and_whiteboard/combined.png&quot; style=&quot;width: 810px; height: 380px&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;whiteboard&quot;&gt;Whiteboard&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/images/collaborative_editor_and_whiteboard/whiteboard.png&quot; style=&quot;width: 810px;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;All features are satisfied as specified in FRS:&lt;/p&gt;
+
+&lt;h3&gt;&lt;strong&gt;Collaborative Code Editor&lt;/strong&gt;&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Real-time code editing and sharing capabilities using websockets.&lt;/li&gt;
+  &lt;li&gt;Syntax highlighting for multiple programming languages using codemirror 6 language packages.&lt;/li&gt;
+  &lt;li&gt;Support for multiple users editing code simultaneously using YJS shared-editing framework.&lt;/li&gt;
+  &lt;li&gt;Files navigator bar for multi-file editing using Depth First Search Algorithm in react.&lt;/li&gt;
+  &lt;li&gt;Create a new meet in just one click!&lt;/li&gt;
+  &lt;li&gt;Fast and low-latency using websockets + sending only new changes made to the document instead of sending the whole document each time.&lt;/li&gt;
+  &lt;li&gt;Modular code as specified in Architecture below.&lt;/li&gt;
+  &lt;li&gt;Secure groups/ rooms using YJS update serialisation.&lt;/li&gt;
+  &lt;li&gt;Additional features provided -
+    &lt;ul&gt;
+      &lt;li&gt;    Zip downloads the entire codebase.&lt;/li&gt;
+      &lt;li&gt;    Pdf download all whiteboard designs.&lt;/li&gt;
+      &lt;li&gt;    Role management for different actors ( or users ) specified below in the use-case diagram.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;&lt;strong&gt;Whiteboard&lt;/strong&gt;&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Interactive whiteboard for visual collaboration and problem-solving using tldraw.&lt;/li&gt;
+  &lt;li&gt;Drawing tools, shapes, and text annotations.&lt;/li&gt;
+  &lt;li&gt;Real-time updates for all participants using YJS.&lt;/li&gt;
+  &lt;li&gt;Ability to save whiteboard content by downloading a local pdf copy: Simply by pressing &lt;strong&gt;Ctrl + P&lt;/strong&gt;.&lt;/li&gt;
+  &lt;li&gt;Additional features provided -
+    &lt;ul&gt;
+      &lt;li&gt;    Upload any new shape or image for UML diagrams, flowcharts or any other design pattern.&lt;/li&gt;
+      &lt;li&gt;    Dark mode and multi page editing.&lt;/li&gt;
+      &lt;li&gt;    Set custom opacity, texture patterns and border levels.&lt;/li&gt;
+      &lt;li&gt;    Use laser pointers for better presentations.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;architecture&quot;&gt;Architecture&lt;/h1&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/images/collaborative_editor_and_whiteboard/architecture.png&quot; style=&quot;width: 780px;&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;frontend&quot;&gt;Frontend&lt;/h2&gt;
+
+&lt;p&gt;The Frontend architecture is composed of CodeMirror 6, a powerful code-editing tool. To enable multi-file support, a file explorer is seamlessly integrated, allowing users to create and delete files or folders within a nested structure. The status bar dynamically displays all open files until they are either closed or removed.&lt;/p&gt;
+
+&lt;p&gt;Additionally, the whiteboard functionality is implemented using Tldraw as a separate component. Users can effortlessly switch between the Code Editor and Whiteboard using the left sidebar.&lt;/p&gt;
+
+&lt;p&gt;The system adopts a &lt;strong&gt;modular approach&lt;/strong&gt;, breaking down the Code Editor into smaller, manageable components such as Editor-screen, FileTree, and LeftPanel. This modular design enhances code maintainability and fosters a more scalable and extensible architecture.&lt;/p&gt;
+
+&lt;h2 id=&quot;backend&quot;&gt;Backend&lt;/h2&gt;
+
+&lt;p&gt;Utilising a Node.js server with the Express framework, the application listens for incoming HTTP requests through RESTful API routes. The server efficiently handles data persistence by saving user input code to the database. Additionally, it provides administrative functionality to retrieve all saved data sets from the database.&lt;/p&gt;
+
+&lt;p&gt;The system is Augmented with a WebSocket server for low-latency communication and real-time updates, this system further enhances its capabilities. The WebSocket server efficiently receives updates from diverse clients, manages document state updates, and broadcasts these changes to other clients within the same room. This functionality ensures synchronised, &lt;strong&gt;real-time communication&lt;/strong&gt; across connected clients for a seamless and interactive user experience.&lt;/p&gt;
+
+&lt;h2 id=&quot;testing&quot;&gt;Testing&lt;/h2&gt;
+
+&lt;p&gt;I have used Jest, in conjunction with React Testing Library, for a comprehensive testing suite. This included rigorous testing scenarios for:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Buttons&lt;/li&gt;
+  &lt;li&gt;Connection management.&lt;/li&gt;
+  &lt;li&gt;Form submissions&lt;/li&gt;
+  &lt;li&gt;Page redirections&lt;/li&gt;
+  &lt;li&gt;Error message handling within the project&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;actors-use-case-diagram&quot;&gt;Actors: Use case diagram&lt;/h1&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/images/collaborative_editor_and_whiteboard/use_case.png&quot; style=&quot;width: 770px&quot; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;dockerization-deployment-and-scale&quot;&gt;Dockerization, Deployment and scale&lt;/h1&gt;
+
+&lt;p&gt;I’ve partitioned the project into distinct frontend and backend components, each independently containerized using Docker. This &lt;strong&gt;modularization&lt;/strong&gt; facilitates the potential for separate hosting on different servers, promoting a &lt;strong&gt;decoupled architecture&lt;/strong&gt;. Although, in the current deployment setup, both containers reside on the same EC2 instance, leveraging Docker Compose for streamlined single-host deployment.&lt;/p&gt;
+
+&lt;p&gt;This configuration ensures swift and straightforward deployment with efficient container orchestration. Please note that since frontend &amp;amp; backend are decoupled you need to enter the correct ip address of the backend container so that frontend can connect with it properly. For in-depth instructions and troubleshooting guidance during deployment, refer to the comprehensive documentation provided in the code repository.&lt;/p&gt;
+
+&lt;h3 id=&quot;docker-composeyml&quot;&gt;docker-compose.yml&lt;/h3&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;version: &amp;quot;3.8&amp;quot;
+
+services:
+frontend:
+build: ./Frontend
+container_name: frontend_c
+ports: - &amp;quot;3000:3000&amp;quot;
+stdin_open: true
+tty: true
+depends_on: - backend
+networks: - mern-network
+
+backend:
+build: ./Backend
+container_name: backend_c
+restart: always
+ports: - &amp;quot;5000:5000&amp;quot;
+networks: - mern-network
+
+networks:
+mern-network:
+driver: bridge&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h3 id=&quot;docker-run-command&quot;&gt;Docker run command&lt;/h3&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;sudo docker compose up --build -d&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h2 id=&quot;scaling&quot;&gt;Scaling&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;Maximum number of users in one room&lt;/strong&gt; &lt;br /&gt;
+In this system, WebSockets are adopted over WebRTC for a client-server architecture. The rationale behind this decision lies in the inherent limitations of WebRTC, particularly in scenarios with a large number of users in a room.&lt;/p&gt;
+
+&lt;p&gt;WebRTC relies on a mesh topology, where each user establishes connections with every other user in the room. However, as the user count surpasses 15 to 30, the P2P connections become inefficient, leading to increased latency. In contrast, the client-server model with WebSockets exhibits superior scalability, comfortably supporting over 100 users in a room without encountering performance issues.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Reducing user bandwidth&lt;/strong&gt; &lt;br /&gt;
+Optimising user bandwidth is achieved through a granular approach of selectively transmitting updates or modifications made to the document, as opposed to repetitively sending the entire document.&lt;/p&gt;
+
+&lt;p&gt;In the collaborative environment, the CRDT algorithm is leveraging this approach, conflict resolution is executed solely based on the transmitted changes, eliminating the need to transmit the entire document each time and ensuring a more efficient and bandwidth-conscious collaborative experience.&lt;/p&gt;
+
+&lt;p&gt;More detailed scaling information about YJS are specified in the references documentation.&lt;/p&gt;
+
+&lt;h1 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h1&gt;
+
+&lt;p&gt;In this exploration, we dived into the intricacies of a Collaborative Code Editor and Whiteboard, aiming to transform the interview process. This enhances communication beyond the traditional bounds of video and audio chats.&lt;/p&gt;
+
+&lt;p&gt;The challenges faced during development served as valuable lessons, fortifying my grasp of web development intricacies and inspiring innovative solutions. This journey was not without its hurdles, researching various repositories, digging one article after another, and experimenting with unknown codebases but with perseverance and effective problem-solving, I navigated these challenges, gaining valuable insights and skills in web development.&lt;/p&gt;
+
+&lt;p&gt;Feel free to reach out if you’d like to learn more about this project—I’m here to help and answer any questions you might have.&lt;/p&gt;
+
+  
+  &lt;p&gt;&lt;a href=&quot;/technology/building-a-collaborative-code-editor-and-whiteboard-for-tech-interviews/&quot;&gt;Building a Collaborative code-editor &amp; Whiteboard: For tech interviews.&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on November 18, 2023.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
   <title type="html"><![CDATA[Puma: From Daemonization to Process Control with Systemctl and Monit]]></title>
   <link rel="alternate" type="text/html" href="/technology/puma-from-daemonization-to-process-control-with-systemctl-and-monit/"/>
   <id>/technology/puma-from-daemonization-to-process-control-with-systemctl-and-monit</id>
@@ -2151,6 +2458,352 @@ SystemTests:
 
   
   &lt;p&gt;&lt;a href=&quot;/technology/demystifying-rails-7-system-tests-configuring-ci-pipeline/&quot;&gt;Demystifying Rails 7 System Tests: Configuring CI Pipeline&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on August 28, 2023.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[Interview-Platform:Insights and Learnings]]></title>
+  <link rel="alternate" type="text/html" href="/technology/interview-platform-insights-and-learnings/"/>
+  <id>/technology/interview-platform-insights-and-learnings</id>
+  <updated>2023-07-27 13:58:13 +0530T00:00:00-00:00</updated>
+  <published>2023-07-27T00:00:00+05:30</published>
+  
+  <author>
+    <name>eLitmus.com</name>
+    <uri></uri>
+    <email>site-admin@elitmus.com</email>
+  </author>
+  <category scheme="/tags/#video-conferencing" term="video-conferencing" /><category scheme="/tags/#socket-io" term="socket-io" /><category scheme="/tags/#webrtc" term="webrtc" /><category scheme="/tags/#mediasoup" term="mediasoup" />
+  <content type="html">
+  
+    &lt;p&gt;An interview platform is a platform that offers a digital answer to the interview procedure. The conventional hiring procedure is frequently ineffective, time-consuming, and difficult. The platform was developed to address the issue by streamlining the hiring process and offering an effective means to carry it out.&lt;/p&gt;
+
+&lt;h2 id=&quot;requirements&quot;&gt;Requirements&lt;/h2&gt;
+
+&lt;p&gt;It was chosen to incorporate the following features in the application taking into account current interview circumstances, which are as follows:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Multi-User Conferencing&lt;/li&gt;
+  &lt;li&gt;The ability to communicate via video and voice,&lt;/li&gt;
+  &lt;li&gt;Chat feature&lt;/li&gt;
+  &lt;li&gt;Screen-sharing Capabilities&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;exploring-the-applications-fundamentals&quot;&gt;Exploring the Application’s Fundamentals&lt;/h2&gt;
+
+&lt;p&gt;To build a solution incorporating the above features it is necessary to have a clear understanding of the following concepts.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;WebRTC (Web Real-Time Communication): It is a free and open-source project that provides web browsers and mobile applications with real-time communication (RTC) via application programming interfaces (APIs). It allows audio and video communication to work inside web pages by allowing direct peer-to-peer communication.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Socket IO: It is a JavaScript library that enables real-time, bidirectional communication between the server and clients. By leveraging WebSockets, it establishes persistent connections, allowing instantaneous data exchange.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Websocket: It is a protocol that provides a full-duplex communications channel over a network connection. WebRTC is standardised on WebSocket as the way to send information from a web browser to the signalling server and vice versa.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Adapter JS: It takes care of the differences between browsers, so developers don’t have to worry about compatibility issues and can focus on building their applications.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Signaling: The signalling process involves exchanging messages between two peers using an intermediary, the signalling server. WebRTC does not define a signalling protocol.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;RTCPeerConnection: RTCPeerConnection is a web API in the JavaScript language used for enabling real-time communication (RTC) between web browsers. It is a fundamental part of the Web Real-Time Communication (WebRTC) technology&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Media Servers: A media server is a device or software that stores digital media such as video, audio, or images and makes it available over a network.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;SDP (Session Description Protocol): A protocol for describing media communication sessions is used. It is used for peer-to-peer negotiation of different audio and video codecs, network topologies, and other device characteristics but does not deliver the media data.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Now let us understand briefly what signalling taking an example:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;User A creates an offer that contains its local SDP.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;User A attaches that offer to something known as an RTCPeerConnection object.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;User A sends its offer to the signalling server using WebSocket.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;User B receives User A’s offer using WebSocket.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;User B creates an answer containing her local SDP.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;User B attaches its answer, along with User A’s offer, to its RTCPeerConnection object.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;User B returns its answer to the signalling server using WebSocket.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;User A receives User B’s offer using WebSocket.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;You may have a basic understanding of the technology used to create the solution up to this point, so let’s take a quick look at the approach used to develop the solution.&lt;/p&gt;
+
+&lt;h2 id=&quot;approach-to-build-the-solution&quot;&gt;Approach to Build the Solution&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;The first milestone was accomplished achieved after finishing room functionality, which essentially means that a unique meeting can be made and participants can enter the room with a unique id.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;To make the application more purpose-specific, admin features and a chat component were included. With this feature, the interviewer has more control over the meeting, and participants can only participate after being accepted by the admin.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;It was important to understand how to use the AWS platform and how to incorporate networking concepts to host the application.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;architecture-to-be-used&quot;&gt;Architecture to be used:&lt;/h2&gt;
+
+&lt;p&gt;Different Architecture that can be used to enable Multiple User Video Calling Apps:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Mesh Topology&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;SFU Topology&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;MCU Topology&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p align=&quot;center&quot;&gt;
+  &lt;img src=&quot;/blog/images/interview-platform-insights-and-learnings/topology.png&quot; alt=&quot;Image&quot; width=&quot;600&quot; /&gt;
+&lt;/p&gt;
+
+&lt;h2 id=&quot;comparing-the-mesh--sfu-topology-to-be-used&quot;&gt;Comparing the Mesh &amp;amp; SFU Topology to be used:&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;In the Mesh architecture a user when joining the room, needs to establish a connection with every other present in the room.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;And in turn the guests present needs to establish a connection with the new user.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Mesh architecture can be suitably implemented in a group of 3-4 people.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The advantage is that it is less expensive and less complex.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The disadvantage lies in the extent of scalability.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;SFU topology has an edge over the Mesh taking into Scalability as a factor.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The bandwidth decreases taking the number of participants to be constant in both cases.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The one disadvantage is that it is more complex and relatively difficult to implement.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;topology-to-be-followed&quot;&gt;Topology to be followed:&lt;/h2&gt;
+
+&lt;p&gt;&lt;strong&gt;Selective forwarding unit&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;In this various clients connect to the media server.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Here P2P is taken into use.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Each device is connected to the server.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The server combines them in the stream and puts them in a single stream.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;comparision-between-mediasoup-and-kurento&quot;&gt;Comparision between Mediasoup and Kurento&lt;/h2&gt;
+
+&lt;p&gt;Until now we have a fair idea of which topology we need to implement in the application. We need a media server to get implemented for Selective Forwarding Unit. There are many options available in media servers that we can proceed but taking into multiple factors we are left with two options and we need to proceed with one.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Media connections are established 80% quicker than Kurento&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Provides rich scalability and performance with its robust selective forwarding unit&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Can be used as a NodeJS package or a Rust library&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;MediaSoup is designed to work in a distributed environment, making it suitable for large-scale deployments. It can handle multiple rooms and numerous concurrent calls, which aligns with your scalability requirement&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;MediaSoup has good community support and regular updates over time&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;MediaSoup allows you to write automated test cases for all the features, helping ensure the stability and functionality of your application.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;insights-of-the-application&quot;&gt;Insights of the application&lt;/h2&gt;
+
+&lt;p&gt;We currently have a good understanding of the architecture that will be used in the application. According to the demands of the application, SFUs (single forwarding units) will be deployed. And we conclude that we will keep using Mediasoup as the application’s media server.&lt;/p&gt;
+
+&lt;p&gt;Talking about the features to be implemented, which include audio and video chat and screen sharing, we need to have a better understanding.&lt;/p&gt;
+
+&lt;p&gt;The application requests authorization to use the available camera and microphone to establish communication and transfer media, such as video and audio.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;navigator.mediaDevices 
+	.getDisplayMedia({ video: true, }) 
+	.then(streamSuccess) 
+	.catch((err) =&amp;gt; { console.log(err); });&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;The ability to share the screen must be implemented in addition to audio and video. To do this, we can use the code snippet below.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-javascript&quot; data-lang=&quot;javascript&quot;&gt;navigator.mediaDevices 
+	.getDisplayMedia({ video: true, }) 
+	.then(streamSuccess) 
+	.catch((err) =&amp;gt; { console.log(err); });&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;As fetching the streams we can proceed with the following steps of implementing the mediasoup architecture. Here is a brief overview of the steps implemented.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Create a media device (mediasoup-client) for capturing media.&lt;/li&gt;
+  &lt;li&gt;Create a transport for sending media to the server.&lt;/li&gt;
+  &lt;li&gt;Connect the send transport and produce audio/video tracks.&lt;/li&gt;
+  &lt;li&gt;Signal a new consumer transport for a remote producer.&lt;/li&gt;
+  &lt;li&gt;Get the list of available producers from the server.&lt;/li&gt;
+  &lt;li&gt;Connect the receiving transport and consume remote media.&lt;/li&gt;
+  &lt;li&gt;Render the local video, screen sharing video, and other controls.&lt;/li&gt;
+  &lt;li&gt;Implement event handlers for muting, camera, and screen sharing toggles.&lt;/li&gt;
+  &lt;li&gt;Implement event handlers for leaving the meeting and accepting new users.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;building-the-solution&quot;&gt;Building the Solution&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;https://react.dev/&quot;&gt;React Js&lt;/a&gt; is used to develop the application’s front end. &lt;a href=&quot;https://redux.js.org/&quot;&gt;Redux&lt;/a&gt; is utilised for state management, and after establishing the page routes, work on UI design began.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;After reading the documentation, we began implementing Mediasoup in the backend and preferred &lt;a href=&quot;https://nodejs.org/en&quot;&gt;Node Js&lt;/a&gt; as the backend framework.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This is an overview of the Mediasoup WebRTC server application. The application is built using Node.js, &lt;a href=&quot;https://expressjs.com/&quot;&gt;Express&lt;/a&gt;, &lt;a href=&quot;https://www.mongodb.com/&quot;&gt;MongoDB&lt;/a&gt;, and &lt;a href=&quot;https://socket.io/&quot;&gt;Socket.IO&lt;/a&gt; to facilitate real-time communication and media streaming.&lt;/p&gt;
+
+&lt;h3 id=&quot;dependencies&quot;&gt;Dependencies&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code&gt;dotenv&lt;/code&gt;: Loads environment variables from a &lt;code&gt;.env&lt;/code&gt; file.&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;express&lt;/code&gt;: Web framework for building the server.&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;httpolyglot&lt;/code&gt;: Provides HTTPS server functionality for secure communication.&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;socket.io&lt;/code&gt;: Enables WebSocket communication for real-time events.&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;mediasoup&lt;/code&gt;: A WebRTC media server library for media processing.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;server-setup&quot;&gt;Server Setup&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Import required modules and set up the Express server.&lt;/li&gt;
+  &lt;li&gt;Create an HTTPS server using &lt;code&gt;httpolyglot&lt;/code&gt; for secure communication with SSL certificates.&lt;/li&gt;
+  &lt;li&gt;Connect to MongoDB using Mongoose to store user information and other data.&lt;/li&gt;
+  &lt;li&gt;Define the MongoDB schema for the “users” collection.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;mediasoup-integration&quot;&gt;Mediasoup Integration&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Create a Mediasoup worker to manage media processing.&lt;/li&gt;
+  &lt;li&gt;Define media codecs for audio and video.&lt;/li&gt;
+  &lt;li&gt;Set up Socket IO to handle WebSocket communication for real-time media streams.&lt;/li&gt;
+  &lt;li&gt;Create maps and arrays to manage Mediasoup peers, transports, producers, and consumers.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;socket-io-event-handlers&quot;&gt;Socket IO Event Handlers&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Implement event handlers for various actions:
+    &lt;ul&gt;
+      &lt;li&gt;Joining a room and creating WebRTC transports.&lt;/li&gt;
+      &lt;li&gt;Joining a room and creating WebRTC transports.&lt;/li&gt;
+      &lt;li&gt;Producing and consuming media.&lt;/li&gt;
+      &lt;li&gt;Sending and receiving messages between peers.&lt;/li&gt;
+      &lt;li&gt;Confirming admin status and accepting user requests.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;mediasoup-transports&quot;&gt;Mediasoup Transports&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Implement functions to create Mediasoup WebRTC transports with specific options.&lt;/li&gt;
+  &lt;li&gt;Handle transport events like DTLS state changes and transport closure.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;final-setup&quot;&gt;Final Setup&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Create the Express app and set it to listen on the specified port (default: 3002).&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;deployment&quot;&gt;Deployment&lt;/h3&gt;
+&lt;ol&gt;
+  &lt;li&gt;Dockerize the application&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-docker&quot; data-lang=&quot;docker&quot;&gt;FROM node:20 
+WORKDIR /app 
+COPY package*.json ./ 
+RUN npm cache clean --force 
+COPY . . 
+EXPOSE 8000 
+CMD [ &amp;quot;npm&amp;quot;, &amp;quot;start&amp;quot; ]&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Initialize an EC2 Instance on AWS&lt;/li&gt;
+  &lt;li&gt;Run the docker container with Ngnix WebServer&lt;/li&gt;
+  &lt;li&gt;Expose TCP UDP Ports for EC2 Instance for media transmission.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;challenges-faced&quot;&gt;Challenges Faced&lt;/h2&gt;
+
+&lt;p&gt;During building the product the major problem I faced was to establish a connection between the clients using the application. Every Client who was joining was producing media but the media was not transporting to other clients. After debugging and revamping the application’s state, the conclusion was drawn that the React state was not behaving as decided and solved the issue after fixing it. During development, the socket instance needs to be properly handled so that it gets mapped to the proper room and doesn’t get broadcasted to every other instance.&lt;/p&gt;
+
+&lt;p&gt;During deployment, the major issue was assigning the proper IP address to be used in the application as the application has the requirement of broadcasting the IP address to every applicant with a public IP. After using the Amazon EC2 instance the issue was solved and then I implemented Docker to containerize the application and run it with the nginx server.&lt;/p&gt;
+
+&lt;p align=&quot;center&quot;&gt;
+  &lt;img src=&quot;/blog/images/interview-platform-insights-and-learnings/app_ss.png&quot; alt=&quot;Image&quot; width=&quot;600&quot; /&gt;
+&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;The first version of the application is built with the multi-user functionality joining with their desired choice of media.&lt;/li&gt;
+  &lt;li&gt;The admin can accept the desired user and on accepting the user can enter the room.&lt;/li&gt;
+  &lt;li&gt;The participants can communicate over audio, see each other’s video and chat in the room. The entire process of building the application is a great chance of learning and rewarding experience and future improvements can be done to make the application more consistent and reliable.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://openvidu.medium.com/a-new-era-for-openvidu-better-perfomance-and-media-quality-with-mediasoup-24d46a9eb10d&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Comparision of Kurento and Mediasoup Mediaserver&lt;/a&gt;&lt;/p&gt;
+
+
+  
+  &lt;p&gt;&lt;a href=&quot;/technology/interview-platform-insights-and-learnings/&quot;&gt;Interview-Platform:Insights and Learnings&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on July 27, 2023.&lt;/p&gt;</content>
 </entry>
 
 
@@ -4382,374 +5035,6 @@ We can check if sidekiq is up and running:
 
   
   &lt;p&gt;&lt;a href=&quot;/the-other-side/outliers-the-story-of-success-book-review/&quot;&gt;Outliers: The story of Success - Book Review&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on May 02, 2022.&lt;/p&gt;</content>
-</entry>
-
-
-<entry>
-  <title type="html"><![CDATA[Creating an npm package from my REACT Component]]></title>
-  <link rel="alternate" type="text/html" href="/technology/creating-an-npm-package-from-my-react-component/"/>
-  <id>/technology/creating-an-npm-package-from-my-react-component</id>
-  <updated>2021-05-25 22:14:23 +0530T00:00:00-00:00</updated>
-  <published>2021-05-25T00:00:00+05:30</published>
-  
-  <author>
-    <name>eLitmus.com</name>
-    <uri></uri>
-    <email>site-admin@elitmus.com</email>
-  </author>
-  <category scheme="/tags/#REACT" term="REACT" /><category scheme="/tags/#npm" term="npm" />
-  <content type="html">
-  
-    &lt;p&gt;So, you have created a useful, customisable, modular component in REACT. Now, you want to share it with everyone by making a package so that anyone can install it ? That is exactly what I had done and now I also wanted to create a npm package and publish it and this is how I did it.&lt;/p&gt;
-
-&lt;h2 id=&quot;prerequisites&quot;&gt;Prerequisites&lt;/h2&gt;
-
-&lt;p&gt;Since I was going to create a npm package, I needed to have Node and npm installed on my system.&lt;/p&gt;
-
-&lt;p&gt;Also I needed a npm account. I didn’t have one so I had to create one before I got started. You can also create one from &lt;a href=&quot;https://www.npmjs.com/&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&quot;getting-started&quot;&gt;Getting Started&lt;/h2&gt;
-
-&lt;p&gt;First order of business was to select an unique name for my package. I settled on &lt;code&gt;react-rails-pagination&lt;/code&gt; as the name for my package.&lt;/p&gt;
-
-&lt;p&gt;To confirm that no package with the same name existed I had to use the following command.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;npm search react-rails-pagination&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;You can use&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;npm search &amp;lt;your-package-name&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;And if no existing package is found with the same name, then you are good to go.&lt;/p&gt;
-
-&lt;p&gt;After I selected a package name, I had to run the following command in my terminal to initialise the package.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;npx create-react-library react-rails-pagination&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;I was prompted to answer a few questions about my package now&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/blog/images/creating-an-npm-package-from-my-react-component/package-info.png&quot; alt=&quot;npm package basic info&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;After entering all the information, it will automatically setup the project. This process might take a little time.&lt;/p&gt;
-
-&lt;p&gt;The advantage of using &lt;code&gt;create-react-library&lt;/code&gt; is that it will initialise your project to be published along with an example where you can test your package. It will also initialise it as a local git repository which you can simply push to github after adding the URL for your remote repository.&lt;/p&gt;
-
-&lt;p&gt;After &lt;code&gt;create-react-library&lt;/code&gt; finishes, the folder structure looks like this&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/blog/images/creating-an-npm-package-from-my-react-component/file-structure.png&quot; alt=&quot;npm package file structure&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;I had to run the following commands in two different terminal tabs to start the development environment&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;cd react-rails-pagination &amp;amp;&amp;amp; npm start&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;cd react-rails-pagination/example &amp;amp;&amp;amp; npm start&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;The first command watches the &lt;code&gt;src/&lt;/code&gt; and recompiles it into the &lt;code&gt;dist/&lt;/code&gt; folder when you make changes.&lt;/p&gt;
-
-&lt;p&gt;The second command runs the example app that links to your package.&lt;/p&gt;
-
-&lt;h2 id=&quot;adding-my-react-component&quot;&gt;Adding my REACT Component&lt;/h2&gt;
-
-&lt;p&gt;Now, I had a look inside the &lt;code&gt;src/&lt;/code&gt; folder in my project. There was an &lt;code&gt;index.js&lt;/code&gt; file which held an &lt;code&gt;ExampleComponent&lt;/code&gt; that was being used in the example app.&lt;/p&gt;
-
-&lt;p&gt;To add my own REACT Component, I placed my &lt;code&gt;Pagination.jsx&lt;/code&gt; file that held my Pagination component inside the &lt;code&gt;src/&lt;/code&gt; folder. Since, my component required a css file too, I placed my css file &lt;code&gt;index.css&lt;/code&gt; inside the same folder as well. I import this &lt;code&gt;index.css&lt;/code&gt; file inside my Pagination component.&lt;/p&gt;
-
-&lt;p&gt;I don’t use a separate css module in my component so I deleted the generated &lt;code&gt;styles.modules.css&lt;/code&gt; file inside the src directory.&lt;/p&gt;
-
-&lt;p&gt;After I had done these changes, my src directory looked something like this&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/blog/images/creating-an-npm-package-from-my-react-component/src-structure.png&quot; alt=&quot;npm package src folder structure&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Now, I need to make sure that my component is being exported from this package, so that any project that uses my package, will get to use my component as well.&lt;/p&gt;
-
-&lt;p&gt;For this I have to make some changes to the &lt;code&gt;index.js&lt;/code&gt; file.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;import Pagination from &amp;#39;./Pagination&amp;#39;;
-
-export default Pagination;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;This imports my component into the &lt;code&gt;index.js&lt;/code&gt; file and sets it as the default export from the package. I do this because the source file or the entrypoint of my package is the &lt;code&gt;src/index.js&lt;/code&gt; file.&lt;/p&gt;
-
-&lt;p&gt;If you don’t want to use the &lt;code&gt;index.js&lt;/code&gt; file or want to create a new entrypoint then open the &lt;code&gt;package.json&lt;/code&gt; file in the root of the project and change the value of the &lt;code&gt;source&lt;/code&gt; key in that file.&lt;/p&gt;
-
-&lt;p&gt;This completes the process of adding my component to the package.&lt;/p&gt;
-
-&lt;h2 id=&quot;checking-if-my-package-is-working-as-expected&quot;&gt;Checking if my package is working as expected&lt;/h2&gt;
-
-&lt;p&gt;To check if my package is working or not, I have to go to the &lt;code&gt;example/&lt;/code&gt; folder.&lt;/p&gt;
-
-&lt;p&gt;In that folder, I have to edit the &lt;code&gt;App.js&lt;/code&gt; file which imports the &lt;code&gt;ExampleComponent&lt;/code&gt; that I modified earlier to use my &lt;code&gt;Pagination&lt;/code&gt; component.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-js&quot; data-lang=&quot;js&quot;&gt;import React from &amp;#39;react&amp;#39;
-
-import Pagination from &amp;#39;react-rails-pagination&amp;#39;
-import &amp;#39;react-rails-pagination/dist/index.css&amp;#39;
-
-const App = () =&amp;gt; {
-  let page = 1;
-  const totalPages = 5;
-
-  const handleChangePage = (currentPage) =&amp;gt; {
-    page = currentPage;
-  }
-  return &amp;lt;Pagination page={page} pages={totalPages} handleChangePage={handleChangePage} /&amp;gt;
-}
-
-export default App;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;These changes allow me to import my package into this example application and check if it is working or not.&lt;/p&gt;
-
-&lt;p&gt;Now if I open the address that the local development server is running on in my browser, I can see that my component is loaded and functioning now.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/blog/images/creating-an-npm-package-from-my-react-component/pagination-1.png&quot; alt=&quot;pagination component 1&quot; /&gt;
-&lt;img src=&quot;/blog/images/creating-an-npm-package-from-my-react-component/pagination-2.png&quot; alt=&quot;pagination component 2&quot; /&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;publishing-my-package&quot;&gt;Publishing my package&lt;/h2&gt;
-
-&lt;p&gt;I need to add a few things to get this package ready for publishing.&lt;/p&gt;
-
-&lt;p&gt;First I add a &lt;code&gt;.npmignore&lt;/code&gt; file to stop a few things from being included in my published package to reduce it’s size. It works the same as a &lt;code&gt;.gitignore&lt;/code&gt; file but for npm in this case.&lt;/p&gt;
-
-&lt;p&gt;The &lt;code&gt;.npmignore&lt;/code&gt; looks like this in my project&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;## the src folder
-src
-.babelrc
-rollup.config.js
-## node modules folder
-node_modules
-## git repository related files
-.git
-.gitignore
-CVS
-.svn
-.hg
-.lock-wscript
-.wafpickle-N
-.DS_Store
-npm-debug.log
-.npmrc
-#others
-config.gypi
-package-lock.json&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Next I opened the &lt;code&gt;package.json&lt;/code&gt; and added a few things in there as well.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-json&quot; data-lang=&quot;json&quot;&gt;{
-  &amp;quot;name&amp;quot;: &amp;quot;react-rails-pagination&amp;quot;,
-  &amp;quot;version&amp;quot;: &amp;quot;1.0.0&amp;quot;,
-  &amp;quot;description&amp;quot;: &amp;quot;React Pagination Component for Rails and other MVC Frameworks&amp;quot;,
-  &amp;quot;license&amp;quot;: &amp;quot;MIT&amp;quot;,
-  &amp;quot;repository&amp;quot;: &amp;quot;piyushswain/react-rails-pagination&amp;quot;,
-  &amp;quot;main&amp;quot;: &amp;quot;dist/index.js&amp;quot;,
-  &amp;quot;module&amp;quot;: &amp;quot;dist/index.modern.js&amp;quot;,
-  &amp;quot;source&amp;quot;: &amp;quot;src/index.js&amp;quot;,
-  &amp;quot;engines&amp;quot;: {
-    &amp;quot;node&amp;quot;: &amp;quot;&amp;gt;=10&amp;quot;
-  },
-  &amp;quot;keywords&amp;quot;: [
-    &amp;quot;react&amp;quot;,
-    &amp;quot;rails&amp;quot;,
-    &amp;quot;mvc&amp;quot;,
-    &amp;quot;react-component&amp;quot;,
-    &amp;quot;pagination&amp;quot;
-  ],
-  &amp;quot;author&amp;quot;: {
-    &amp;quot;name&amp;quot;: &amp;quot;Piyush Swain&amp;quot;,
-    &amp;quot;email&amp;quot;: &amp;quot;piyush.swain3@gmail.com&amp;quot;
-  },
-  &amp;quot;homepage&amp;quot;: &amp;quot;https://github.com/piyushswain/react-rails-pagination&amp;quot;,
-  .
-  .
-  .
-  .
-}&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;I updated the &lt;code&gt;author&lt;/code&gt; field to add my email.&lt;/p&gt;
-
-&lt;p&gt;Next, I added the keys &lt;code&gt;homepage&lt;/code&gt; and &lt;code&gt;keywords&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;homepage&lt;/code&gt; can be used to add a website link to your project. I used my github repository link for now but I will change it later when I add a demo to this project. If you have a working demo, you can add that link in it’s place.&lt;/p&gt;
-
-&lt;p&gt;The &lt;code&gt;keywords&lt;/code&gt; key can be used to give the npm search directory keywords to attach to your project so that people using the npm search engine can find your project more easily. It takes an array of words as an argument.&lt;/p&gt;
-
-&lt;p&gt;Finally, I update the &lt;code&gt;README.md&lt;/code&gt; file in the root directory to add a description and instructions for anyone using my package. You will have to update your &lt;code&gt;README.md&lt;/code&gt; according to your package as well.&lt;/p&gt;
-
-&lt;p&gt;I review all the changes and then first push my code to my github repository.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;git remote add origin https://github.com/piyushswain/react-rails-pagination.git # Sets the new remote for the local repo
-git add .
-git commit -m &amp;#39;Initial Commit&amp;#39;
-git push -u origin main  # Pushes the changes to the remote repository&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Now, my package is ready to be published. I run the following commands to start the process of publishing my package to npm.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;npm login&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Login command asks for the username and password of your npm account. Enter those succeessfully and it will log you in to npm. If you have already logged in to npm, then you can skip this step.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;npm run build&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;This optimizes and creates a production build for your package. I recommend running this everytime before you issue a publish command.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;npm publish&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Finally, running this command will upload your package to npm. You can check it in your npm profile where you can find all your uploaded packages.&lt;/p&gt;
-
-&lt;p&gt;If you wish to publish again after making some changes then open your &lt;code&gt;package.json&lt;/code&gt; file and update the &lt;code&gt;version&lt;/code&gt; key to publish again. Remember to build your package before publishing as it will create an optimized production build for your package.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;TIP:&lt;/strong&gt; If for some reason you cannot get the &lt;code&gt;css&lt;/code&gt; to work, then a small hack is to directly update the &lt;code&gt;dist/index.css&lt;/code&gt; file as this is the file that is published and used by anyone importing your package&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;You can find this article on the author’s blog &lt;a href=&quot;https://piyushswain.github.io/blog&quot;&gt;piyushswain.github.io&lt;/a&gt; as well.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-
-  
-  &lt;p&gt;&lt;a href=&quot;/technology/creating-an-npm-package-from-my-react-component/&quot;&gt;Creating an npm package from my REACT Component&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on May 25, 2021.&lt;/p&gt;</content>
-</entry>
-
-
-<entry>
-  <title type="html"><![CDATA[Migration from Paperclip to ActiveStorage]]></title>
-  <link rel="alternate" type="text/html" href="/technology/migration-from-paperclip-to-activestorage/"/>
-  <id>/technology/migration-from-paperclip-to-activestorage</id>
-  <updated>2021-05-21 15:07:15 +0530T00:00:00-00:00</updated>
-  <published>2021-05-21T00:00:00+05:30</published>
-  
-  <author>
-    <name>eLitmus.com</name>
-    <uri></uri>
-    <email>site-admin@elitmus.com</email>
-  </author>
-  <category scheme="/tags/#Rails" term="Rails" /><category scheme="/tags/#Paperclip" term="Paperclip" /><category scheme="/tags/#ActiveStorage" term="ActiveStorage" />
-  <content type="html">
-  
-    &lt;p&gt;&lt;em&gt;How we migrated hundreds of thousands of attachments from Paperclip to ActiveStorage without downtime.&lt;/em&gt;&lt;/p&gt;
-
-&lt;p&gt;At &lt;a href=&quot;https://www.elitmus.com&quot;&gt;eLitmus&lt;/a&gt;, recently we migrated thousands of attachment records from &lt;a href=&quot;https://github.com/thoughtbot/paperclip&quot;&gt;Paperclip&lt;/a&gt; to Rails-owned &lt;a href=&quot;https://guides.rubyonrails.org/active_storage_overview.html&quot;&gt;ActiveStorage&lt;/a&gt;. Paperclip and Active Storage solve similar problems - uploading files to cloud storage like Amazon S3, Google Cloud Storage, or Microsoft Azure Storage. In our case, we are uploading files to Amazon s3. And then attach those files to Active Records objects. So migrating from one to another is straightforward data-rewriting.&lt;/p&gt;
-
-&lt;h3 id=&quot;why-do-we-migrate-from-paperclip-to-active-storage&quot;&gt;&lt;strong&gt;Why do we migrate from paperclip to active storage?&lt;/strong&gt;&lt;/h3&gt;
-
-&lt;p&gt;ActiveStorage was introduced in Rails version 5.2. At the time of migration, we were at Rails version 6.0. So, we were already running behind in keeping things up to date. Active storage is a highly recommended tool for uploading files. For a long, before ActiveStorage, this functionality was provided by outside gems, including Paperclip. With the release of Active storage, Paperclip was already deprecated for some time, and we wanted to move forward with Active Storage knowing it’s not as mature as Paperclip, but it’s owned by the rails’ community behind it. So we were happy with that.&lt;/p&gt;
-
-&lt;h3 id=&quot;how-do-we-migrate-from-paperclip-to-active-storage&quot;&gt;&lt;strong&gt;How do we migrate from paperclip to active storage?&lt;/strong&gt;&lt;/h3&gt;
-
-&lt;p&gt;After reading articles on the web and the migration guide provided by the Paperclip process seemed pretty straightforward. We had around 2 Million records belonging to 16 different Active Records. In our case, we need migration that is fast and with no downtime. We had records in millions we cannot afford to wait for days to run migrations. We decided to do it in small steps. One step at a time, migrating all attachments of one Active Record. So a total of 32 Merge Requests were merged in production during this time. For each Active Record, two Merge Requests deployed because we didn’t want to have any unavailable attachments during the whole process, we split it into two steps or Merge Requests.&lt;/p&gt;
-
-&lt;p&gt;So both steps revolve around the Paperclip and ActiveStorage. Let us refresh our understanding of how paperclip and active storage works. Paperclip works by attaching file data to the model. At the same time, it changes the schema of the model by introducing four columns in the Active Record table. It manages rails validations based on size and presence of file data if required.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;create_table &amp;quot;users&amp;quot;, force: :cascade do |t|
-    t.string &amp;quot;image_file_name&amp;quot;
-    t.string &amp;quot;image_content_type&amp;quot;
-    t.integer &amp;quot;image_file_size&amp;quot;
-    t.datetime &amp;quot;image_updated_at&amp;quot;
-  end&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Here’s how it would go for a &lt;code&gt;User&lt;/code&gt; with an &lt;code&gt;image&lt;/code&gt;, that is this in Paperclip:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;class User &amp;lt; ApplicationRecord
-    has_attached_file :image
-
-    validates_attachment :avatar, presence: true,
-      content_type: &amp;quot;image/jpeg&amp;quot;,
-      size: { in: 0..10.kilobytes }
-  end&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;On another side, we start by installing ActiveStorage. Normally, Rails 6.1 already comes with it, so all we need is run:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;rails active_storage:install&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;ActiveStorage creates three database tables ActiveStorageBlobs table storing attachment metadata, the ActiveStorageAttachments table, which is a polymorphic table between the blobs table and rails model and the ActiveStorageVariantRecords table tracks the presence of variant in the database. ActiveStorage doesn’t come with validations. we found some outside gems, including &lt;a href=&quot;https://github.com/igorkasyanchuk/active_storage_validations&quot;&gt;active_storage_validations&lt;/a&gt; which works for us.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;create_table :active_storage_blobs do |t|
-    t.string   :key,      null: false
-    t.string   :filename,     null: false
-    t.string   :content_type
-    t.text     :metadata
-    t.string   :service_name, null: false
-    t.bigint   :byte_size,    null: false
-    t.string   :checksum,     null: false
-    t.datetime :created_at,   null: false
-
-    t.index [ :key ], unique: true
-  end
-
-  create_table :active_storage_attachments do |t|
-    t.string     :name,     null: false
-    t.references :record,   null: false, polymorphic: true, index: false
-    t.references :blob,     null: false
-
-    t.datetime :created_at, null: false
-
-    t.index [ :record_type, :record_id, :name, :blob_id ], name: &amp;quot;index_active_storage_attachments_uniqueness&amp;quot;, unique: true
-    t.foreign_key :active_storage_blobs, column: :blob_id
-  end
-
-  create_table :active_storage_variant_records do |t|
-    t.belongs_to :blob, null: false, index: false
-    t.string :variation_digest, null: false
-
-    t.index %i[ blob_id variation_digest ], name: &amp;quot;index_active_storage_variant_records_uniqueness&amp;quot;, unique: true
-    t.foreign_key :active_storage_blobs, column: :blob_id
-  end&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Here’s how it would go for a &lt;code&gt;User&lt;/code&gt; with an &lt;code&gt;image&lt;/code&gt;, that is this in ActiveStorage:&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;class User &amp;lt; ApplicationRecord
-    has_one_attached :image
-
-    validates :image, attached: true, 
-      content_type: &amp;#39;image/png&amp;#39;,
-      size: { in: 0..10.kilobytes }
-  end&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;Let’s deep dive into the two steps we adopted, &lt;strong&gt;Migrated Paperclip&lt;/strong&gt; data and &lt;strong&gt;Adopted ActiveStorage&lt;/strong&gt;&lt;/p&gt;
-
-&lt;h4 id=&quot;migrated-paperclip-data&quot;&gt;&lt;strong&gt;Migrated Paperclip Data&lt;/strong&gt;&lt;/h4&gt;
-
-&lt;p&gt;In this step, we did the most crucial part of the process, running a rake job to migrate paperclip data to active storage tables. We kept everything from the Paperclip as it is and, we also added support for Active Storage. We were using both functionalities at the same time. During the time, attachments for the model were migrated from Paperclip to ActiveStorage if a user decides to upload any attachments, the user still uses the paperclip implementation, but in the background after the successful commit of all transaction related to Paperclip. We were duplicating the same attachment to active storage by using Active Record Callback after_commit.&lt;/p&gt;
-
-&lt;h4 id=&quot;what-does-our-rake-task-flow-look-like&quot;&gt;&lt;strong&gt;What does our rake task flow look like?&lt;/strong&gt;&lt;/h4&gt;
-
-&lt;p&gt;In this step, we created a rake task that copies all the data produced by Paperclip to the new ActiveStorage format.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Firstly, we pushed every column_name matching the Regex containing the file_name into the array. For example, we have a UserSignature model having a column image_file_name.&lt;/li&gt;
-  &lt;li&gt;Secondly, for each instance of the model, created an ActiveStorage record only if ActiveStorage doesn’t contain a record for that instance. The reason for this is that for some reason, we cancel our rake task or it gets crashes, we had a choice to restart it from the place where it left off.&lt;/li&gt;
-  &lt;li&gt;So for each instance, we were first constructing the direct URL of the attachment. Direct URL is the Amazon s3 URL to download the attachment from Amazon s3. We then pass on this direct URL to ActiveStorage::Blob create_and_upload! Method, which first downloads it and re-upload it to the s3 bucket. We then created the associated polymorphic ActiveStorage record.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;what-challenges-did-we-face-running-rake-tasks&quot;&gt;&lt;strong&gt;What challenges did we face running rake tasks?&lt;/strong&gt;&lt;/h4&gt;
-
-&lt;p&gt;At eLitmus, models with CDN bucket configurations have less than 20 thousand records. For models with a limited number of records above approach works well for us. It looks quite straightforward for us. As soon we started migrating the Default bucket, with each model with records greater than 50,000, problems came arising. We started with records in increasing order of their count. For the Default bucket, we started our journey with 56,000 records by following the approach mentioned above. It took around more than 4 hours to migrate 56,000 in a staging environment. We can’t afford to wait for hours to migrate 56,000 attachments. So we had to come up with a different approach and, this is where things become interesting.&lt;/p&gt;
-
-&lt;p&gt;After all the specs, we found that in the above approach, we have an open URI to download the attachment from Amazon s3 and re-upload it to the s3 bucket in the transaction that prolonged the database connection time. We came up with a different approach by designing our rake task; in such a way that instead of hitting s3 of every record, we decided to just come up with a database migration that copies all of the data generated from the paperclip to the new Active Storage required format. Paperclip adds attachment columns directly to the model’s tables such as image_file_name, image_content_type, image_updated_at, image_file_size. ActiveStorage stores this information in two dedicated tables ActiveStorageBlobs table and ActiveStorageAttachments table.&lt;/p&gt;
-
-&lt;p&gt;We loop through the records of the model and then through each attachment definition within the model. If the model record doesn’t have an uploaded attachment, skip to the next record. Otherwise, we converted the Paperclip data to ActiveStorage records. We set the values for the new ActiveStorage records based on the data from Paperclip’s field for the ActiveStorageBlobs table.&lt;/p&gt;
-
-&lt;p&gt;For the records with limited numbers, less than 1,00,000 approach works well for us. It took only 8 minutes to migrate 96,000 records. Our next target was to migrate around 4,50,000 migrate. We started migrating with the same approach we used for 96,00,000. But things do not go as straightforward. While migrating 4,50,000 maximum number of records in our Paperclip data had missing file size. As ActiveStorageBlobs table byte_size is the required field, We had to hit s3 API to fetch file size. It took around 4 hours in staging to migrate. On optimizing the rake task, we came up with another approach instead of reading data from a Paperclip column and then writing them to ActiveStorageBlobs at, same time. We decided to first read all the data from the Paperclip and then write it back to ActiveStorage. Firstly we read all the data from paperclip model columns and made them compatible with ActiveStorage Required format in CSV. Then we write data from CSV to ActiveStorage tables. It took 2 hours for us to migrate 4,50,000 records in production.
-With the same approach next, we migrated around 14,00,000 records and, it took 45 minutes in staging and 18 hours in production.&lt;/p&gt;
-
-&lt;h4 id=&quot;adopted-active-storage&quot;&gt;&lt;strong&gt;Adopted Active Storage&lt;/strong&gt;&lt;/h4&gt;
-
-&lt;p&gt;After the job finished, we removed everything related to the paperclip and replaced its usage with active storage.  We updated config files, added Amazon s3 storage definitions to storage.yml, and removed paperclip configuration for attachments related to the model. Updated model, views, and controllers related to Active Record. The red, green, and refactor approach helped us to improve confidence that our code was working as expected.&lt;/p&gt;
-
-&lt;h4 id=&quot;what-challenges-did-we-face-during-migration&quot;&gt;&lt;strong&gt;What challenges did we face during migration?&lt;/strong&gt;&lt;/h4&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Paperclip provides us several validators to validate our attachments. Out of the box, ActiveStorage doesn’t come with validations. We need to write custom validations in ActiveStorage, to add simple validations for attachments to validate presence, content type, attachment size. After some research, we found some outside gems, including &lt;a href=&quot;https://github.com/igorkasyanchuk/active_storage_validations&quot;&gt;active_storage_validations&lt;/a&gt;, provide us validators as Paperclip. As ActiveStorage is evolving day by day, validations are on the to-do list of the rails community. As soon as it is released, we will be ready to get the outside gem replaced.&lt;/li&gt;
-  &lt;li&gt;At eLitmus, we were using two Amazon s3 buckets - default bucket and CDN bucket, to store our attachments. Paperclip provides us functionality to store attachments on different buckets by giving an option bucket name while uploading attachment data. We started migrating from Paperclip to ActiveStorage with our application rails version 6.0. In Rails 6.0, there was no such tool to categorize the bucket name while uploading an attachment. Almost half of the models in our application are using CDN bucket, and the rest are using default bucket. The Rails community is behind the ActiveStorage in the rails version 6.1 service column was introduced in the ActiveStorageBlobs table for categorizing the bucket name while uploading an attachment. So we migrated the first CDN bucket attachment with rails version 6.0. Then we upgraded our rails version to 6.1 and migrated the other half records to the default bucket.&lt;/li&gt;
-  &lt;li&gt;After the migration of 14,00,000 records after a week, we encountered a bug in production around 500, records key were missing from the amazon s3 bucket. After few hours of debugging, we found that between the time,  1st and 2nd MR’s merge in production. During, this period we kept everything from the paperclip as it is we, also added support for Active Storage. We were using both functionalities at the same time. During the time attachment for the model were migrated from paperclip to active storage, if a user decides to upload any attachments, the user still uses the paperclip implementation, but in the background after the successful commit of all transaction related to paperclip. We were duplicating the same attachment to active storage by using Active Record Callback after_commit. We produce the bug when the user uploads the attachment with the same filename as in our database before the migration process. We accidentally deleted the record’s key from amazon s3. After specs and debugging we, came up with a solution to recover these deleted files from amazon s3. We created a new rake task for recovering the deleted files from s3 by deleting the latest delete markers version for the key from s3. And all files were successfully recovered and working fine now on production.&lt;/li&gt;
-  &lt;li&gt;After three weeks, we encountered another problem in production. Some of our users reported to us with queries that some of them were having problems uploading a resume. After specs and analysis, we figure out that for around one thousand resume records, there were two ActiveStorage attachments for them in ActiveStorage tables. As ActiveStorage works on the principle that for one ActiveRecord object, there will be one ActiveStorage attachment for has_one_attached relationship. During specs, one more problem comes to our front that on our database there were around 3 thousand active storage attachments with missing resume ActiveRecord objects. After deep-diving into the codebase, we figured out that due to our daily cron job, which deletes all inactive users from our database. So for the past three weeks, this job was deleting all the ActiveRecord objects but not ActiveStorage Attachments. On the solution part, we first decided to restrict inactive users to upload the attachments without activating their accounts and updated cron jobs to delete all the ActiveStorage attachments associated with the ActiveRecord object whenever it is deleted. On the other hand, to match the same number of our ActiveRecord objects and ActiveStorage attachments for resumes, we created three rake tasks. The first one to remove all attachments except the latest one from the ActiveStorage tables for an ActiveRecord object with more than one attachment in ActiveStorage tables. The second one, to filter out all the active storage of type resumes which doesn’t have any records for them in the resume table. And saved active storage attachment ID and resume ID in CSV. The third one, that processes CSV generated in the second rake task and deletes all the active storage records associated with them from active storage tables. It took around 15-20 min to run all three rake tasks. As a result of it, both the ActiveRecord and ActiveStorage number matched. Now, it’s running fine on production. We have not received any queries yet.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h3 id=&quot;conclusion&quot;&gt;&lt;strong&gt;Conclusion&lt;/strong&gt;&lt;/h3&gt;
-
-&lt;p&gt;ActiveStorage has now been in production for over a week, and it’s been seamless. It provided us everything we needed though they are certainly more things that need to be evolved validations for attachments, supporting directory structure for active storage blob key. Looking Forward to seeing active storage evolve. And this will conclude our journey regarding migration from paperclip to ActiveStorage.&lt;/p&gt;
-
-  
-  &lt;p&gt;&lt;a href=&quot;/technology/migration-from-paperclip-to-activestorage/&quot;&gt;Migration from Paperclip to ActiveStorage&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on May 21, 2021.&lt;/p&gt;</content>
 </entry>
 
 </feed>

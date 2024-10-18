@@ -1,0 +1,852 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Interview-Platform:Insights and Learnings &#8211; eLitmus Blog</title>
+<meta name="description" content="We learn new things everyday, and we document our learnings here...">
+
+<meta name="keywords" content="video-conferencing, socket-io, webrtc, mediasoup">
+
+<!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary">    
+<meta name="twitter:title" content="Interview-Platform:Insights and Learnings">
+<meta name="twitter:description" content="An interview platform is a platform that offers a digital answer to the interview procedure. The conventional hiring procedure is frequently ineffective, time-consuming, and difficult. The platform was developed to address the issue by streamlining the hiring process and offering an effective means to carry it out.
+
+">
+<meta name="twitter:site" content="@elitmus">
+<meta name="twitter:image" content="/blog/images/default_og.png">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        
+            <meta name="twitter:creator" content="@https://twitter.com/its_rajat_dev">
+        
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+
+
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="/blog/images/default_og.png"/>
+<meta property="og:image:width" content="1280"/>
+<meta property="og:image:height" content="720"/>
+<meta property="og:type" content="article">
+<meta property="og:title" content="Interview-Platform:Insights and Learnings">
+<meta property="og:description" content="An interview platform is a platform that offers a digital answer to the interview procedure. The conventional hiring procedure is frequently ineffective, time-consuming, and difficult. The platform was developed to address the issue by streamlining the hiring process and offering an effective means to carry it out.
+
+">
+<meta property="og:url" content="/blog/technology/interview-platform-insights-and-learnings/">
+<meta property="og:site_name" content="eLitmus Blog">
+
+
+
+
+
+
+
+
+<link rel="canonical" href="https://www.elitmus.com/blog/technology/interview-platform-insights-and-learnings/">
+<link href="/blog/feed.xml" type="application/atom+xml" rel="alternate" title="eLitmus Blog Feed">
+
+
+	<link rel="author" href="https://plus.google.com/+eLitmus?rel=author">
+
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Icons -->
+<!-- apple touch icons -->
+<link rel="apple-touch-icon" sizes="57x57" href="/blog/images/apple-touch-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="114x114" href="/blog/images/apple-touch-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/blog/images/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/blog/images/apple-touch-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="60x60" href="/blog/images/apple-touch-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/blog/images/apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/blog/images/apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/blog/images/apple-touch-icon-152x152.png">
+<!-- Favicons default 16x16 -->
+<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="/blog/favicon.ico">
+
+<!-- Favicons others -->
+<link rel="icon" type="image/png" href="/blog/images/favicon-196x196.png" sizes="196x196">
+<link rel="icon" type="image/png" href="/blog/images/favicon-160x160.png" sizes="160x160">
+<link rel="icon" type="image/png" href="/blog/images/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/blog/images/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/blog/images/favicon-32x32.png" sizes="32x32">
+
+<!-- Icons for Windows 8 Tiles -->
+<meta name="msapplication-TileColor" content="#ffffff"/>
+<meta name="msapplication-TileImage" content="/blog/images/mstile-144x144.png">
+
+<!-- For all browsers -->
+
+
+<!-- Webfonts -->
+<link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:600,300,300italic|The+Girl+Next+Door" rel="stylesheet" type="text/css">
+<link href='//fonts.googleapis.com/css?family=Source+Code+Pro:300' rel='stylesheet' type='text/css'>
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- bootstrap 4 -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/bootstrap.min.css">
+
+<!-- below css file is used for navbar in individual blogposts -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/main.min.css">
+
+<!-- <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"> -->
+
+<!-- Optional theme -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/bootstrap-theme.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Font Awesome -->
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/font-elitmuslogo.css" />
+
+<link rel="stylesheet" href="/blog/assets/css/customize.css">
+<link rel="stylesheet" href="/blog/assets/css/forkit.css">
+
+<!-- Prism -->
+<link rel="stylesheet" href="/blog/assets/css/prism.css">
+
+</head>
+
+<body id="post">
+
+  <header class="headroom">
+
+  <nav class="navbar navbar-expand-md navbar-dark bg-black fixed-top" role="navigation">
+
+      <a class="navbar-brand" href="/blog/">
+        <img src="/blog/images/elitmus-only-logo.svg" class="img-logo">
+        <span><div class="blog-label">blog</div></span>
+      </a>
+
+      <!-- the toggle button -->
+      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="navbar-toggler-icon"></span>
+        <span class="sr-only">Toggle navigation</span><!-- only for screen readers -->
+      </button>
+
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav mr-auto">
+
+          <!-- first item = dropdown search -->
+          <li class="nav-item">
+            <div class="dropdown search-box-margin">
+
+            
+              <div class="form-inline">
+                 
+
+                <input data-toggle="dropdown" placeholder="Search..." id="search-box" class="form-control form-control-sm search-input dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+
+
+                <div class="dropdown-menu" id="search-dropdown">
+                  <a role='presentation' class='dropdown-item search-results'> Type more.... </a>
+                </div>
+
+              </div>
+
+
+
+            <!-- the below line will pass "search word" to search.html -->
+
+            <!--
+            <form class="form-inline" action="/blog/search" method="get">
+               
+
+
+              <label for="search_box">Search</label>
+              <input data-toggle="dropdown" type="text" name="query" placeholder="Search..." id="search-box" class="form-control form-control-sm search-input dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+
+              <div class="dropdown-menu" id="search-dropdown">
+                  <a role='presentation' class='dropdown-item search-results'> Type more.... </a>
+              </div>
+
+              <input type="submit" value="search">
+
+            </form>
+            -->
+
+            <!-- end of form -->
+
+
+            </div>
+          </li>
+        </ul>
+
+        
+
+        <!-- every link on the right side -->
+        <ul class="nav navbar-nav navbar-right nav-icon-size-reduce">
+          
+          <li class="nav-item">
+             
+              <a href="/blog/" class="nav-link">
+                <i class="fa fa-home"></i> Home
+              </a>
+            
+          </li>
+          
+          <li class="nav-item">
+             
+              <a href="/blog/posts/" class="nav-link">
+                <i class="fa fa-file-text-o"></i> Posts
+              </a>
+            
+          </li>
+          
+          <li class="nav-item">
+             
+              <a href="//www.elitmus.com/" class="nav-link">
+                <i class="el el-elitmuslogo"></i> eLitmus
+              </a>
+            
+          </li>
+          
+
+          <!-- feed is the last link -->
+          <li class="nav-item">
+            <a href="/blog/feed.xml" class="nav-link" title="Atom/RSS feed">
+              <i class="fa fa-rss"></i> Feed
+            </a>
+          </li>
+        </ul>
+
+
+
+      </div> <!-- /.navbar-collapse -->
+
+  </nav><!--[if lt IE 9]><div class="upgrade"><strong><a href="https://whatbrowser.org/">Your browser is quite old!</strong> Why not upgrade to a different browser to better enjoy this site?</a></div><![endif]-->
+</header>
+<!-- 
+
+  <div class="search-wrapper">
+    <div class="search-form">
+      <input type="text" class="search-field" placeholder="Search...">
+      <i class="icon-remove-sign icon-2x"></i>
+      <ul class="search-results post-list"></ul> -->
+<!-- /.search-results -->
+<!-- </div> -->
+<!-- /.search-form -->
+<!-- </div> -->
+<!-- ./search-wrapper -->
+<!--  -->
+
+  
+
+  <div class="container-fluid">
+
+  <div class="row">
+
+
+    <div class="col-md-2"></div>
+      <div class="col-md-8">
+        <div id="main" role="main" class="marginal ">
+          <article class="entry">
+
+          
+
+            <div>
+              <header>
+                <span class="entry-tags">
+                  
+                    <a href="/blog/tags/#video-conferencing" title="Pages tagged video-conferencing">video-conferencing</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#socket-io" title="Pages tagged socket-io">socket-io</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#webrtc" title="Pages tagged webrtc">webrtc</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#mediasoup" title="Pages tagged mediasoup">mediasoup</a>
+                    
+                  
+
+                  <div class=' social-sharing pull-right'>        
+     
+</div>
+
+                </span>
+              
+                
+                  <h1 class="no-padding">Interview-Platform:Insights and Learnings</h1>
+                
+              </header>
+            </div>
+           
+            <div>
+              <div>
+                <span class='badge badge-warning'> <a href="/blog/categories/technology/index.html" > technology </a></span>
+              </div>
+
+              
+
+              <div class="post-content-justify">
+                <p>An interview platform is a platform that offers a digital answer to the interview procedure. The conventional hiring procedure is frequently ineffective, time-consuming, and difficult. The platform was developed to address the issue by streamlining the hiring process and offering an effective means to carry it out.</p>
+
+<h2 id="requirements">Requirements</h2>
+
+<p>It was chosen to incorporate the following features in the application taking into account current interview circumstances, which are as follows:</p>
+
+<ul>
+  <li>Multi-User Conferencing</li>
+  <li>The ability to communicate via video and voice,</li>
+  <li>Chat feature</li>
+  <li>Screen-sharing Capabilities</li>
+</ul>
+
+<h2 id="exploring-the-applications-fundamentals">Exploring the Application’s Fundamentals</h2>
+
+<p>To build a solution incorporating the above features it is necessary to have a clear understanding of the following concepts.</p>
+
+<ul>
+  <li>
+    <p>WebRTC (Web Real-Time Communication): It is a free and open-source project that provides web browsers and mobile applications with real-time communication (RTC) via application programming interfaces (APIs). It allows audio and video communication to work inside web pages by allowing direct peer-to-peer communication.</p>
+  </li>
+  <li>
+    <p>Socket IO: It is a JavaScript library that enables real-time, bidirectional communication between the server and clients. By leveraging WebSockets, it establishes persistent connections, allowing instantaneous data exchange.</p>
+  </li>
+  <li>
+    <p>Websocket: It is a protocol that provides a full-duplex communications channel over a network connection. WebRTC is standardised on WebSocket as the way to send information from a web browser to the signalling server and vice versa.</p>
+  </li>
+  <li>
+    <p>Adapter JS: It takes care of the differences between browsers, so developers don’t have to worry about compatibility issues and can focus on building their applications.</p>
+  </li>
+  <li>
+    <p>Signaling: The signalling process involves exchanging messages between two peers using an intermediary, the signalling server. WebRTC does not define a signalling protocol.</p>
+  </li>
+  <li>
+    <p>RTCPeerConnection: RTCPeerConnection is a web API in the JavaScript language used for enabling real-time communication (RTC) between web browsers. It is a fundamental part of the Web Real-Time Communication (WebRTC) technology</p>
+  </li>
+  <li>
+    <p>Media Servers: A media server is a device or software that stores digital media such as video, audio, or images and makes it available over a network.</p>
+  </li>
+  <li>
+    <p>SDP (Session Description Protocol): A protocol for describing media communication sessions is used. It is used for peer-to-peer negotiation of different audio and video codecs, network topologies, and other device characteristics but does not deliver the media data.</p>
+  </li>
+</ul>
+
+<p>Now let us understand briefly what signalling taking an example:</p>
+
+<ul>
+  <li>
+    <p>User A creates an offer that contains its local SDP.</p>
+  </li>
+  <li>
+    <p>User A attaches that offer to something known as an RTCPeerConnection object.</p>
+  </li>
+  <li>
+    <p>User A sends its offer to the signalling server using WebSocket.</p>
+  </li>
+  <li>
+    <p>User B receives User A’s offer using WebSocket.</p>
+  </li>
+  <li>
+    <p>User B creates an answer containing her local SDP.</p>
+  </li>
+  <li>
+    <p>User B attaches its answer, along with User A’s offer, to its RTCPeerConnection object.</p>
+  </li>
+  <li>
+    <p>User B returns its answer to the signalling server using WebSocket.</p>
+  </li>
+  <li>
+    <p>User A receives User B’s offer using WebSocket.</p>
+  </li>
+</ul>
+
+<p>You may have a basic understanding of the technology used to create the solution up to this point, so let’s take a quick look at the approach used to develop the solution.</p>
+
+<h2 id="approach-to-build-the-solution">Approach to Build the Solution</h2>
+
+<ul>
+  <li>
+    <p>The first milestone was accomplished achieved after finishing room functionality, which essentially means that a unique meeting can be made and participants can enter the room with a unique id.</p>
+  </li>
+  <li>
+    <p>To make the application more purpose-specific, admin features and a chat component were included. With this feature, the interviewer has more control over the meeting, and participants can only participate after being accepted by the admin.</p>
+  </li>
+  <li>
+    <p>It was important to understand how to use the AWS platform and how to incorporate networking concepts to host the application.</p>
+  </li>
+</ul>
+
+<h2 id="architecture-to-be-used">Architecture to be used:</h2>
+
+<p>Different Architecture that can be used to enable Multiple User Video Calling Apps:</p>
+
+<ol>
+  <li>
+    <p>Mesh Topology</p>
+  </li>
+  <li>
+    <p>SFU Topology</p>
+  </li>
+  <li>
+    <p>MCU Topology</p>
+  </li>
+</ol>
+
+<p align="center">
+  <img src="/blog/images/interview-platform-insights-and-learnings/topology.png" alt="Image" width="600" />
+</p>
+
+<h2 id="comparing-the-mesh--sfu-topology-to-be-used">Comparing the Mesh &amp; SFU Topology to be used:</h2>
+
+<ul>
+  <li>
+    <p>In the Mesh architecture a user when joining the room, needs to establish a connection with every other present in the room.</p>
+  </li>
+  <li>
+    <p>And in turn the guests present needs to establish a connection with the new user.</p>
+  </li>
+  <li>
+    <p>Mesh architecture can be suitably implemented in a group of 3-4 people.</p>
+  </li>
+  <li>
+    <p>The advantage is that it is less expensive and less complex.</p>
+  </li>
+  <li>
+    <p>The disadvantage lies in the extent of scalability.</p>
+  </li>
+  <li>
+    <p>SFU topology has an edge over the Mesh taking into Scalability as a factor.</p>
+  </li>
+  <li>
+    <p>The bandwidth decreases taking the number of participants to be constant in both cases.</p>
+  </li>
+  <li>
+    <p>The one disadvantage is that it is more complex and relatively difficult to implement.</p>
+  </li>
+</ul>
+
+<h2 id="topology-to-be-followed">Topology to be followed:</h2>
+
+<p><strong>Selective forwarding unit</strong></p>
+
+<ul>
+  <li>
+    <p>In this various clients connect to the media server.</p>
+  </li>
+  <li>
+    <p>Here P2P is taken into use.</p>
+  </li>
+  <li>
+    <p>Each device is connected to the server.</p>
+  </li>
+  <li>
+    <p>The server combines them in the stream and puts them in a single stream.</p>
+  </li>
+</ul>
+
+<h2 id="comparision-between-mediasoup-and-kurento">Comparision between Mediasoup and Kurento</h2>
+
+<p>Until now we have a fair idea of which topology we need to implement in the application. We need a media server to get implemented for Selective Forwarding Unit. There are many options available in media servers that we can proceed but taking into multiple factors we are left with two options and we need to proceed with one.</p>
+
+<ol>
+  <li>
+    <p>Media connections are established 80% quicker than Kurento</p>
+  </li>
+  <li>
+    <p>Provides rich scalability and performance with its robust selective forwarding unit</p>
+  </li>
+  <li>
+    <p>Can be used as a NodeJS package or a Rust library</p>
+  </li>
+  <li>
+    <p>MediaSoup is designed to work in a distributed environment, making it suitable for large-scale deployments. It can handle multiple rooms and numerous concurrent calls, which aligns with your scalability requirement</p>
+  </li>
+  <li>
+    <p>MediaSoup has good community support and regular updates over time</p>
+  </li>
+  <li>
+    <p>MediaSoup allows you to write automated test cases for all the features, helping ensure the stability and functionality of your application.</p>
+  </li>
+</ol>
+
+<h2 id="insights-of-the-application">Insights of the application</h2>
+
+<p>We currently have a good understanding of the architecture that will be used in the application. According to the demands of the application, SFUs (single forwarding units) will be deployed. And we conclude that we will keep using Mediasoup as the application’s media server.</p>
+
+<p>Talking about the features to be implemented, which include audio and video chat and screen sharing, we need to have a better understanding.</p>
+
+<p>The application requests authorization to use the available camera and microphone to establish communication and transfer media, such as video and audio.</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript">navigator.mediaDevices 
+	.getDisplayMedia({ video: true, }) 
+	.then(streamSuccess) 
+	.catch((err) =&gt; { console.log(err); });</code></pre></figure>
+
+<p>The ability to share the screen must be implemented in addition to audio and video. To do this, we can use the code snippet below.</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript">navigator.mediaDevices 
+	.getDisplayMedia({ video: true, }) 
+	.then(streamSuccess) 
+	.catch((err) =&gt; { console.log(err); });</code></pre></figure>
+
+<p>As fetching the streams we can proceed with the following steps of implementing the mediasoup architecture. Here is a brief overview of the steps implemented.</p>
+
+<ul>
+  <li>Create a media device (mediasoup-client) for capturing media.</li>
+  <li>Create a transport for sending media to the server.</li>
+  <li>Connect the send transport and produce audio/video tracks.</li>
+  <li>Signal a new consumer transport for a remote producer.</li>
+  <li>Get the list of available producers from the server.</li>
+  <li>Connect the receiving transport and consume remote media.</li>
+  <li>Render the local video, screen sharing video, and other controls.</li>
+  <li>Implement event handlers for muting, camera, and screen sharing toggles.</li>
+  <li>Implement event handlers for leaving the meeting and accepting new users.</li>
+</ul>
+
+<h2 id="building-the-solution">Building the Solution</h2>
+
+<ul>
+  <li>
+    <p><a href="https://react.dev/">React Js</a> is used to develop the application’s front end. <a href="https://redux.js.org/">Redux</a> is utilised for state management, and after establishing the page routes, work on UI design began.</p>
+  </li>
+  <li>
+    <p>After reading the documentation, we began implementing Mediasoup in the backend and preferred <a href="https://nodejs.org/en">Node Js</a> as the backend framework.</p>
+  </li>
+</ul>
+
+<p>This is an overview of the Mediasoup WebRTC server application. The application is built using Node.js, <a href="https://expressjs.com/">Express</a>, <a href="https://www.mongodb.com/">MongoDB</a>, and <a href="https://socket.io/">Socket.IO</a> to facilitate real-time communication and media streaming.</p>
+
+<h3 id="dependencies">Dependencies</h3>
+
+<ul>
+  <li><code>dotenv</code>: Loads environment variables from a <code>.env</code> file.</li>
+  <li><code>express</code>: Web framework for building the server.</li>
+  <li><code>httpolyglot</code>: Provides HTTPS server functionality for secure communication.</li>
+  <li><code>socket.io</code>: Enables WebSocket communication for real-time events.</li>
+  <li><code>mediasoup</code>: A WebRTC media server library for media processing.</li>
+</ul>
+
+<h3 id="server-setup">Server Setup</h3>
+
+<ol>
+  <li>Import required modules and set up the Express server.</li>
+  <li>Create an HTTPS server using <code>httpolyglot</code> for secure communication with SSL certificates.</li>
+  <li>Connect to MongoDB using Mongoose to store user information and other data.</li>
+  <li>Define the MongoDB schema for the “users” collection.</li>
+</ol>
+
+<h3 id="mediasoup-integration">Mediasoup Integration</h3>
+
+<ol>
+  <li>Create a Mediasoup worker to manage media processing.</li>
+  <li>Define media codecs for audio and video.</li>
+  <li>Set up Socket IO to handle WebSocket communication for real-time media streams.</li>
+  <li>Create maps and arrays to manage Mediasoup peers, transports, producers, and consumers.</li>
+</ol>
+
+<h3 id="socket-io-event-handlers">Socket IO Event Handlers</h3>
+
+<ol>
+  <li>Implement event handlers for various actions:
+    <ul>
+      <li>Joining a room and creating WebRTC transports.</li>
+      <li>Joining a room and creating WebRTC transports.</li>
+      <li>Producing and consuming media.</li>
+      <li>Sending and receiving messages between peers.</li>
+      <li>Confirming admin status and accepting user requests.</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="mediasoup-transports">Mediasoup Transports</h3>
+
+<ol>
+  <li>Implement functions to create Mediasoup WebRTC transports with specific options.</li>
+  <li>Handle transport events like DTLS state changes and transport closure.</li>
+</ol>
+
+<h3 id="final-setup">Final Setup</h3>
+
+<ol>
+  <li>Create the Express app and set it to listen on the specified port (default: 3002).</li>
+</ol>
+
+<h3 id="deployment">Deployment</h3>
+<ol>
+  <li>Dockerize the application</li>
+</ol>
+
+<figure class="highlight"><pre><code class="language-docker" data-lang="docker">FROM node:20 
+WORKDIR /app 
+COPY package*.json ./ 
+RUN npm cache clean --force 
+COPY . . 
+EXPOSE 8000 
+CMD [ &quot;npm&quot;, &quot;start&quot; ]</code></pre></figure>
+
+<ol>
+  <li>Initialize an EC2 Instance on AWS</li>
+  <li>Run the docker container with Ngnix WebServer</li>
+  <li>Expose TCP UDP Ports for EC2 Instance for media transmission.</li>
+</ol>
+
+<h2 id="challenges-faced">Challenges Faced</h2>
+
+<p>During building the product the major problem I faced was to establish a connection between the clients using the application. Every Client who was joining was producing media but the media was not transporting to other clients. After debugging and revamping the application’s state, the conclusion was drawn that the React state was not behaving as decided and solved the issue after fixing it. During development, the socket instance needs to be properly handled so that it gets mapped to the proper room and doesn’t get broadcasted to every other instance.</p>
+
+<p>During deployment, the major issue was assigning the proper IP address to be used in the application as the application has the requirement of broadcasting the IP address to every applicant with a public IP. After using the Amazon EC2 instance the issue was solved and then I implemented Docker to containerize the application and run it with the nginx server.</p>
+
+<p align="center">
+  <img src="/blog/images/interview-platform-insights-and-learnings/app_ss.png" alt="Image" width="600" />
+</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<ul>
+  <li>The first version of the application is built with the multi-user functionality joining with their desired choice of media.</li>
+  <li>The admin can accept the desired user and on accepting the user can enter the room.</li>
+  <li>The participants can communicate over audio, see each other’s video and chat in the room. The entire process of building the application is a great chance of learning and rewarding experience and future improvements can be done to make the application more consistent and reliable.</li>
+</ul>
+
+<h2 id="references">References</h2>
+
+<p><a href="https://openvidu.medium.com/a-new-era-for-openvidu-better-perfomance-and-media-quality-with-mediasoup-24d46a9eb10d" target="_blank" style="color: blue;">Comparision of Kurento and Mediasoup Mediaserver</a></p>
+
+
+              </div>
+              <div class="entry-tags">
+                <div class=' social-sharing pull-right'>        
+     
+</div>
+              </div>
+              <div class="clearfix"><br/></div>
+
+                <div class="panel panel-default">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+      <div class="panel-body">
+        <div class="container-fluid">
+
+          <div class="row">
+            <div class="col-sm-12 col-md-4">
+              <center>
+                <img src="/blog/images/rajat.jpg" alt="Rajat Kumar Nayak photo" class="author-photo img-circle img-responsive"/>
+                
+                <span class="author vcard">
+                  <span class="fn">Rajat Kumar Nayak</span>
+                </span>
+
+                <div class="nav-icon-size-reduce social-icons">
+                  
+                    <a href="https://twitter.com/https://twitter.com/its_rajat_dev"  title="Rajat Kumar Nayak on Twitter"  target="_blank"><i class="fa fa-twitter "></i></a>
+                  
+                  
+                  
+                  
+
+                  
+                    <a href="https://linkedin.com/in/rajat-kumar-nayak-a4aa84204" title="Rajat Kumar Nayak on LinkedIn" target="_blank"><i class="fa fa-linkedin "></i></a>
+                  
+
+                  
+
+                  
+
+                  
+
+                  
+                    <a href="https://github.com/rajat-gith" title="Rajat Kumar Nayak on Github" target="_blank"><i class="fa fa-github "></i></a>
+                  
+
+                     
+                </div><!-- /.social-icons -->
+              </center>
+            </div>
+
+            <div class="col-sm-12 col-md-8">
+              
+                <span class="author-bio">Rajat Nayak is an Full Stack Intern at eLitmus. He loves building softwares and has a great inclination towards contributing to tech communities and collaborations.</span>
+              
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</div>
+                <div id='discourse-comments'></div>
+
+<script type="text/javascript">
+  DiscourseEmbed = { discourseUrl: 'https://adda.elitmus.com/',
+                     discourseEmbedUrl: 'https://www.elitmus.com/blog/technology/interview-platform-insights-and-learnings/'
+                   };
+
+  (function() {
+    var d = document.createElement('script'); 
+    d.type = 'text/javascript'; 
+    d.async = true;
+    d.src = DiscourseEmbed.discourseUrl + 'javascripts/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(d);
+  })();
+</script>
+
+
+                
+              </div><!-- /.entry-content -->
+            </div><!-- /.entry-wrapper -->
+
+          </article>
+
+          <nav class="navbar nav-justified" role="navigation">
+            <ul class="nav pager">
+              
+                <li class="previous showElem mr-auto"><a href="/blog/technology/building-a-frontend-scoring-engine-automating-frontend-evaluation/" title="Building a Frontend Scoring Engine: Automating Frontend Evaluation">&larr;<span class="showPrevNex"> Previous </span> </a></li>
+              
+              
+                <li class="next showElem ml-auto"><a href="/blog/technology/demystifying-rails-7-system-tests-configuring-ci-pipeline/" title="Demystifying Rails 7 System Tests: Configuring CI Pipeline"> <span class='showPrevNex'> Next </span> &rarr; </a></li>
+              
+            </ul>
+          </nav>
+        
+        </div><!-- /#main -->
+
+      <!--/col-md-2 -->
+      <div class="col-md-2">
+
+      </div>
+
+    </div><!-- /row -->
+    </div>
+    <div class="footer-color">
+      <footer role="contentinfo">
+        <center>
+            <span class='footer-text'>
+    &copy;  2005-<script> document.write(new Date().getFullYear()) </script>, eLitmus.com. | <a href="/terms_of_use/">Terms of Use</a> &middot; <a href="/privacy_policy/">Privacy Policy</a>
+
+  </span>
+        </center>
+      </footer>
+    </div><!-- /.footer-wrapper -->
+    
+
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-CB7H9KN61P"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+
+		gtag('config', 'G-CB7H9KN61P');
+	</script>
+
+
+
+<!-- Load Modernizr -->
+<script src="/blog/assets/js/vendor/modernizr-2.6.2.custom.min.js"></script>
+
+<!-- adding jquery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- end of jquery -->
+
+<script src="/blog/assets/js/scripts.min.js"></script>
+<script src="/blog/assets/js/lunr.min.js"></script>
+<script src="/blog/assets/js/lunr-search.js"></script>
+<script src="/blog/assets/js/plugins/headroom.min.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+<script src="/blog/assets/js/vendor/forkit.js"></script>
+
+<!-- Prism -->
+<script src="/blog/assets/js/prism.js"></script>
+  
+
+  </body>
+</html>

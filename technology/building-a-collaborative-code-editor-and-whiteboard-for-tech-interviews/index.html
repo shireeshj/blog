@@ -1,0 +1,824 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Building a Collaborative code-editor &amp; Whiteboard: For tech interviews. &#8211; eLitmus Blog</title>
+<meta name="description" content="We learn new things everyday, and we document our learnings here...">
+
+<meta name="keywords" content="Concurrency Management, Websockets, Multifile Navigation, YJS, tldraw, OT Vs CRDT, CodeMirror 6, Docker, AWS">
+
+<!-- Twitter Cards -->
+  <meta name="twitter:card" content="summary">    
+<meta name="twitter:title" content="Building a Collaborative code-editor &amp; Whiteboard: For tech interviews.">
+<meta name="twitter:description" content="A Collaborative code-editor and Whiteboard aims to diversify the current interviewing scenario to Live - Coding, Sketching, Crafting, and Conceptualisation of ideas between the Interviewer and Interviewee for better communication which was until now only limited to Video and audio chats.
+
+">
+<meta name="twitter:site" content="@elitmus">
+<meta name="twitter:image" content="/blog/images/default_og.png">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        
+    
+
+    
+
+    
+
+
+
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="/blog/images/default_og.png"/>
+<meta property="og:image:width" content="1280"/>
+<meta property="og:image:height" content="720"/>
+<meta property="og:type" content="article">
+<meta property="og:title" content="Building a Collaborative code-editor &amp; Whiteboard: For tech interviews.">
+<meta property="og:description" content="A Collaborative code-editor and Whiteboard aims to diversify the current interviewing scenario to Live - Coding, Sketching, Crafting, and Conceptualisation of ideas between the Interviewer and Interviewee for better communication which was until now only limited to Video and audio chats.
+
+">
+<meta property="og:url" content="/blog/technology/building-a-collaborative-code-editor-and-whiteboard-for-tech-interviews/">
+<meta property="og:site_name" content="eLitmus Blog">
+
+
+
+
+
+
+
+
+<link rel="canonical" href="https://www.elitmus.com/blog/technology/building-a-collaborative-code-editor-and-whiteboard-for-tech-interviews/">
+<link href="/blog/feed.xml" type="application/atom+xml" rel="alternate" title="eLitmus Blog Feed">
+
+
+	<link rel="author" href="https://plus.google.com/+eLitmus?rel=author">
+
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Icons -->
+<!-- apple touch icons -->
+<link rel="apple-touch-icon" sizes="57x57" href="/blog/images/apple-touch-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="114x114" href="/blog/images/apple-touch-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="72x72" href="/blog/images/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="144x144" href="/blog/images/apple-touch-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="60x60" href="/blog/images/apple-touch-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/blog/images/apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/blog/images/apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/blog/images/apple-touch-icon-152x152.png">
+<!-- Favicons default 16x16 -->
+<link rel="shortcut icon" type="image/vnd.microsoft.icon" href="/blog/favicon.ico">
+
+<!-- Favicons others -->
+<link rel="icon" type="image/png" href="/blog/images/favicon-196x196.png" sizes="196x196">
+<link rel="icon" type="image/png" href="/blog/images/favicon-160x160.png" sizes="160x160">
+<link rel="icon" type="image/png" href="/blog/images/favicon-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="/blog/images/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="/blog/images/favicon-32x32.png" sizes="32x32">
+
+<!-- Icons for Windows 8 Tiles -->
+<meta name="msapplication-TileColor" content="#ffffff"/>
+<meta name="msapplication-TileImage" content="/blog/images/mstile-144x144.png">
+
+<!-- For all browsers -->
+
+
+<!-- Webfonts -->
+<link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:600,300,300italic|The+Girl+Next+Door" rel="stylesheet" type="text/css">
+<link href='//fonts.googleapis.com/css?family=Source+Code+Pro:300' rel='stylesheet' type='text/css'>
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- bootstrap 4 -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/bootstrap.min.css">
+
+<!-- below css file is used for navbar in individual blogposts -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/main.min.css">
+
+<!-- <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"> -->
+
+<!-- Optional theme -->
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/bootstrap-theme.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Font Awesome -->
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="/blog/assets/css/font-elitmuslogo.css" />
+
+<link rel="stylesheet" href="/blog/assets/css/customize.css">
+<link rel="stylesheet" href="/blog/assets/css/forkit.css">
+
+<!-- Prism -->
+<link rel="stylesheet" href="/blog/assets/css/prism.css">
+
+</head>
+
+<body id="post">
+
+  <header class="headroom">
+
+  <nav class="navbar navbar-expand-md navbar-dark bg-black fixed-top" role="navigation">
+
+      <a class="navbar-brand" href="/blog/">
+        <img src="/blog/images/elitmus-only-logo.svg" class="img-logo">
+        <span><div class="blog-label">blog</div></span>
+      </a>
+
+      <!-- the toggle button -->
+      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="navbar-toggler-icon"></span>
+        <span class="sr-only">Toggle navigation</span><!-- only for screen readers -->
+      </button>
+
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav mr-auto">
+
+          <!-- first item = dropdown search -->
+          <li class="nav-item">
+            <div class="dropdown search-box-margin">
+
+            
+              <div class="form-inline">
+                 
+
+                <input data-toggle="dropdown" placeholder="Search..." id="search-box" class="form-control form-control-sm search-input dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+
+
+                <div class="dropdown-menu" id="search-dropdown">
+                  <a role='presentation' class='dropdown-item search-results'> Type more.... </a>
+                </div>
+
+              </div>
+
+
+
+            <!-- the below line will pass "search word" to search.html -->
+
+            <!--
+            <form class="form-inline" action="/blog/search" method="get">
+               
+
+
+              <label for="search_box">Search</label>
+              <input data-toggle="dropdown" type="text" name="query" placeholder="Search..." id="search-box" class="form-control form-control-sm search-input dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+
+              <div class="dropdown-menu" id="search-dropdown">
+                  <a role='presentation' class='dropdown-item search-results'> Type more.... </a>
+              </div>
+
+              <input type="submit" value="search">
+
+            </form>
+            -->
+
+            <!-- end of form -->
+
+
+            </div>
+          </li>
+        </ul>
+
+        
+
+        <!-- every link on the right side -->
+        <ul class="nav navbar-nav navbar-right nav-icon-size-reduce">
+          
+          <li class="nav-item">
+             
+              <a href="/blog/" class="nav-link">
+                <i class="fa fa-home"></i> Home
+              </a>
+            
+          </li>
+          
+          <li class="nav-item">
+             
+              <a href="/blog/posts/" class="nav-link">
+                <i class="fa fa-file-text-o"></i> Posts
+              </a>
+            
+          </li>
+          
+          <li class="nav-item">
+             
+              <a href="//www.elitmus.com/" class="nav-link">
+                <i class="el el-elitmuslogo"></i> eLitmus
+              </a>
+            
+          </li>
+          
+
+          <!-- feed is the last link -->
+          <li class="nav-item">
+            <a href="/blog/feed.xml" class="nav-link" title="Atom/RSS feed">
+              <i class="fa fa-rss"></i> Feed
+            </a>
+          </li>
+        </ul>
+
+
+
+      </div> <!-- /.navbar-collapse -->
+
+  </nav><!--[if lt IE 9]><div class="upgrade"><strong><a href="https://whatbrowser.org/">Your browser is quite old!</strong> Why not upgrade to a different browser to better enjoy this site?</a></div><![endif]-->
+</header>
+<!-- 
+
+  <div class="search-wrapper">
+    <div class="search-form">
+      <input type="text" class="search-field" placeholder="Search...">
+      <i class="icon-remove-sign icon-2x"></i>
+      <ul class="search-results post-list"></ul> -->
+<!-- /.search-results -->
+<!-- </div> -->
+<!-- /.search-form -->
+<!-- </div> -->
+<!-- ./search-wrapper -->
+<!--  -->
+
+  
+
+  <div class="container-fluid">
+
+  <div class="row">
+
+
+    <div class="col-md-2"></div>
+      <div class="col-md-8">
+        <div id="main" role="main" class="marginal ">
+          <article class="entry">
+
+          
+
+            <div>
+              <header>
+                <span class="entry-tags">
+                  
+                    <a href="/blog/tags/#Concurrency Management" title="Pages tagged Concurrency Management">Concurrency Management</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#Websockets" title="Pages tagged Websockets">Websockets</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#Multifile Navigation" title="Pages tagged Multifile Navigation">Multifile Navigation</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#YJS" title="Pages tagged YJS">YJS</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#tldraw" title="Pages tagged tldraw">tldraw</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#OT Vs CRDT" title="Pages tagged OT Vs CRDT">OT Vs CRDT</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#CodeMirror 6" title="Pages tagged CodeMirror 6">CodeMirror 6</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#Docker" title="Pages tagged Docker">Docker</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#AWS" title="Pages tagged AWS">AWS</a>
+                    
+                  
+
+                  <div class=' social-sharing pull-right'>        
+     
+</div>
+
+                </span>
+              
+                
+                  <h1 class="no-padding">Building a Collaborative code-editor &amp; Whiteboard: For tech interviews.</h1>
+                
+              </header>
+            </div>
+           
+            <div>
+              <div>
+                <span class='badge badge-warning'> <a href="/blog/categories/technology/index.html" > technology </a></span>
+              </div>
+
+              
+
+              <div class="post-content-justify">
+                <p>A Collaborative code-editor and Whiteboard aims to diversify the current interviewing scenario to Live - Coding, Sketching, Crafting, and Conceptualisation of ideas between the Interviewer and Interviewee for better communication which was until now only limited to Video and audio chats.</p>
+
+<h1 id="the-blog-blueprint">The Blog Blueprint:</h1>
+
+<ul>
+  <li>Need for collaboration: Unveiling the Why</li>
+  <li>Cracking the Code: Research and Concluded Solutions
+    <ul>
+      <li>    Collaborative conflict management.</li>
+      <li>    Code-editor research</li>
+      <li>    Existing code-editors</li>
+      <li>    Existing whiteboards</li>
+    </ul>
+  </li>
+  <li>Feature Showcase</li>
+  <li>Architecture</li>
+  <li>Actors: Use case diagram</li>
+  <li>Dockerization, Deployment and scale</li>
+  <li>Conclusion</li>
+</ul>
+
+<h1 id="need-for-collaboration-unveiling-the-why">Need for Collaboration: Unveiling the Why</h1>
+
+<p>In the post-pandemic landscape, the majority of tech interviews and initial screening rounds have transitioned to virtual formats through platforms like Google Meet, Zoom, or Microsoft Teams. While these platforms excel in facilitating video and audio interactions, they fall short when it comes to assessing candidates’ coding problem-solving skills in a live, interview-pressure setting. Typically, recruiters resort to screen sharing candidates’ local code editors, but this approach presents limitations.</p>
+
+<p>Recruiters lack the ability to actively edit the code or navigate through different code files seamlessly. Simple tasks such as pointing out errors, saving code for later review, brainstorming designs, and optimizing code quality become cumbersome, relying on manual instructions for candidates to scroll up or down.</p>
+
+<p>As a result, the demand for a collaborative code editor and whiteboard becomes not just beneficial but critical in addressing these challenges efficiently.</p>
+
+<h1 id="cracking-the-code-research-and-concluded-solutions">Cracking the Code: Research and Concluded Solutions</h1>
+
+<h2 id="what-if-two-users-press-two-different-letters-on-the-same-line-at-the-exact-same-time">What if two users press two different letters on the same line at the exact same time?</h2>
+
+<p>This conflict is a major problem that all collaborative and distributed softwares have to address. Therefore, when the user makes a change to the document that change needs to be synchronised with other users as well and if the user has to wait for this synchronisation for every letter they type this will make the application very slow. So in order to get a near real-time collaborative editing experience every client maintains a local replica of the document and the main issue now is just to maintain consistency with other clients local replica.</p>
+
+<p>Consider the following example -
+In an empty line, Alice inserts letter ‘A’ at index 0 and Bob inserts letter ‘B’ at index 0 at the exact same time. Now how should we combine these changes together? Should we prefer Alice’s changes over Bob’s or vice-versa?</p>
+
+<p>Well there is no logical answer and quite frankly it doesn’t matter, what actually matters is that at the end of combining these operations it should “Converge to an identical state” i.e both Alice and Bob should get the same text as soon as possible and if they are not satisfied they will re-edit just like in git you would have merge conflicts and you would have to merge manually but here we can automate this merging using various concurrency control and consistency models.</p>
+
+<p>There are two conceptual protocols when dealing with such problems -</p>
+
+<ol>
+  <li><strong>Consensus based protocol</strong> - Pick one &amp; reject the rest. In this case it will select any one between Alice and Bob, thereby losing one client’s data completely. This is mainly used in decentralised blockchain applications.</li>
+  <li><strong>Collaboration based protocol</strong> - Merge &amp; Keep them all.</li>
+</ol>
+
+<p>But that’s not the end of the story as we can take advantage of commutative operations like consider a double insertion situation - the text initially is “APP”, Alice inserts “H” at the beginning and Bob inserts “Y” at the end at the exact same time as Alice. In such a situation there is a line conflict but since insertions at different positions are commutative we can merge these operations automatically to get the final text “HAPPY”.
+Thereby not discarding Alice’s changes or Bob’s changes, providing a real-time conflict-free editing experience and there is no need for someone to manually merge these changes for us.</p>
+
+<p>The concurrency control algorithms are widely studied for collaborative tools and a lot of research is currently going into such algorithms to attain distributed concurrency. The two most widely used ones are OT and CRDT.</p>
+
+<h3 id="operational-transformation-ot">Operational Transformation (OT)</h3>
+
+<p>Also known as <strong>Event passing</strong>. Any key event happening on the client-side will be sent to the server. Events can be inserting/deleting a character. The operation received by the server from the client is transformed against its operation which results in a new operation to be performed on the client-side. OT implementations are used in Google docs and many more such collaborative applications pre-2018 ( before CRDT optimisations started to outperform their OT counterparts ).</p>
+
+<p>This can be better understood with the help of an example -</p>
+
+<p><img src="/blog/images/collaborative_editor_and_whiteboard/ot.png" alt="ot" /></p>
+
+<p>There are many models based on Operational Transformation that are used in prod addressing different issues and there is a plethora of dense academic research whose references can be found in the Documentation. As this blog is written mainly from a developer point of view but academic references are also mentioned wherever needed.</p>
+
+<h3 id="conflict-free-replicated-data-type-crdt">Conflict-free Replicated Data Type (CRDT)</h3>
+
+<p>CRDT works on two core principles -</p>
+
+<ol>
+  <li><strong>Commutative</strong> - Re-ordering different operations will not change the final result.</li>
+  <li><strong>Idempotency</strong> - No matter how many times an operation is performed the final result remains the same.</li>
+</ol>
+
+<p>Here, every character in the document is assigned a unique ID, and when a new character is
+inserted, the new character would get an ID based on the average of its neighbours (ideally could even take non-integer IDs), which helps to make the algorithm less complex in conflict resolution.</p>
+
+<p>Just like OT had its own various models, CRDTs too have different implementations developed &amp; optimised over time. To get a conceptual understanding consider the example below - using Lagoot’s CRDT Algorithm</p>
+
+<p><img src="/blog/images/collaborative_editor_and_whiteboard/crdt.png" alt="crdt" /></p>
+
+<p>CRDTs have a lenient approach to the order of operations. In theory, this reduces the design complexity of distribution mechanisms since there is no need for strict serialisation protocols. By tolerating out-of-order updates, the distribution mechanism has to meet simpler integrity guarantees.</p>
+
+<h3 id="ot-vs-crdt-final-solution">OT Vs CRDT: Final Solution</h3>
+
+<p>CRDTs serve our requirements much better because of these two main reasons -</p>
+
+<ul>
+  <li><strong>Speed</strong>: CRDTs are much much faster than many OT implementations applying operations should be possible with just a <em>O(log(n))</em> lookup. But in the past the main problem was the large memory overhead. Which is now resolved after significant optimisations in YJS CRDT implementation. ( Exact benchmarks are provided in the references section of Documentation. )</li>
+  <li><strong>Flexibility and Usability</strong>: CRDTs support a wider range of data types. Compared to the OT library, which requires a thorough modelling of business logic as different types of operation data structures, when using the CRDT library, you only need to perform the same operation on common data structures, such as Map and Array.</li>
+</ul>
+
+<h2 id="code-editor-research">Code-editor Research</h2>
+
+<p>The main code-editing component libraries explored were -</p>
+
+<ul>
+  <li><a href="https://codemirror.net/" target="_blank" style="color: blue;">CodeMirror 6</a></li>
+  <li><a href="https://microsoft.github.io/monaco-editor/" target="_blank" style="color: blue;">Monaco Editor</a></li>
+  <li><a href="https://ace.c9.io/" target="_blank" style="color: blue;">Ace Editor</a></li>
+</ul>
+
+<p>Out of which CodeMirror 6 was selected due to the following reasons -</p>
+
+<ul>
+  <li><strong>Highly modular and lightweight</strong>: seamless integration of only the necessary components, allowing for a tailored and resource-efficient implementation.</li>
+  <li>Has a modern, extensible API with <strong>excellent documentation.</strong></li>
+  <li>Is easy to customise, style, and reconfigure.</li>
+</ul>
+
+<h2 id="existing-browser-based-code-editors">Existing Browser based code-editors</h2>
+
+<p>Here are some more projects and companies whose products were researched thoroughly, but to prevent this blog from becoming super lengthy only the names with references are mentioned and all the other details are mentioned in the Proof Of Concept given alongside the Documentation:</p>
+
+<ul>
+  <li><a href="https://gitlab.com/gitlab-org/gitlab-web-ide" target="_blank" style="color: blue;">Gitlab Web IDE</a></li>
+  <li><a href="https://github.com/coder/code-server" target="_blank" style="color: blue;">Code-server</a></li>
+  <li><a href="https://github.com/replit" target="_blank" style="color: blue;">Replit</a></li>
+  <li><a href="https://codeanywhere.com/solutions/collaborate " target="_blank" style="color: blue;">Codeanywhere</a></li>
+  <li><a href="https://codepen.io/" target="_blank" style="color: blue;">Codepen</a></li>
+  <li><a href="https://www.codetogether.com/ " target="_blank" style="color: blue;">Codetogether</a></li>
+  <li><a href="https://github.dev/github/dev" target="_blank" style="color: blue;">Github.dev</a></li>
+  <li><a href="https://github.com/features/codespaces" target="_blank" style="color: blue;">Github Codespaces</a></li>
+  <li><a href="https://vscode.dev/" target="_blank" style="color: blue;">Vscode.dev</a></li>
+</ul>
+
+<h2 id="existing-whiteboards">Existing Whiteboards</h2>
+
+<p><strong>tldraw</strong></p>
+
+<ul>
+  <li><a href="https://docs.tldraw.dev/introduction" target="_blank" style="color: blue;">Docs</a></li>
+  <li><a href="https://github.com/tldraw/tldraw" target="_blank" style="color: blue;">Github</a></li>
+  <li>22k+ stars</li>
+  <li>130 contributors actively maintaining.</li>
+  <li>Well funded <a href="https://tldraw.substack.com/p/tiny-little-seed-round" target="_blank" style="color: blue;">$2.7M seed</a></li>
+  <li>Supports YJS ( Shared-editing framework )</li>
+  <li>Easy to integrate.</li>
+</ul>
+
+<p>Other options researched:</p>
+
+<ul>
+  <li><a href="https://github.com/excalidraw/excalidraw" target="_blank" style="color: blue;">Excalidraw</a></li>
+  <li><a href="http://fabricjs.com/" target="_blank" style="color: blue;">fabric.js</a></li>
+  <li><a href="https://github.com/embiem/react-canvas-draw" target="_blank" style="color: blue;">react-canvas-draw</a></li>
+</ul>
+
+<h1 id="feature-showcase">Feature Showcase</h1>
+
+<h3 id="client-workspace">Client Workspace</h3>
+
+<p><img src="/blog/images/collaborative_editor_and_whiteboard/client_workspace.png" style="width: 810px;" /></p>
+
+<h3 id="multifile-navigation--room-info">Multifile Navigation &amp; Room info</h3>
+
+<p><img src="/blog/images/collaborative_editor_and_whiteboard/combined.png" style="width: 810px; height: 380px" /></p>
+
+<h3 id="whiteboard">Whiteboard</h3>
+
+<p><img src="/blog/images/collaborative_editor_and_whiteboard/whiteboard.png" style="width: 810px;" /></p>
+
+<p>All features are satisfied as specified in FRS:</p>
+
+<h3><strong>Collaborative Code Editor</strong></h3>
+<ul>
+  <li>Real-time code editing and sharing capabilities using websockets.</li>
+  <li>Syntax highlighting for multiple programming languages using codemirror 6 language packages.</li>
+  <li>Support for multiple users editing code simultaneously using YJS shared-editing framework.</li>
+  <li>Files navigator bar for multi-file editing using Depth First Search Algorithm in react.</li>
+  <li>Create a new meet in just one click!</li>
+  <li>Fast and low-latency using websockets + sending only new changes made to the document instead of sending the whole document each time.</li>
+  <li>Modular code as specified in Architecture below.</li>
+  <li>Secure groups/ rooms using YJS update serialisation.</li>
+  <li>Additional features provided -
+    <ul>
+      <li>    Zip downloads the entire codebase.</li>
+      <li>    Pdf download all whiteboard designs.</li>
+      <li>    Role management for different actors ( or users ) specified below in the use-case diagram.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3><strong>Whiteboard</strong></h3>
+<ul>
+  <li>Interactive whiteboard for visual collaboration and problem-solving using tldraw.</li>
+  <li>Drawing tools, shapes, and text annotations.</li>
+  <li>Real-time updates for all participants using YJS.</li>
+  <li>Ability to save whiteboard content by downloading a local pdf copy: Simply by pressing <strong>Ctrl + P</strong>.</li>
+  <li>Additional features provided -
+    <ul>
+      <li>    Upload any new shape or image for UML diagrams, flowcharts or any other design pattern.</li>
+      <li>    Dark mode and multi page editing.</li>
+      <li>    Set custom opacity, texture patterns and border levels.</li>
+      <li>    Use laser pointers for better presentations.</li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="architecture">Architecture</h1>
+
+<p><img src="/blog/images/collaborative_editor_and_whiteboard/architecture.png" style="width: 780px;" /></p>
+
+<h2 id="frontend">Frontend</h2>
+
+<p>The Frontend architecture is composed of CodeMirror 6, a powerful code-editing tool. To enable multi-file support, a file explorer is seamlessly integrated, allowing users to create and delete files or folders within a nested structure. The status bar dynamically displays all open files until they are either closed or removed.</p>
+
+<p>Additionally, the whiteboard functionality is implemented using Tldraw as a separate component. Users can effortlessly switch between the Code Editor and Whiteboard using the left sidebar.</p>
+
+<p>The system adopts a <strong>modular approach</strong>, breaking down the Code Editor into smaller, manageable components such as Editor-screen, FileTree, and LeftPanel. This modular design enhances code maintainability and fosters a more scalable and extensible architecture.</p>
+
+<h2 id="backend">Backend</h2>
+
+<p>Utilising a Node.js server with the Express framework, the application listens for incoming HTTP requests through RESTful API routes. The server efficiently handles data persistence by saving user input code to the database. Additionally, it provides administrative functionality to retrieve all saved data sets from the database.</p>
+
+<p>The system is Augmented with a WebSocket server for low-latency communication and real-time updates, this system further enhances its capabilities. The WebSocket server efficiently receives updates from diverse clients, manages document state updates, and broadcasts these changes to other clients within the same room. This functionality ensures synchronised, <strong>real-time communication</strong> across connected clients for a seamless and interactive user experience.</p>
+
+<h2 id="testing">Testing</h2>
+
+<p>I have used Jest, in conjunction with React Testing Library, for a comprehensive testing suite. This included rigorous testing scenarios for:</p>
+
+<ul>
+  <li>Buttons</li>
+  <li>Connection management.</li>
+  <li>Form submissions</li>
+  <li>Page redirections</li>
+  <li>Error message handling within the project</li>
+</ul>
+
+<h1 id="actors-use-case-diagram">Actors: Use case diagram</h1>
+
+<p><img src="/blog/images/collaborative_editor_and_whiteboard/use_case.png" style="width: 770px" /></p>
+
+<h1 id="dockerization-deployment-and-scale">Dockerization, Deployment and scale</h1>
+
+<p>I’ve partitioned the project into distinct frontend and backend components, each independently containerized using Docker. This <strong>modularization</strong> facilitates the potential for separate hosting on different servers, promoting a <strong>decoupled architecture</strong>. Although, in the current deployment setup, both containers reside on the same EC2 instance, leveraging Docker Compose for streamlined single-host deployment.</p>
+
+<p>This configuration ensures swift and straightforward deployment with efficient container orchestration. Please note that since frontend &amp; backend are decoupled you need to enter the correct ip address of the backend container so that frontend can connect with it properly. For in-depth instructions and troubleshooting guidance during deployment, refer to the comprehensive documentation provided in the code repository.</p>
+
+<h3 id="docker-composeyml">docker-compose.yml</h3>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">version: &quot;3.8&quot;
+
+services:
+frontend:
+build: ./Frontend
+container_name: frontend_c
+ports: - &quot;3000:3000&quot;
+stdin_open: true
+tty: true
+depends_on: - backend
+networks: - mern-network
+
+backend:
+build: ./Backend
+container_name: backend_c
+restart: always
+ports: - &quot;5000:5000&quot;
+networks: - mern-network
+
+networks:
+mern-network:
+driver: bridge</code></pre></figure>
+
+<h3 id="docker-run-command">Docker run command</h3>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">sudo docker compose up --build -d</code></pre></figure>
+
+<h2 id="scaling">Scaling</h2>
+
+<p><strong>Maximum number of users in one room</strong> <br />
+In this system, WebSockets are adopted over WebRTC for a client-server architecture. The rationale behind this decision lies in the inherent limitations of WebRTC, particularly in scenarios with a large number of users in a room.</p>
+
+<p>WebRTC relies on a mesh topology, where each user establishes connections with every other user in the room. However, as the user count surpasses 15 to 30, the P2P connections become inefficient, leading to increased latency. In contrast, the client-server model with WebSockets exhibits superior scalability, comfortably supporting over 100 users in a room without encountering performance issues.</p>
+
+<p><strong>Reducing user bandwidth</strong> <br />
+Optimising user bandwidth is achieved through a granular approach of selectively transmitting updates or modifications made to the document, as opposed to repetitively sending the entire document.</p>
+
+<p>In the collaborative environment, the CRDT algorithm is leveraging this approach, conflict resolution is executed solely based on the transmitted changes, eliminating the need to transmit the entire document each time and ensuring a more efficient and bandwidth-conscious collaborative experience.</p>
+
+<p>More detailed scaling information about YJS are specified in the references documentation.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>In this exploration, we dived into the intricacies of a Collaborative Code Editor and Whiteboard, aiming to transform the interview process. This enhances communication beyond the traditional bounds of video and audio chats.</p>
+
+<p>The challenges faced during development served as valuable lessons, fortifying my grasp of web development intricacies and inspiring innovative solutions. This journey was not without its hurdles, researching various repositories, digging one article after another, and experimenting with unknown codebases but with perseverance and effective problem-solving, I navigated these challenges, gaining valuable insights and skills in web development.</p>
+
+<p>Feel free to reach out if you’d like to learn more about this project—I’m here to help and answer any questions you might have.</p>
+
+              </div>
+              <div class="entry-tags">
+                <div class=' social-sharing pull-right'>        
+     
+</div>
+              </div>
+              <div class="clearfix"><br/></div>
+
+                <div class="panel panel-default">
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+      <div class="panel-body">
+        <div class="container-fluid">
+
+          <div class="row">
+            <div class="col-sm-12 col-md-4">
+              <center>
+                <img src="/blog/images/manav.jpg" alt="Manavkumar Patel photo" class="author-photo img-circle img-responsive"/>
+                
+                <span class="author vcard">
+                  <span class="fn">Manavkumar Patel</span>
+                </span>
+
+                <div class="nav-icon-size-reduce social-icons">
+                  
+                  
+                  
+                  
+
+                  
+                    <a href="https://linkedin.com/in/manavkumar-patel-69802b202" title="Manavkumar Patel on LinkedIn" target="_blank"><i class="fa fa-linkedin "></i></a>
+                  
+
+                  
+
+                  
+
+                  
+
+                  
+                    <a href="https://github.com/masterMav" title="Manavkumar Patel on Github" target="_blank"><i class="fa fa-github "></i></a>
+                  
+
+                     
+                </div><!-- /.social-icons -->
+              </center>
+            </div>
+
+            <div class="col-sm-12 col-md-8">
+              
+                <span class="author-bio">Manavkumar Patel is an intern at eLitmus. He is passionate about Algorithmic Problem-solving and web-development. In his free time he likes to study more about history and competitive programming.</span>
+              
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+  
+
+  
+
+  
+
+</div>
+                <div id='discourse-comments'></div>
+
+<script type="text/javascript">
+  DiscourseEmbed = { discourseUrl: 'https://adda.elitmus.com/',
+                     discourseEmbedUrl: 'https://www.elitmus.com/blog/technology/building-a-collaborative-code-editor-and-whiteboard-for-tech-interviews/'
+                   };
+
+  (function() {
+    var d = document.createElement('script'); 
+    d.type = 'text/javascript'; 
+    d.async = true;
+    d.src = DiscourseEmbed.discourseUrl + 'javascripts/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(d);
+  })();
+</script>
+
+
+                
+              </div><!-- /.entry-content -->
+            </div><!-- /.entry-wrapper -->
+
+          </article>
+
+          <nav class="navbar nav-justified" role="navigation">
+            <ul class="nav pager">
+              
+                <li class="previous showElem mr-auto"><a href="/blog/technology/puma-from-daemonization-to-process-control-with-systemctl-and-monit/" title="Puma: From Daemonization to Process Control with Systemctl and Monit">&larr;<span class="showPrevNex"> Previous </span> </a></li>
+              
+              
+                <li class="next showElem ml-auto"><a href="/blog/technology/how-to-setup-aws-cloudwatch-alarm-for-your-ses-reputation-metrics/" title="How to setup AWS Cloudwatch alarm for your SES reputation metrics"> <span class='showPrevNex'> Next </span> &rarr; </a></li>
+              
+            </ul>
+          </nav>
+        
+        </div><!-- /#main -->
+
+      <!--/col-md-2 -->
+      <div class="col-md-2">
+
+      </div>
+
+    </div><!-- /row -->
+    </div>
+    <div class="footer-color">
+      <footer role="contentinfo">
+        <center>
+            <span class='footer-text'>
+    &copy;  2005-<script> document.write(new Date().getFullYear()) </script>, eLitmus.com. | <a href="/terms_of_use/">Terms of Use</a> &middot; <a href="/privacy_policy/">Privacy Policy</a>
+
+  </span>
+        </center>
+      </footer>
+    </div><!-- /.footer-wrapper -->
+    
+
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-CB7H9KN61P"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+
+		gtag('config', 'G-CB7H9KN61P');
+	</script>
+
+
+
+<!-- Load Modernizr -->
+<script src="/blog/assets/js/vendor/modernizr-2.6.2.custom.min.js"></script>
+
+<!-- adding jquery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- end of jquery -->
+
+<script src="/blog/assets/js/scripts.min.js"></script>
+<script src="/blog/assets/js/lunr.min.js"></script>
+<script src="/blog/assets/js/lunr-search.js"></script>
+<script src="/blog/assets/js/plugins/headroom.min.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+<script src="/blog/assets/js/vendor/forkit.js"></script>
+
+<!-- Prism -->
+<script src="/blog/assets/js/prism.js"></script>
+  
+
+  </body>
+</html>

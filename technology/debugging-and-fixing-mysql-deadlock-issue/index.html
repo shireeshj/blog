@@ -13,10 +13,11 @@
 <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary">    
 <meta name="twitter:title" content="Debugging &amp; Fixing mysql deadlock issue">
-<meta name="twitter:description" content="<p>Recently, during one of our tests, we encountered a deadlock issue that was reported by Sentry. The deadlock occurred while attempting to insert scores into a table after completing a candidate’s test. We were initially unsure about the cause of this deadlock. Upon investigation, we discovered that it was due to the interplay of various locks in our MySQL database. In this blog post, we will deep dive into the nature of these locks, understand their impact on transactions, and present the solutions we implemented to mitigate deadlock occurrences.</p>
+<meta name="twitter:description" content="Recently, during one of our tests, we encountered a deadlock issue that was reported by Sentry. The deadlock occurred while attempting to insert scores into a table after completing a candidate’s test. We were initially unsure about the cause of this deadlock. Upon investigation, we discovered that it was due to the interplay of various locks in our MySQL database. In this blog post, we will deep dive into the nature of these locks, understand their impact on transactions, and present the solutions we implemented to mitigate deadlock occurrences.
 
 ">
 <meta name="twitter:site" content="@elitmus">
+<meta name="twitter:image" content="/blog/images/default_og.png">
 
     
 
@@ -60,20 +61,26 @@
 
     
 
+    
+
+    
+
 
 
 
 <!-- Open Graph -->
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="/blog/images/blog_logo_taglinedorange.png"/>
+<meta property="og:image" content="/blog/images/default_og.png"/>
+<meta property="og:image:width" content="1280"/>
+<meta property="og:image:height" content="720"/>
 <meta property="og:type" content="article">
 <meta property="og:title" content="Debugging &amp; Fixing mysql deadlock issue">
-<meta property="og:description" content="<p>Recently, during one of our tests, we encountered a deadlock issue that was reported by Sentry. The deadlock occurred while attempting to insert scores into a table after completing a candidate’s test. We were initially unsure about the cause of this deadlock. Upon investigation, we discovered that it was due to the interplay of various locks in our MySQL database. In this blog post, we will deep dive into the nature of these locks, understand their impact on transactions, and present the solutions we implemented to mitigate deadlock occurrences.</p>
+<meta property="og:description" content="Recently, during one of our tests, we encountered a deadlock issue that was reported by Sentry. The deadlock occurred while attempting to insert scores into a table after completing a candidate’s test. We were initially unsure about the cause of this deadlock. Upon investigation, we discovered that it was due to the interplay of various locks in our MySQL database. In this blog post, we will deep dive into the nature of these locks, understand their impact on transactions, and present the solutions we implemented to mitigate deadlock occurrences.
 
 ">
 <meta property="og:url" content="/blog/technology/debugging-and-fixing-mysql-deadlock-issue/">
-
 <meta property="og:site_name" content="eLitmus Blog">
+
 
 
 
@@ -282,12 +289,10 @@
 
     <div class="col-md-2"></div>
       <div class="col-md-8">
-        
-
-        <div id="main" role="main" class="marginal">
+        <div id="main" role="main" class="marginal ">
           <article class="entry">
 
-            
+          
 
             <div>
               <header>
@@ -567,6 +572,10 @@ end</code></pre></figure>
 
         </div>
       </div>
+
+  
+
+  
 
   
 
