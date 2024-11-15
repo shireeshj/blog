@@ -5,15 +5,15 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
 <head>
 <meta charset="utf-8">
-<title>Improving Drag in React JS: A Smoother Approach to Draggable Elements &#8211; eLitmus Blog</title>
+<title>Kamal App Deployment Tool &#8211; eLitmus Blog</title>
 <meta name="description" content="We learn new things everyday, and we document our learnings here...">
 
-<meta name="keywords" content="technology, javascript, ReactJS">
+<meta name="keywords" content="kamal, deployment, docker, rails, ruby">
 
 <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary">    
-<meta name="twitter:title" content="Improving Drag in React JS: A Smoother Approach to Draggable Elements">
-<meta name="twitter:description" content="When building interactive web components, such as a draggable element, you might run into the problem where the native draggable attribute leaves the original element in place while dragging a semi-transparent copy. This behavior can feel clunky and disrupts the user experience. In this blog, I’ll show you how to build a smooth draggable component where the element itself follows the mouse pointer, rather than a ghost image.
+<meta name="twitter:title" content="Kamal App Deployment Tool">
+<meta name="twitter:description" content="Kamal is a simple, dedicated orchestration tool built specifically for deploying containerized applications (mainly Rails). In this blog post, I will take a deep dive into the internal workings of Kamal, exploring its high-level architecture and key deployment phases.
 
 ">
 <meta name="twitter:site" content="@elitmus">
@@ -58,8 +58,6 @@
     
 
     
-        
-    
 
     
 
@@ -72,11 +70,11 @@
 <meta property="og:image:width" content="1280"/>
 <meta property="og:image:height" content="720"/>
 <meta property="og:type" content="article">
-<meta property="og:title" content="Improving Drag in React JS: A Smoother Approach to Draggable Elements">
-<meta property="og:description" content="When building interactive web components, such as a draggable element, you might run into the problem where the native draggable attribute leaves the original element in place while dragging a semi-transparent copy. This behavior can feel clunky and disrupts the user experience. In this blog, I’ll show you how to build a smooth draggable component where the element itself follows the mouse pointer, rather than a ghost image.
+<meta property="og:title" content="Kamal App Deployment Tool">
+<meta property="og:description" content="Kamal is a simple, dedicated orchestration tool built specifically for deploying containerized applications (mainly Rails). In this blog post, I will take a deep dive into the internal workings of Kamal, exploring its high-level architecture and key deployment phases.
 
 ">
-<meta property="og:url" content="/blog/technology/improving-drag-in-reactjs-a-smoother-approach-to-draggable-elements/">
+<meta property="og:url" content="/blog/technology/kamal-app-deployment-tool-internals/">
 <meta property="og:site_name" content="eLitmus Blog">
 
 
@@ -86,7 +84,7 @@
 
 
 
-<link rel="canonical" href="https://www.elitmus.com/blog/technology/improving-drag-in-reactjs-a-smoother-approach-to-draggable-elements/">
+<link rel="canonical" href="https://www.elitmus.com/blog/technology/kamal-app-deployment-tool-internals/">
 <link href="/blog/feed.xml" type="application/atom+xml" rel="alternate" title="eLitmus Blog Feed">
 
 
@@ -296,13 +294,19 @@
               <header>
                 <span class="entry-tags">
                   
-                    <a href="/blog/tags/#technology" title="Pages tagged technology">technology</a>
+                    <a href="/blog/tags/#kamal" title="Pages tagged kamal">kamal</a>
                     &nbsp;&bull;&nbsp;
                   
-                    <a href="/blog/tags/#javascript" title="Pages tagged javascript">javascript</a>
+                    <a href="/blog/tags/#deployment" title="Pages tagged deployment">deployment</a>
                     &nbsp;&bull;&nbsp;
                   
-                    <a href="/blog/tags/#ReactJS" title="Pages tagged ReactJS">ReactJS</a>
+                    <a href="/blog/tags/#docker" title="Pages tagged docker">docker</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#rails" title="Pages tagged rails">rails</a>
+                    &nbsp;&bull;&nbsp;
+                  
+                    <a href="/blog/tags/#ruby" title="Pages tagged ruby">ruby</a>
                     
                   
 
@@ -313,7 +317,7 @@
                 </span>
               
                 
-                  <h1 class="no-padding">Improving Drag in React JS: A Smoother Approach to Draggable Elements</h1>
+                  <h1 class="no-padding">Kamal App Deployment Tool</h1>
                 
               </header>
             </div>
@@ -326,175 +330,183 @@
               
 
               <div class="post-content-justify">
-                <p>When building interactive web components, such as a <code>draggable</code> element, you might run into the problem where the native draggable attribute leaves the original element in place while dragging a semi-transparent copy. This behavior can feel clunky and disrupts the user experience. In this blog, I’ll show you how to build a smooth draggable component where the element itself follows the mouse pointer, rather than a ghost image.</p>
+                <p>Kamal is a simple, dedicated orchestration tool built specifically for deploying containerized applications (mainly Rails). In this blog post, I will take a deep dive into the internal workings of Kamal, exploring its high-level architecture and key deployment phases.</p>
+
+<h4 id="high-level-architecture-of-kamal"><strong>High Level Architecture of Kamal</strong></h4>
+<p>We can divide Kamal deployment in 3 parts</p>
+<ol>
+  <li>Build</li>
+  <li>Push Image to container registry</li>
+  <li>Deploy</li>
+</ol>
 
 <div style=" text-align: center; margin: 20px;">
-  <img src="/blog/images/draggable-element/draggable.gif" />
+  <img src="/blog/images/kamal-deploy/High-level-arch.png" />
 </div>
 
-<p>By default, when you set an HTML element to <code>draggable="true"</code>, the browser shows a semi-transparent copy of the element that moves with your mouse. While this behavior is native and functional, it often doesn’t look great. You want to make sure that the original element moves smoothly with the cursor without showing the browser’s default ghost image.</p>
+<h5 id="build-phase"><strong>Build Phase</strong></h5>
+<p>The build process can occur either locally or on a remote server. Its primary purpose is to create images compatible with both amd64 and arm64 architectures. Kamal employs a straightforward Docker-in-Docker strategy for cross-platform builds, making it seamless to create images that work across different architectures.</p>
 
-<p><strong>Solution</strong></p>
+<h5 id="container-registry"><strong>Container Registry</strong></h5>
+<p>When using <code>kamal build</code> command, the tool automatically pushes the newly built image to your container registry. If you’re handling the build process separately, you’ll need to manage the registry push manually. Kamal supports most major container registries out of the box (e.g. Docker hub / AWS ECR).</p>
 
-<p>The solution is to create an overlay element that follows the mouse pointer while hiding the original element during dragging. This approach improves the user experience and creates a smoother drag-and-drop interaction.</p>
-
-<p><strong>Step-by-Step Guide</strong></p>
+<h5 id="deploy-phase-the-core-magic"><strong>Deploy Phase: The Core Magic</strong></h5>
+<p>This is the core of Kamal’s deployment process, which goes beyond just pulling the image and starting a container. Here’s a step by step breakdown of what Kamal does under the hood during deployment:</p>
 
 <ul>
-  <li>
-    <p><strong>Setup Initial State</strong></p>
+  <li>SSH into servers &amp; start by removing any outdated image with the same tag on each server, ensuring the environment is clean.</li>
+  <li>Then, it pulls the latest version of the Docker image from the registry</li>
+  <li>Kamal integrates with Kamal-proxy (or similar proxies) to manage network routing. It checks if the kamal-proxy is active, which is essential for rerouting traffic to the new container when it’s ready.</li>
+  <li>Kamal Now, first replaces the old container name to <code>_replaced</code> than start this new primary container &amp; will wait for healthcheck to be passed to consider it as healthy.</li>
+  <li>Once the above step completed Kamal starts the secondary containers.</li>
+  <li>After confirming that the new containers are stable, Kamal prunes old containers and images, freeing up disk space and reducing clutter on servers. This cleanup ensures efficient resource use over time.</li>
+</ul>
 
-    <p>We are going to need some state to handle the Drag &amp; Drop.</p>
+<div style=" text-align: center; margin: 20px;">
+  <img src="/blog/images/kamal-deploy/deploy.png" />
+</div>
+
+<h4 id="practical-uses"><strong>Practical Uses</strong></h4>
+<p>Kamal can be used in multiple ways -</p>
+
+<ul>
+  <li>As a cross platform image builder.</li>
+  <li>For deploying pre-built containerized applications (Build step can be taken care by someone else).
+    <ul>
+      <li>Deploy step can be done for any containerized application.</li>
+      <li>Platform specific deployment to multiple nodes in parallel.</li>
+    </ul>
+  </li>
+  <li>As an end-to-end solution handling both build and deploy phases.</li>
+</ul>
+
+<h4 id="prerequisites-to-use-kamal"><strong>Prerequisites to use Kamal</strong></h4>
+<ul>
+  <li>Ruby Environment.</li>
+  <li>A containerized application.</li>
+  <li>Access to container registry.</li>
+  <li>Server Infrastructure (Bare Metal / EC2 / Google Cloud )
+    <ul>
+      <li>SSH Keys Setup so that kamal can access the servers during deploy.</li>
+    </ul>
   </li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">const [isDragging, setIsDragging] = useState(false);
-    const [offset, setOffset] = useState(null);
-    const [position, setPosition] = useState(null);
-    const draggableRef = useRef(null);</code></pre></figure>
-
-<p><code>isDragging</code>: This will store the current drag state of the element.</p>
-
-<p><code>offset</code>: When the user starts dragging, they can click anywhere within the draggable element. This stores the coordinate distance between the element’s origin point and the clicked position.</p>
-
-<p><code>position</code>: This will store the current cursor position.</p>
-
-<p><code>draggableRef</code>: We’ll use this to retrieve the origin position of the draggable element.</p>
-
+<h4 id="steps"><strong>Steps</strong></h4>
 <ul>
-  <li>
-    <p><strong>Create the Draggable Element</strong></p>
-
-    <p>First, let’s set up a simple HTML element to drag:</p>
+  <li>Install latest ruby</li>
+  <li>Initialize kamal
+    <ul>
+      <li>Install kamal gem. <code>gem install kamal</code></li>
+      <li>In app directory run <code>kamal init</code> (This can be run outside of project directory if build is not part of the deployment)</li>
+    </ul>
   </li>
+  <li>Configure deployment settings in <code>config/deploy.yml</code></li>
+  <li>For multiple environments, create specific config files(e.g. staging / UAT / production)
+config/deploy.staging.yml<code>
+config/deploy.production.yml</code></li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">return (
-      &lt;div className=&quot;App&quot;&gt;
-        {
-          isDragging &amp;&amp; position &amp;&amp; (
-            &lt;div
-              className=&quot;draggable-item draggable-overlay&quot;
-              style={ `top: ${position.y}px; left: ${position.x}px`}
-            &gt;
-              Drag Me!
-            &lt;/div&gt;
-          )
-        }
-        &lt;div
-          ref={draggableRef}
-          onMouseDown={handleMouseDown}
-          className=&quot;draggable-item&quot;
-          style={`opacity: ${isDragging ? 0 : 1};`}
-        &gt;
-          Drag Me!
-        &lt;/div&gt;
-      &lt;/div&gt;
-    );</code></pre></figure>
-
+<h5 id="build-configuration"><strong>Build Configuration</strong></h5>
+<p>Kamal offers flexible options for managing the build process.</p>
 <ul>
-  <li>
-    <p><strong>Handle Drag Start: Hide the Original and Create an Overlay</strong></p>
-
-    <p>We are not going to use native <code>drag</code> events. Instead we will be using <code>onMouseDown</code> event as it will give us more flexibility.</p>
-  </li>
+  <li>Within same project folder using <code>config/deploy.yml</code></li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">const getInitialPosition = () =&gt; {
-      const draggableElement = draggableRef?.current?.getBoundingClientRect();
-      return {
-        x: (draggableElement?.x || 0) + window.scrollX, // It will handle edge case when there is scroll in the page.
-        y: (draggableElement?.y || 0) + window.scrollY,
-      };
-    };
-
-    const handleMouseDown = (event) =&gt; {
-      setIsDragging(true);
-      const initialPosition = getInitialPosition();
-      setOffset({
-        x: event.clientX - initialPosition.x,
-        y: event.clientY - initialPosition.y,
-      });
-      setPosition(initialPosition);
-      document.addEventListener(&#39;mouseup&#39;, handleMouseUp);
-    };
-
-    useEffect(() =&gt; {
-    if (offset) {
-      document.addEventListener(&#39;mousemove&#39;, handleMouseMove);
-    } else {
-      document.removeEventListener(&#39;mousemove&#39;, handleMouseMove);
-    }
-
-    return () =&gt; {
-      document.removeEventListener(&#39;mousemove&#39;, handleMouseMove);
-    };
-  }, [offset]);</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">builder:
+  arch: amd64</code></pre></figure>
 
 <ul>
-  <li>
-    <p><strong>Move the Overlay with the Mouse</strong></p>
-
-    <p>In last step we had added an <code>eventListener</code> on <code>mousemove</code> event. Now, let’s make sure that on mouse move the overlay follows it.</p>
-  </li>
+  <li>Specify external project locations, if <code>config/deploy.yml</code> is in different folder:</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">const handleMouseMove = (event) =&gt; {
-      if (!isDragging) return;
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">builder:
+    arch: amd64
+    context: &#39;path_to_project_base&#39; 
+    dockerfile: &#39;path_to_dockerfile&#39;
+    args:
+      COMMIT_SHA: 1.0.0 # default it picks up the latest commit hash.</code></pre></figure>
 
-      if (event.clientX &gt; 0 &amp;&amp; event.clientY &gt; 0) {
-        setPosition({
-          x: event.clientX - (offset?.x || 0),
-          y: event.clientY - (offset?.y || 0),
-        });
-      }
-    };</code></pre></figure>
+<h6 id="image-tagging"><strong>Image Tagging</strong></h6>
+<p>By default, Kamal uses Git commit hashes for image tagging. This provides automatic versioning based on your Git history. However, you can customize this behavior if you want to create your own tags:</p>
 
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">builder:
+  # Other configurations...
+  args:
+    # Override default git hash-based tag
+    COMMIT_SHA: 1.0.0</code></pre></figure>
+
+<p>Once configuration are set use <code>kamal build</code> to finish up the build process.</p>
+
+<p>To deploy a specific version we need to pass <code>VERSION</code> during deploy</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">VERSION=1.0.0 kamal deploy -P</code></pre></figure>
+
+<h5 id="deploy-configurations"><strong>Deploy configurations</strong></h5>
+<p>Kamal gives us following commands to deploy application -</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">kamal setup    # First-time setup and deployment
+kamal deploy   # Standard deployment
+kamal redeploy # Just Deploy without bootstrapping servers / proxy containers</code></pre></figure>
+
+<p><strong>Pro Tip</strong>: Add <code>-P</code> or <code>--skip-push</code> to any command to skip the build and push phases. This is particularly useful when you’re using a separate CI/CD pipeline for building images:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">kamal deploy -P  # Deploy without image build &amp; push step</code></pre></figure>
+
+<h5 id="managing-database-migrations"><strong>Managing Database Migrations</strong></h5>
+<p>We can use following approaches to run the migrations so that migrations runs only in primary server.</p>
+
+<h6 id="using-hooks"><strong>Using Hooks</strong></h6>
+<p>Hooks are Kamal’s way of executing commands at specific points in the deployment process. Here’s the complete hooks list.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">docker-setup
+pre-connect
+pre-build
+pre-deploy
+post-deploy
+pre-proxy-reboot
+post-proxy-reboot</code></pre></figure>
+
+<p>For migrations, the <code>pre_deploy</code> hook can be used, insert the below code in <code>hooks/pre-delploy</code> file:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">VERSION=$KAMAL_VERSION kamal app exec -p &quot;./bin/rails db:prepare&quot;</code></pre></figure>
+
+<h6 id="server-tags-for-migration-control"><strong>Server Tags for Migration Control</strong></h6>
+<p>To run migrations using server tags we can do following steps</p>
+
+<ol>
+  <li>Add a tag to the server</li>
+  <li>Create Env variable for that tag</li>
+  <li>Use that ENV variable in docker-entrypoint</li>
+</ol>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">config.yml
+servers:
+  - 172.0.0.1: db
+  - 172.0.0.2
+  - 172.0.0.3
+  
+env:
+  clear:
+    MYSQL_USER: app
+  secret:
+    - MYSQL_PASSWORD
+  tags:
+    db:
+      MIGRATION: 1</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">if [ &quot;$RUN_MIGRATIONS&quot; = &quot;1&quot; ]; then
+  echo &quot;Running database migrations...&quot;
+  bundle exec rails db:migrate
+fi</code></pre></figure>
+
+<p>For Detailed discussion on Database migration visit <a href="https://github.com/basecamp/kamal/discussions/526" target="_blank" style="color: blue;">Github Discussion</a></p>
+
+<h4 id="references"><strong>References</strong></h4>
 <ul>
-  <li>
-    <p><strong>Clean Up on Drag End</strong></p>
-
-    <p>Once the dragging is finished, we need to remove the overlay and make the original element visible again. Also we need to remove the <code>mousemove</code> event listener.</p>
-  </li>
+  <li><a href="https://github.com/basecamp/kamal" target="_blank" style="color: blue;">Kamal github</a></li>
+  <li><a href="https://kamal-deploy.org" target="_blank" style="color: blue;">Kamal Docs</a></li>
 </ul>
-
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">const handleMouseUp = () =&gt; {
-      setIsDragging(false);
-      setPosition(null);
-      setOffset(null);
-
-      document.removeEventListener(&#39;mouseup&#39;, handleMouseUp);
-    };</code></pre></figure>
-
-<ul>
-  <li>
-    <p><strong>Styling the Draggable &amp; Overlay</strong></p>
-
-    <p>Finally, you can style the overlay so that it looks like the original element. This CSS will ensure that the overlay matches the original element’s appearance.</p>
-  </li>
-</ul>
-
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">.draggable-item {
-      border: 2px solid #707070;
-      padding: 7px 14px;
-      border-radius: 8px;
-      width: fit-content;
-      cursor: grab;
-      user-select: none;
-      background-color: coral;
-    }
-
-    .draggable-overlay {
-      position: absolute;
-      cursor: grabbing;
-      box-shadow: 0px 20px 25px -5px #0000001a;
-    }</code></pre></figure>
-
-<p><strong>Conclusion</strong></p>
-
-<p>By using an overlay element to follow the mouse and hiding the original element, you can avoid the default ghost image that the browser shows when dragging. This method provides a smoother and more visually pleasing drag-and-drop experience.</p>
-
-<p>Feel free to experiment with this solution in your projects, and let me know if you find any other creative ways to enhance the draggable experience!</p>
 
               </div>
               <div class="entry-tags">
@@ -545,58 +557,6 @@
   
 
   
-    
-      <div class="panel-body">
-        <div class="container-fluid">
-
-          <div class="row">
-            <div class="col-sm-12 col-md-4">
-              <center>
-                <img src="/blog/images/vikastiwari14.jpg" alt="Vikas Tiwari photo" class="author-photo img-circle img-responsive"/>
-                
-                <span class="author vcard">
-                  <span class="fn">Vikas Tiwari</span>
-                </span>
-
-                <div class="nav-icon-size-reduce social-icons">
-                  
-                  
-                  
-                  
-
-                  
-                    <a href="https://linkedin.com/in/vikastiwari14" title="Vikas Tiwari on LinkedIn" target="_blank"><i class="fa fa-linkedin "></i></a>
-                  
-
-                  
-
-                  
-                    <a href="https://instagram.com/vikastiwari14_" title="Vikas Tiwari on Instagram" target="_blank"><i class="fa fa-instagram "></i></a>
-                  
-
-                  
-
-                  
-                    <a href="https://github.com/VikasTiwari14" title="Vikas Tiwari on Github" target="_blank"><i class="fa fa-github "></i></a>
-                  
-
-                     
-                </div><!-- /.social-icons -->
-              </center>
-            </div>
-
-            <div class="col-sm-12 col-md-8">
-              
-                <span class="author-bio">Vikas Tiwari is a member of technology at eLitmus who loves taking on new challenges. Beyond the tech world, he's a fitness enthusiast and love to explore new places.</span>
-              
-            </div>
-
-          </div>
-
-        </div>
-      </div>
-
-  
 
   
 
@@ -605,7 +565,7 @@
 
 <script type="text/javascript">
   DiscourseEmbed = { discourseUrl: 'https://adda.elitmus.com/',
-                     discourseEmbedUrl: 'https://www.elitmus.com/blog/technology/improving-drag-in-reactjs-a-smoother-approach-to-draggable-elements/'
+                     discourseEmbedUrl: 'https://www.elitmus.com/blog/technology/kamal-app-deployment-tool-internals/'
                    };
 
   (function() {
@@ -627,10 +587,8 @@
           <nav class="navbar nav-justified" role="navigation">
             <ul class="nav pager">
               
-                <li class="previous showElem mr-auto"><a href="/blog/book-review/book-review-never-let-me-go-kazuo-ishiguro/" title="Book review: Never let me go - Kazuo Ishiguro">&larr;<span class="showPrevNex"> Previous </span> </a></li>
+                <li class="previous showElem mr-auto"><a href="/blog/technology/improving-drag-in-reactjs-a-smoother-approach-to-draggable-elements/" title="Improving Drag in React JS: A Smoother Approach to Draggable Elements">&larr;<span class="showPrevNex"> Previous </span> </a></li>
               
-              
-                <li class="next showElem ml-auto"><a href="/blog/technology/kamal-app-deployment-tool-internals/" title="Kamal App Deployment Tool"> <span class='showPrevNex'> Next </span> &rarr; </a></li>
               
             </ul>
           </nav>

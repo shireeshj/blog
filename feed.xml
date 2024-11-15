@@ -7,13 +7,211 @@
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="/feed.xml" />
 <link rel="alternate" type="text/html" href="/" />
-<updated>2024-10-18T15:45:05+05:30</updated>
+<updated>2024-11-15T20:26:15+05:30</updated>
 <id>/</id>
 <author>
   <name>eLitmus.com</name>
   <uri>/</uri>
   <email>site-admin@elitmus.com</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[Kamal App Deployment Tool]]></title>
+  <link rel="alternate" type="text/html" href="/technology/kamal-app-deployment-tool-internals/"/>
+  <id>/technology/kamal-app-deployment-tool-internals</id>
+  <updated>2024-11-14 10:48:20 +0530T00:00:00-00:00</updated>
+  <published>2024-11-14T00:00:00+05:30</published>
+  
+  <author>
+    <name>eLitmus.com</name>
+    <uri></uri>
+    <email>site-admin@elitmus.com</email>
+  </author>
+  <category scheme="/tags/#kamal" term="kamal" /><category scheme="/tags/#deployment" term="deployment" /><category scheme="/tags/#docker" term="docker" /><category scheme="/tags/#rails" term="rails" /><category scheme="/tags/#ruby" term="ruby" />
+  <content type="html">
+  
+    &lt;p&gt;Kamal is a simple, dedicated orchestration tool built specifically for deploying containerized applications (mainly Rails). In this blog post, I will take a deep dive into the internal workings of Kamal, exploring its high-level architecture and key deployment phases.&lt;/p&gt;
+
+&lt;h4 id=&quot;high-level-architecture-of-kamal&quot;&gt;&lt;strong&gt;High Level Architecture of Kamal&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;We can divide Kamal deployment in 3 parts&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Build&lt;/li&gt;
+  &lt;li&gt;Push Image to container registry&lt;/li&gt;
+  &lt;li&gt;Deploy&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div style=&quot; text-align: center; margin: 20px;&quot;&gt;
+  &lt;img src=&quot;/blog/images/kamal-deploy/High-level-arch.png&quot; /&gt;
+&lt;/div&gt;
+
+&lt;h5 id=&quot;build-phase&quot;&gt;&lt;strong&gt;Build Phase&lt;/strong&gt;&lt;/h5&gt;
+&lt;p&gt;The build process can occur either locally or on a remote server. Its primary purpose is to create images compatible with both amd64 and arm64 architectures. Kamal employs a straightforward Docker-in-Docker strategy for cross-platform builds, making it seamless to create images that work across different architectures.&lt;/p&gt;
+
+&lt;h5 id=&quot;container-registry&quot;&gt;&lt;strong&gt;Container Registry&lt;/strong&gt;&lt;/h5&gt;
+&lt;p&gt;When using &lt;code&gt;kamal build&lt;/code&gt; command, the tool automatically pushes the newly built image to your container registry. If you’re handling the build process separately, you’ll need to manage the registry push manually. Kamal supports most major container registries out of the box (e.g. Docker hub / AWS ECR).&lt;/p&gt;
+
+&lt;h5 id=&quot;deploy-phase-the-core-magic&quot;&gt;&lt;strong&gt;Deploy Phase: The Core Magic&lt;/strong&gt;&lt;/h5&gt;
+&lt;p&gt;This is the core of Kamal’s deployment process, which goes beyond just pulling the image and starting a container. Here’s a step by step breakdown of what Kamal does under the hood during deployment:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;SSH into servers &amp;amp; start by removing any outdated image with the same tag on each server, ensuring the environment is clean.&lt;/li&gt;
+  &lt;li&gt;Then, it pulls the latest version of the Docker image from the registry&lt;/li&gt;
+  &lt;li&gt;Kamal integrates with Kamal-proxy (or similar proxies) to manage network routing. It checks if the kamal-proxy is active, which is essential for rerouting traffic to the new container when it’s ready.&lt;/li&gt;
+  &lt;li&gt;Kamal Now, first replaces the old container name to &lt;code&gt;_replaced&lt;/code&gt; than start this new primary container &amp;amp; will wait for healthcheck to be passed to consider it as healthy.&lt;/li&gt;
+  &lt;li&gt;Once the above step completed Kamal starts the secondary containers.&lt;/li&gt;
+  &lt;li&gt;After confirming that the new containers are stable, Kamal prunes old containers and images, freeing up disk space and reducing clutter on servers. This cleanup ensures efficient resource use over time.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div style=&quot; text-align: center; margin: 20px;&quot;&gt;
+  &lt;img src=&quot;/blog/images/kamal-deploy/deploy.png&quot; /&gt;
+&lt;/div&gt;
+
+&lt;h4 id=&quot;practical-uses&quot;&gt;&lt;strong&gt;Practical Uses&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;Kamal can be used in multiple ways -&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;As a cross platform image builder.&lt;/li&gt;
+  &lt;li&gt;For deploying pre-built containerized applications (Build step can be taken care by someone else).
+    &lt;ul&gt;
+      &lt;li&gt;Deploy step can be done for any containerized application.&lt;/li&gt;
+      &lt;li&gt;Platform specific deployment to multiple nodes in parallel.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;As an end-to-end solution handling both build and deploy phases.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;prerequisites-to-use-kamal&quot;&gt;&lt;strong&gt;Prerequisites to use Kamal&lt;/strong&gt;&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;Ruby Environment.&lt;/li&gt;
+  &lt;li&gt;A containerized application.&lt;/li&gt;
+  &lt;li&gt;Access to container registry.&lt;/li&gt;
+  &lt;li&gt;Server Infrastructure (Bare Metal / EC2 / Google Cloud )
+    &lt;ul&gt;
+      &lt;li&gt;SSH Keys Setup so that kamal can access the servers during deploy.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;steps&quot;&gt;&lt;strong&gt;Steps&lt;/strong&gt;&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;Install latest ruby&lt;/li&gt;
+  &lt;li&gt;Initialize kamal
+    &lt;ul&gt;
+      &lt;li&gt;Install kamal gem. &lt;code&gt;gem install kamal&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;In app directory run &lt;code&gt;kamal init&lt;/code&gt; (This can be run outside of project directory if build is not part of the deployment)&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Configure deployment settings in &lt;code&gt;config/deploy.yml&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;For multiple environments, create specific config files(e.g. staging / UAT / production)
+config/deploy.staging.yml&lt;code&gt;
+config/deploy.production.yml&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h5 id=&quot;build-configuration&quot;&gt;&lt;strong&gt;Build Configuration&lt;/strong&gt;&lt;/h5&gt;
+&lt;p&gt;Kamal offers flexible options for managing the build process.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;Within same project folder using &lt;code&gt;config/deploy.yml&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;builder:
+  arch: amd64&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Specify external project locations, if &lt;code&gt;config/deploy.yml&lt;/code&gt; is in different folder:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;builder:
+    arch: amd64
+    context: &amp;#39;path_to_project_base&amp;#39; 
+    dockerfile: &amp;#39;path_to_dockerfile&amp;#39;
+    args:
+      COMMIT_SHA: 1.0.0 # default it picks up the latest commit hash.&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h6 id=&quot;image-tagging&quot;&gt;&lt;strong&gt;Image Tagging&lt;/strong&gt;&lt;/h6&gt;
+&lt;p&gt;By default, Kamal uses Git commit hashes for image tagging. This provides automatic versioning based on your Git history. However, you can customize this behavior if you want to create your own tags:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;builder:
+  # Other configurations...
+  args:
+    # Override default git hash-based tag
+    COMMIT_SHA: 1.0.0&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Once configuration are set use &lt;code&gt;kamal build&lt;/code&gt; to finish up the build process.&lt;/p&gt;
+
+&lt;p&gt;To deploy a specific version we need to pass &lt;code&gt;VERSION&lt;/code&gt; during deploy&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;VERSION=1.0.0 kamal deploy -P&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h5 id=&quot;deploy-configurations&quot;&gt;&lt;strong&gt;Deploy configurations&lt;/strong&gt;&lt;/h5&gt;
+&lt;p&gt;Kamal gives us following commands to deploy application -&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;kamal setup    # First-time setup and deployment
+kamal deploy   # Standard deployment
+kamal redeploy # Just Deploy without bootstrapping servers / proxy containers&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;strong&gt;Pro Tip&lt;/strong&gt;: Add &lt;code&gt;-P&lt;/code&gt; or &lt;code&gt;--skip-push&lt;/code&gt; to any command to skip the build and push phases. This is particularly useful when you’re using a separate CI/CD pipeline for building images:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;kamal deploy -P  # Deploy without image build &amp;amp; push step&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h5 id=&quot;managing-database-migrations&quot;&gt;&lt;strong&gt;Managing Database Migrations&lt;/strong&gt;&lt;/h5&gt;
+&lt;p&gt;We can use following approaches to run the migrations so that migrations runs only in primary server.&lt;/p&gt;
+
+&lt;h6 id=&quot;using-hooks&quot;&gt;&lt;strong&gt;Using Hooks&lt;/strong&gt;&lt;/h6&gt;
+&lt;p&gt;Hooks are Kamal’s way of executing commands at specific points in the deployment process. Here’s the complete hooks list.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;docker-setup
+pre-connect
+pre-build
+pre-deploy
+post-deploy
+pre-proxy-reboot
+post-proxy-reboot&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;For migrations, the &lt;code&gt;pre_deploy&lt;/code&gt; hook can be used, insert the below code in &lt;code&gt;hooks/pre-delploy&lt;/code&gt; file:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;VERSION=$KAMAL_VERSION kamal app exec -p &amp;quot;./bin/rails db:prepare&amp;quot;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;h6 id=&quot;server-tags-for-migration-control&quot;&gt;&lt;strong&gt;Server Tags for Migration Control&lt;/strong&gt;&lt;/h6&gt;
+&lt;p&gt;To run migrations using server tags we can do following steps&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Add a tag to the server&lt;/li&gt;
+  &lt;li&gt;Create Env variable for that tag&lt;/li&gt;
+  &lt;li&gt;Use that ENV variable in docker-entrypoint&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;config.yml
+servers:
+  - 172.0.0.1: db
+  - 172.0.0.2
+  - 172.0.0.3
+  
+env:
+  clear:
+    MYSQL_USER: app
+  secret:
+    - MYSQL_PASSWORD
+  tags:
+    db:
+      MIGRATION: 1&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;if [ &amp;quot;$RUN_MIGRATIONS&amp;quot; = &amp;quot;1&amp;quot; ]; then
+  echo &amp;quot;Running database migrations...&amp;quot;
+  bundle exec rails db:migrate
+fi&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;For Detailed discussion on Database migration visit &lt;a href=&quot;https://github.com/basecamp/kamal/discussions/526&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Github Discussion&lt;/a&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;references&quot;&gt;&lt;strong&gt;References&lt;/strong&gt;&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/basecamp/kamal&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Kamal github&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://kamal-deploy.org&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Kamal Docs&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+  
+  &lt;p&gt;&lt;a href=&quot;/technology/kamal-app-deployment-tool-internals/&quot;&gt;Kamal App Deployment Tool&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on November 14, 2024.&lt;/p&gt;</content>
+</entry>
 
 
 <entry>
@@ -4989,52 +5187,6 @@ We can check if sidekiq is up and running:
 
   
   &lt;p&gt;&lt;a href=&quot;/technology/sidekiq-process-in-production-with-systemd-and-monit/&quot;&gt;Sidekiq process in production with Systemd and Monit&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on June 29, 2022.&lt;/p&gt;</content>
-</entry>
-
-
-<entry>
-  <title type="html"><![CDATA[Outliers: The story of Success - Book Review]]></title>
-  <link rel="alternate" type="text/html" href="/the-other-side/outliers-the-story-of-success-book-review/"/>
-  <id>/the-other-side/outliers-the-story-of-success-book-review</id>
-  <updated>2022-05-02 17:59:16 +0530T00:00:00-00:00</updated>
-  <published>2022-05-02T00:00:00+05:30</published>
-  
-  <author>
-    <name>eLitmus.com</name>
-    <uri></uri>
-    <email>site-admin@elitmus.com</email>
-  </author>
-  <category scheme="/tags/#Book%20Review" term="Book Review" /><category scheme="/tags/#Books" term="Books" /><category scheme="/tags/#Success" term="Success" /><category scheme="/tags/#Outliers" term="Outliers" />
-  <content type="html">
-  
-    &lt;p&gt;For the last two months, I have been reading the book “&lt;strong&gt;Outliers&lt;/strong&gt;” by &lt;strong&gt;Malcolm Gladwell&lt;/strong&gt;. “&lt;strong&gt;Outliers - The story of success&lt;/strong&gt;” has two parts: &lt;strong&gt;Opportunity&lt;/strong&gt; and &lt;strong&gt;Legacy&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;p&gt;“In outliers author survey the ingredients for the success. He wrote about the reason behind the success of great people like Bill Gates, Bill Joy, Joseph Flom, and the musical group Beatles. And how Chris Langan and Oppenheimer ended up with different stories. And how the culture, family, and friends play a role in determining individual success.”&lt;/p&gt;
-
-&lt;p&gt;&lt;ins&gt;&lt;strong&gt;Key Factor of Success:&lt;/strong&gt;&lt;/ins&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;1. Opportunity&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;We all have equal opportunities. Some people recognize and take advantage of them. But as per the author, In reality, these people are benefited from hidden and extraordinary opportunities. Culture benefits, the where and in which family and the time we grew up. Values received from our ancestors.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;2. Environment affect&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;The values of the world we live in and the people around us, have a profound effect on who we are. The place we live and the people we spend time with are critical factors to success. The author explains the Roseto Mystery. Why do the people of Roseto have good health and rare heart attacks? How community benefits play a dominant role in Roseto Mystery.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;3. Hard work&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;It takes 10000 hours to master anything from beginner to world-class expert in any field. “10000” hours is a lot, so it’s a good advantage for me to start at a young age.&lt;/p&gt;
-
-&lt;p&gt;The author explains how Bill Joy from age of 16 started with computers. And from that day in university, when introduced to the computer, the place became his life, and he programmed whenever he gets time. He wrote the UNIX and the program for TCP/IP, which allows us to connect to the Internet. In his early days he devoted his 10,000 hours with passion and abilities.&lt;/p&gt;
-
-&lt;p&gt;How Beatles were invited to play in a club where they had to play for a lot of hours, even the whole night. By the time the Beatles reached success, they played almost 12000 times and for more than 10,000 hours.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;4. Legacy often drives our behavior&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Gladwell points out how values passed from generation to generation. He points out the cultural legacy of Asian countries where rice is the dominant crop. How the success of rice paddy depends on the amount of hard work and diligence; we put in. To have a successful paddy, wake up at dawn and work all day. Which then creates a cultural legacy of hard work.&lt;/p&gt;
-
-  
-  &lt;p&gt;&lt;a href=&quot;/the-other-side/outliers-the-story-of-success-book-review/&quot;&gt;Outliers: The story of Success - Book Review&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on May 02, 2022.&lt;/p&gt;</content>
 </entry>
 
 </feed>
