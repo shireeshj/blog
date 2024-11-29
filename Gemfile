@@ -30,3 +30,8 @@ gem 'pygments.rb'
 # gem 'iconv'
 
 gem "webrick", "~> 1.8"
+
+
+
+
+gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]

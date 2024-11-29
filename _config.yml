@@ -8,7 +8,7 @@ search:           true
 # You don't need to specify the protocol if you want it available on http and https. Example: //localhost:4000
 # url:              //shireeshj.github.io
 url:              ""
-baseurl:          /blog
+baseurl:          "/blog"
 url_for_sitemaps: https://www.elitmus.com
 canonical_domain: https://www.elitmus.com
 # Owner/author information

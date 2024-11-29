@@ -1,5 +1,3 @@
----
----
 
 function urlToTitle(refer) {
   refer = refer.substring(1, refer.length - 1);
