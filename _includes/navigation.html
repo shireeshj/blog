@@ -1,8 +1,9 @@
+<link rel="stylesheet" href="{{site.baseurl}}/assets/css/style.css">
 <header class="headroom">
   <nav class="navbar navbar-expand-md navbar-dark bg-black fixed-top">
     <!-- Brand Logo -->
     <a class="navbar-brand d-flex align-items-center" href="{{ site.baseurl }}/">
-      <img src="{{site.baseurl}}/images/elitmus-only-logo.svg" class="img-logo" alt="elitmus logo" style="height: 40px;">
+      <img src="{{ site.baseurl }}/images/elitmus-only-logo.svg" class="img-logo" alt="elitmus logo" style="height: 40px;">
       <span class="ml-2 blog-label" style="font-size: 14px; font-weight: 600;">Blog</span>
     </a>
 
@@ -21,7 +22,7 @@
       <div
         id="searchDropdown"
         class="dropdown-menu show"
-        style="width: 300px; display: none; position: absolute; top: 100%; left: 0; z-index: 1050;"
+        style="width: 300px; display: none; position: absolute; top: 100%; left: 0; z-index: 1050; background-color: #fff; max-height: 300px; overflow-y: auto; border: 1px solid #ddd; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
       ></div>
     </form>
 
@@ -47,3 +48,13 @@
     </div>
   </nav>
 </header>
+
+<style>
+  .dropdown-menu {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff; /* Ensuring background is white for visibility */
+  }
+</style>

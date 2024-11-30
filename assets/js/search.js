@@ -2,42 +2,73 @@
 
 // this template came from cloudcannon's course, search for searching using lunr.js
 // link to git repo: https://github.com/CloudCannon/bakery-store-jekyll-template/tree/lunrjs
-(function() {
-  // Get the search input field and the search dropdown
-  var searchInput = document.getElementById('search-input');
-  var searchDropdown = document.getElementById('search-dropdown');
 
-  // Fetch the search.json file
-  fetch('{{ site.baseurl }}/search.json')
-    .then(response => response.json())
-    .then(data => {
-      // Add event listener to the search input field
-      searchInput.addEventListener('input', function() {
-        var searchTerm = this.value.toLowerCase();
-        var filteredPosts = data.filter(post =>
-          post.title.toLowerCase().includes(searchTerm)
+  // Fetch and filter search results
+  async function searchPosts() {
+    const input = document.getElementById("searchInput");
+    const dropdown = document.getElementById("searchDropdown");
+    const query = input.value.trim();
+  
+    // Exit if the query is empty
+    if (!query) {
+      dropdown.style.display = "none"; // Hide dropdown if query is empty
+      dropdown.innerHTML = ""; // Clear previous results
+      return;
+    }
+  
+    try {
+      // Fetch the search data
+      const response = await fetch("search.json");
+      const posts = await response.json();
+  
+      // Log the query and post data for debugging
+      console.log("Query:", query);
+      console.log("Posts:", posts);
+  
+      // Filter posts based on the query
+      const results = posts.filter(post => {
+        const title = post.title ? post.title.toLowerCase() : '';
+        const category = post.category ? post.category.toLowerCase() : '';
+        const content = post.content ? post.content.toLowerCase() : '';
+  
+        const matches = (
+          title.includes(query.toLowerCase()) ||
+          category.includes(query.toLowerCase()) ||
+          content.includes(query.toLowerCase())
         );
-
-        // Update the dropdown list with the filtered posts
-        updateDropdown(filteredPosts);
+  
+        return matches;
       });
-    });
-
-  function updateDropdown(posts) {
-    searchDropdown.innerHTML = '';
-
-    posts.forEach(post => {
-      var link = document.createElement('a');
-      link.classList.add('dropdown-item');
-      link.href = '{{ site.baseurl }}' + post.url;
-      link.textContent = post.title;
-      searchDropdown.appendChild(link);
-    });
-
-    // Show the dropdown if there are filtered posts, hide it otherwise
-    searchDropdown.style.display = posts.length > 0 ? 'block' : 'none';
+  
+      // Log the results after filtering for debugging
+      console.log("Filtered Results:", results);
+  
+      // If there are results, display the dropdown
+      if (results.length > 0) {
+        dropdown.style.display = "block"; // Show dropdown
+        dropdown.innerHTML = results
+          .map(
+            result => `
+              <a href="${result.url}" class="dropdown-item">
+                <strong>${result.title}</strong><br />
+              </a>
+            `
+          )
+          .join(""); // Create dropdown items from the results
+      }else {
+        dropdown.style.display = "block"; // Ensure dropdown is visible
+        dropdown.innerHTML = `<p class="dropdown-item">No result found</p>`; // Show "No result found"
+      }
+  
+      // Log the final dropdown content for debugging
+      console.log("Dropdown HTML:", dropdown.innerHTML);
+  
+    } catch (error) {
+      console.error("Error fetching or parsing search data:", error);
+      dropdown.style.display = "none"; // Hide dropdown on error
+    }
   }
-})();
+  
 //// for console testing only ////
 
 //// copy paste the below code in console one section at a time ////
