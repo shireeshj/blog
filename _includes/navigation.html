@@ -31,12 +31,15 @@
       <ul class="navbar-nav ml-auto">
         {% for link in site.links %}
         <li class="nav-item">
-          <a
-            href="{{ link.external ? link.url : site.url | append: site.baseurl | append: link.url }}"
-            class="nav-link"
-          >
-            <i class="{{ link.icon }}"></i> {{ link.title }}
-          </a>
+          {% if link.external %} 
+            <a href="{{ link.url }}" class="nav-link">
+              <i class="{{link.icon}}"></i> {{ link.title }}
+            </a>
+          {% else %} 
+            <a href="{{ site.url }}{{ site.baseurl }}{{ link.url }}" class="nav-link">
+              <i class="{{link.icon}}"></i> {{ link.title }}
+            </a>
+          {% endif %}
         </li>
         {% endfor %}
         <li class="nav-item">
