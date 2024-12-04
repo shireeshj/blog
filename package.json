@@ -1,5 +1,5 @@
 {
-  "name": "eLitmus-blog-theme",
+  "name": "elitmus-blog-theme",
   "author": "Shireesh <shireesh@elitmus.com>",
   "license": "MIT",
   "homepage": "https://shireeshj.github.io/",
@@ -15,12 +15,28 @@
   },
   "devDependencies": {
     "async": "^2.6.4",
+    "autoprefixer": "^10.4.20",
     "grunt": "^1.6.1",
     "grunt-contrib-clean": "^2.0.1",
     "grunt-contrib-imagemin": "^4.0.0",
     "grunt-contrib-jshint": "^3.2.0",
     "grunt-contrib-uglify": "^5.2.2",
     "grunt-contrib-watch": "^1.1.0",
-    "grunt-svgmin": "^7.0.0"
+    "grunt-svgmin": "^7.0.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15"
+  },
+  "version": "1.0.0",
+  "description": "This repo contains eLitmus blog hosted on Github Pages. The blog is accessible over https://www.elitmus.com/blog/",
+  "main": "Gruntfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "npx tailwindcss -i ./assets/css/tailwind.css -o ./assets/css/output.css --watch"
+  },
+  "keywords": [],
+  "dependencies": {
+    "fuse.js": "^7.0.0",
+    "lunr": "^2.3.9",
+    "simple-jekyll-search": "^1.10.0"
   }
 }

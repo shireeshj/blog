@@ -10,7 +10,7 @@ body {
 	padding: 0;
 	margin: 0;
 	font-size: 20px;
-	background: #1D1D1D;
+	color: #333;
 }
 
 p {
@@ -23,6 +23,7 @@ a {
 
 h1,
 h2 {
+	color: #333;
 	padding: 0;
 	margin: 0;
 }
@@ -62,8 +63,7 @@ div.small-container {
 
 header,
 footer {
-	background: #1D1D1D;
-	color: #ffffff;
+	color:#333 ;
 }
 
 section.hero {
@@ -81,7 +81,7 @@ header a,
 section.hero a,
 footer a {
 	text-decoration: none;
-	color: #ffffff;
+	color:#333  ;
 }
 
 header,
@@ -225,3 +225,364 @@ input[type="submit"] {
 	margin: 0 auto;
 	padding: 100px 0;
 }
+
+.container {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 20px;
+	font-family: 'Georgia', serif; /* Medium-like typography */
+	color: #333;
+}  
+
+.blog-grid {	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
+	gap: 30px; 
+}  
+
+.blog-card {
+	border: none;
+	border-radius: 8px;
+	overflow: hidden; /* Ensures thumbnail images stay rounded */
+	background-color: #fff;
+	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+	display: flex;
+	flex-direction: column; /* Ensures "Read More" is at the bottom */
+	justify-content: space-between;
+	height: 100%; /* Ensures even cards */
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.blog-card:hover {
+	transform: translateY(-8px); /* Smooth hover animation */
+	box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.blog-content {
+	padding: 20px;
+}
+
+.blog-title {
+	font-size: 1.5rem;
+	font-weight: bold;
+	margin-bottom: 10px;
+	color: #333;
+}
+
+.blog-title a {
+	text-decoration: none;
+	color: inherit; /* Keep default text color */
+}
+.blog-title a:hover {
+	color: #007BFF; /* Medium-like accent color */
+}
+
+.meta {
+	font-size: 0.9rem;
+	color: #777;
+	margin-bottom: 15px;
+}
+.meta-info {
+	font-size: 0.9rem;
+	color: #666;
+	margin-top: 5px;
+	margin-bottom: 15px;
+}
+.meta-info .category {
+	font-weight: bold;
+}
+
+.meta-info .author {
+	font-weight: bold;
+	color: #555;
+}
+
+.meta-info .category:hover {
+	text-decoration: underline;
+}
+.meta-info .author:hover {
+	color: #333;
+}
+
+
+.tags {
+	margin-top: 10px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 5px;
+}
+  
+.tag {
+	display: inline-block;
+	background-color: #f0f0f0; /* Subtle background for tags */
+	color: #333;
+	font-size: 0.8rem;
+	padding: 3px 8px;
+	border-radius: 3px;
+
+}
+  
+.tag:hover {
+	background-color:#333;
+	color: #fff;
+}
+.more-tags {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.hidden {
+	display: none; /* Initially hide extra tags */
+}
+
+.card-footer {
+	margin-top: auto;
+	padding: 15px 20px;
+	background: #f8f9fa;
+	text-align: right;
+}
+
+
+.read-more {
+	display: inline-block;
+	margin-top: 15px;
+	color: #333;
+	text-decoration: none;
+	font-weight: bold;
+	transition: color 0.2s ease;
+}
+
+.subheading {
+	font-size: 0.9rem;
+	color: #777;
+	margin-bottom: 10px;
+}
+
+.subheading .category {
+	font-weight: bold;
+}
+
+.subheading .author {
+	font-style: italic;
+	color: #555;
+}
+
+
+.read-more:hover {
+	text-decoration: underline;
+	color: #0056b3;
+}
+.categories-section {
+	margin-bottom: 30px;
+	padding: 20px;
+	background-color: #ffffff;
+	border: 1px solid #e0e0e0;
+	border-radius: 8px;
+	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+}
+
+.categories-heading {
+	font-size: 1.6rem;
+	font-weight: 600;
+	margin-bottom: 15px;
+	color: #333; 
+	text-transform: uppercase;
+	letter-spacing: 1px;
+}
+  
+.categories-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+  
+.category-item {
+	margin: 10px;
+}
+  
+.category-link {
+	display: block;
+	background-color: #f5f5f5; 
+	color: #333; 
+	padding: 8px 15px;
+	border-radius: 8px;
+	text-decoration: none;
+	font-size: 0.95rem;
+	font-weight: 500;
+	transition: all 0.3s ease;
+	width: 100%; 
+}
+  
+.category-link:hover {
+	background-color: #333; 
+	color: #ffffff;
+	box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+  
+.recent-posts-heading {
+	font-size: 1.5rem;
+	font-weight: bold;
+	margin-bottom: 20px;
+	color: #333;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+}
+
+
+.modern-author-widget {
+	max-width: 800px;
+	margin: 20px auto;
+	padding: 20px;
+	background-color: #f9f9f9;
+	border-radius: 12px;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.author-card {
+	display: flex;
+	align-items: center;
+	width: 100%;
+}
+
+.author-avatar img {
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	object-fit: cover;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	margin-right: 20px;
+}
+
+.author-details {
+	flex: 1;
+}
+
+.author-name {
+	font-size: 1.5em;
+	font-weight: 700;
+	margin-bottom: 8px;
+	color: #333;
+}
+
+.author-bio {
+	font-size: 1em;
+	color: #666;
+	margin-bottom: 15px;
+	line-height: 1.6;
+}
+
+
+
+.article-title {
+	font-size: 2.5rem;
+	font-weight: 800;
+	color: #333;
+	margin-bottom: 0.5rem;
+	line-height: 1.2;
+}
+
+
+.tag-link {
+	font-size: 0.85rem;
+	color: #0077cc;
+	text-decoration: none;
+}
+
+.tag-link:hover {
+	text-decoration: underline;
+}
+
+.author-metadata {
+	display: flex;
+	align-items: center;
+
+	padding: 10px 15px;
+	border-radius: 10px;
+
+}
+
+
+
+.author-name {
+	font-size: 1.2rem;
+	font-weight: 600;
+	color: #333;
+	margin-bottom: 5px;
+}
+
+
+.show-all-container {
+    text-align: center;
+    margin-top: 20px;
+}
+.show-all-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #333;
+    background-color: #ccc ;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+.show-all-button:hover {
+    background-color: #333;
+	color: white;
+}
+.dropdown-menu {
+	max-height: 300px;
+	overflow-x: auto;
+	overflow-y: hidden;
+	border-radius: 8px;
+	border: 1px solid #ddd;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	background-color: #fff;
+	transition: all 0.3s ease-in-out;
+	padding: 10px 0;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	width: auto;
+	min-width: 100%;
+	z-index: 1050;
+	opacity: 0;
+	visibility: hidden;
+  }
+  
+  .dropdown-menu.show {
+	opacity: 1;
+	visibility: visible;
+  }
+  
+  .dropdown-item {
+	padding: 10px 15px;
+	font-size: 14px;
+	color: #333;
+	cursor: pointer;
+	border-radius: 5px;
+	transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  
+  .dropdown-item:hover {
+	background-color: #f0f0f0;
+	color: #007bff;
+	transform: translateX(5px);
+  }
+  
+  .dropdown-item:focus {
+	outline: none;
+	background-color: #007bff;
+	color: #fff;
+  }
+  
+  @media (max-width: 768px) {
+	.dropdown-menu {
+	  width: 100%;
+	  left: 0;
+	}
+  }
+  
+  

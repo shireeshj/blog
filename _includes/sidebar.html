@@ -1,22 +1,20 @@
-
-{% capture category_count %} {{ site.categories | size }}* {% endcapture %}
-
+{% capture category_count %}{{ site.categories | size }}{% endcapture %}
 {% assign count = category_count | plus: 0 %}
-{% if  count > 1 %}
+{% if count > 1 %}
 
-<div class="fixed-sidebar mx-auto">
-	
-	<ul class="sidebar-category list-group ml-auto">
-		<li class="categories-heading list-group-item">
-			<span class="fa fa-th-list"></span> Categories:
-		</li>
-	  {% for category in site.categories %}
-	  	<li class="list-group-item"> 
-	  		<a name="{{ category | first | capitalize }}" href="{{ site.url }}{{ site.baseurl }}/categories/{{ category | first }}/" class="category">  {{ category | first | capitalize }} </a>
-	  	</li>
-	  {% endfor %}
-	</ul>
-
+<div class="categories-section">
+  <h3 class="categories-heading">
+    <span class="fa fa-th-list"></span> Categories
+  </h3>
+  <ul class="categories-list">
+    {% for category in site.categories %}
+      <li class="category-item"> 
+        <a name="{{ category | first | capitalize }}" href="{{ site.url }}{{ site.baseurl }}/categories/{{ category | first }}/" class="category-link">
+          {{ category | first | capitalize }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
 </div>
 
 {% endif %}

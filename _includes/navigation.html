@@ -1,108 +1,63 @@
+<link rel="stylesheet" href="{{site.baseurl}}/assets/css/style.css">
 <header class="headroom">
+  <nav class="navbar navbar-expand-md navbar-dark bg-black fixed-top">
+    <!-- Brand Logo -->
+    <a class="navbar-brand d-flex align-items-center" href="{{ site.baseurl }}/">
+      <img src="{{ site.baseurl }}/images/elitmus-only-logo.svg" class="img-logo" alt="elitmus logo" style="height: 40px;">
+      <span class="ml-2 blog-label" style="font-size: 14px; font-weight: 600;">Blog</span>
+    </a>
 
-  <nav class="navbar navbar-expand-md navbar-dark bg-black fixed-top" role="navigation">
+    <!-- Search Bar -->
+    <form class="form-inline mx-auto" style="position: relative;">
+      <input
+        id="searchInput"
+        class="form-control mr-sm-2"
+        type="search"
+        placeholder="Search"
+        aria-label="Search"
+        onkeyup="searchPosts()"
+        style="width: 300px;"
+      />
+      <!-- Dropdown for search results -->
+      <div
+        id="searchDropdown"
+        class="dropdown-menu show"
+        style="width: 300px; display: none; position: absolute; top: 100%; left: 0; z-index: 1050; background-color: #fff; max-height: 300px; overflow-y: auto; border: 1px solid #ddd; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);"
+      ></div>
+    </form>
 
-      <a class="navbar-brand" href="{{ site.baseurl }}/">
-        <img src="{{site.baseurl}}/images/elitmus-only-logo.svg" class="img-logo">
-        <span><div class="blog-label">blog</div></span>
-      </a>
-
-      <!-- the toggle button -->
-      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target=".navbar-collapse">
-        <span class="navbar-toggler-icon"></span>
-        <span class="sr-only">Toggle navigation</span><!-- only for screen readers -->
-      </button>
-
-      <div class="collapse navbar-collapse">
-        <ul class="nav navbar-nav mr-auto">
-
-          <!-- first item = dropdown search -->
-          <li class="nav-item">
-            <div class="dropdown search-box-margin">
-
-            
-              <div class="form-inline">
-                {% capture category_count %} {{ site.categories | size }}* {% endcapture %} {% assign count = category_count | plus: 0 %}
-
-                <input data-toggle="dropdown" placeholder="Search..." id="search-box" class="form-control form-control-sm search-input dropdown-toggle" aria-haspopup="true" aria-expanded="false">
-
-
-                <div class="dropdown-menu" id="search-dropdown">
-                  <a role='presentation' class='dropdown-item search-results'> Type more.... </a>
-                </div>
-
-              </div>
-
-
-
-            <!-- the below line will pass "search word" to search.html -->
-
-            <!--
-            <form class="form-inline" action="{{ site.url }}{{ site.baseurl }}/search" method="get">
-              {% capture category_count %} {{ site.categories | size }}* {% endcapture %} {% assign count = category_count | plus: 0 %}
-
-
-              <label for="search_box">Search</label>
-              <input data-toggle="dropdown" type="text" name="query" placeholder="Search..." id="search-box" class="form-control form-control-sm search-input dropdown-toggle" aria-haspopup="true" aria-expanded="false">
-
-              <div class="dropdown-menu" id="search-dropdown">
-                  <a role='presentation' class='dropdown-item search-results'> Type more.... </a>
-              </div>
-
-              <input type="submit" value="search">
-
-            </form>
-            -->
-
-            <!-- end of form -->
-
-
-            </div>
-          </li>
-        </ul>
-
-        
-
-        <!-- every link on the right side -->
-        <ul class="nav navbar-nav navbar-right nav-icon-size-reduce">
-          {% for link in site.links %}
-          <li class="nav-item">
-            {% if link.external %} 
-              <a href="{{ link.url }}" class="nav-link">
-                <i class="{{link.icon}}"></i> {{ link.title }}
-              </a>
-            {% else %} 
-              <a href="{{ site.url }}{{ site.baseurl }}{{ link.url }}" class="nav-link">
-                <i class="{{link.icon}}"></i> {{ link.title }}
-              </a>
-            {% endif %}
-          </li>
-          {% endfor %}
-
-          <!-- feed is the last link -->
-          <li class="nav-item">
-            <a href="{{ site.url }}{{ site.baseurl }}/feed.xml" class="nav-link" title="Atom/RSS feed">
-              <i class="fa fa-rss"></i> Feed
+    <!-- Navbar Links -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        {% for link in site.links %}
+        <li class="nav-item">
+          {% if link.external %} 
+            <a href="{{ link.url }}" class="nav-link">
+              <i class="{{link.icon}}"></i> {{ link.title }}
             </a>
-          </li>
-        </ul>
-
-
-
-      </div> <!-- /.navbar-collapse -->
-
-  </nav>{% include browser-upgrade.html %}
+          {% else %} 
+            <a href="{{ site.url }}{{ site.baseurl }}{{ link.url }}" class="nav-link">
+              <i class="{{link.icon}}"></i> {{ link.title }}
+            </a>
+          {% endif %}
+        </li>
+        {% endfor %}
+        <li class="nav-item">
+          <a href="{{ site.url }}{{ site.baseurl }}/feed.xml" class="nav-link" title="Atom/RSS feed">
+            <i class="fa fa-rss"></i> Feed
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
 </header>
-<!-- 
-{% if site.search %}
-  <div class="search-wrapper">
-    <div class="search-form">
-      <input type="text" class="search-field" placeholder="Search...">
-      <i class="icon-remove-sign icon-2x"></i>
-      <ul class="search-results post-list"></ul> -->
-<!-- /.search-results -->
-<!-- </div> -->
-<!-- /.search-form -->
-<!-- </div> -->
-<!-- ./search-wrapper -->
-<!-- {% endif %} -->
+
+<style>
+  .dropdown-menu {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff; /* Ensuring background is white for visibility */
+  }
+</style>

@@ -32,40 +32,31 @@
             {% endif %}
           {% endif %}
 
-            <div>
               <header>
-                <span class="entry-tags">
-                  {% for tag in page.tags %}
-                    <a href="{{ site.url }}{{ site.baseurl }}/tags/#{{ tag | cgi_encode }}" title="Pages tagged {{ tag }}">{{ tag }}</a>
-                    {% unless forloop.last %}&nbsp;&bull;&nbsp;{% endunless %}
-                  {% endfor %}
-
-                  {% include social-shares.html %}
-
-                </span>
-              
                 {% if page.link %}
-                  <h1 class="no-padding">
+                  <h1 class="article-title">
                     <a href="{{ page.link }}">
                       {% if page.headline %}
                         {{ page.headline }}
                       {% else %}
                         {{ page.title }}
-                      {% endif %} 
-                      <span class="link-arrow">&rarr;</span>
+                      {% endif %}
                     </a>
                   </h1>
                 {% else %}
-                  <h1 class="no-padding">{% if page.headline %}{{ page.headline }}{% else %}{{ page.title }}{% endif %}</h1>
+                  <h1 class="article-title">{% if page.headline %}{{ page.headline }}{% else %}{{ page.title }}{% endif %}</h1>
                 {% endif %}
+              
+                <!-- Author and Metadata Section -->
+                <div class="author-metadata">
+                    <span class="publication-info">
+                      Published in 
+                      <a href="{{ site.baseurl }}/categories/{{ page.category }}/index.html">{{ page.category }}</a> 
+                      on <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%B %d, %Y" }}</time>
+                    </span>
+                </div>
               </header>
-            </div>
-           
             <div>
-              <div>
-                <span class='badge badge-warning'> <a href="{{ site.baseurl }}/categories/{{ page.category }}/index.html" > {{ page.category }} </a></span>
-              </div>
-
               {% if page.tldr %}
                 <div class='pull-left date-show'>
                   <span class="entry-date date published">

@@ -1,5 +1,3 @@
----
----
 
 function urlToTitle(refer) {
   refer = refer.substring(1, refer.length - 1);
@@ -49,7 +47,7 @@ $(document).ready(function() {
   var result = [];
   var jsonData = {};
   var originalJsonData = {};
-  $.getJSON("{{ site.url }}{{ site.baseurl }}/search.json", function(json) {
+  $.getJSON("search.json", function(json) {
     // this will show the info it in firebug console
     idx = lunr(function() {
       this.field('category',{ boost: 100})
