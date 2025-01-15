@@ -45,6 +45,9 @@ links:
   - title: Posts
     url: /posts/
     icon: "fa fa-file-text-o"
+  - title: Feed
+    url: /feed.xml/
+    icon: "fa fa-rss"  
   - title: eLitmus
     url: //www.elitmus.com/
     external: true

@@ -1,41 +1,33 @@
 <header class="headroom">
 
-  <nav class="navbar navbar-expand-md navbar-dark bg-black fixed-top" role="navigation">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-black shadow-sm fixed-top py-1"  role="navigation">
 
-      <a class="navbar-brand" href="{{ site.baseurl }}/">
-        <img src="{{site.baseurl}}/images/elitmus-only-logo.svg" class="img-logo">
-        <span><div class="blog-label">blog</div></span>
+      <a class="navbar-brand d-flex align-items-center" href="{{ site.baseurl }}/">
+        <img src="{{site.baseurl}}/images/elitmus-only-logo.svg" class=" ml-2 img-logo " alt="Logo" style="height: 36px;">
+        <span class="ml-2 mr-5 blog-label text-muted font-weight-bold " style="font-size: 1.4rem; ">blog</span>
       </a>
 
       <!-- the toggle button -->
-      <button type="button" class="navbar-toggler" data-toggle="collapse" data-target=".navbar-collapse">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
-        <span class="sr-only">Toggle navigation</span><!-- only for screen readers -->
       </button>
 
       <div class="collapse navbar-collapse">
-        <ul class="nav navbar-nav mr-auto">
+        <ul class="navbar-nav mr-auto">
 
           <!-- first item = dropdown search -->
           <li class="nav-item">
-            <div class="dropdown search-box-margin">
+            <div class="dropdown">
 
-            
               <div class="form-inline">
                 {% capture category_count %} {{ site.categories | size }}* {% endcapture %} {% assign count = category_count | plus: 0 %}
-
                 <input data-toggle="dropdown" placeholder="Search..." id="search-box" class="form-control form-control-sm search-input dropdown-toggle" aria-haspopup="true" aria-expanded="false">
-
-
-                <div class="dropdown-menu" id="search-dropdown">
-                  <a role='presentation' class='dropdown-item search-results'> Type more.... </a>
+                <div class="dropdown-menu shadow-sm" id="search-dropdown">
+                  <a role="presentation" class="dropdown-item text-muted">Type more...</a>
                 </div>
-
               </div>
 
-
-
-            <!-- the below line will pass "search word" to search.html -->
+              <!-- the below line will pass "search word" to search.html -->
 
             <!--
             <form class="form-inline" action="{{ site.url }}{{ site.baseurl }}/search" method="get">
@@ -56,38 +48,28 @@
 
             <!-- end of form -->
 
-
             </div>
           </li>
         </ul>
 
-        
-
         <!-- every link on the right side -->
-        <ul class="nav navbar-nav navbar-right nav-icon-size-reduce">
+        <ul class="navbar-nav ml-auto">
           {% for link in site.links %}
           <li class="nav-item">
             {% if link.external %} 
-              <a href="{{ link.url }}" class="nav-link">
-                <i class="{{link.icon}}"></i> {{ link.title }}
+              <a href="{{ link.url }}" class="nav-link" style="font-size: 1.2rem;">
+                 {{ link.title }}
               </a>
             {% else %} 
-              <a href="{{ site.url }}{{ site.baseurl }}{{ link.url }}" class="nav-link">
-                <i class="{{link.icon}}"></i> {{ link.title }}
+              <a href="{{ site.url }}{{ site.baseurl }}{{ link.url }}" class="nav-link" style = "font-size: 1.2rem;">
+                 {{ link.title }}
               </a>
             {% endif %}
           </li>
           {% endfor %}
 
-          <!-- feed is the last link -->
-          <li class="nav-item">
-            <a href="{{ site.url }}{{ site.baseurl }}/feed.xml" class="nav-link" title="Atom/RSS feed">
-              <i class="fa fa-rss"></i> Feed
-            </a>
-          </li>
+      
         </ul>
-
-
 
       </div> <!-- /.navbar-collapse -->
 
@@ -106,3 +88,11 @@
 <!-- </div> -->
 <!-- ./search-wrapper -->
 <!-- {% endif %} -->
+<style>
+  .navbar.bg-black {
+    background-color: #000000 !important;
+  }
+  .navbar .blog-label {
+    color: #ffffff !important; /* Pure white */
+  }
+</style>
