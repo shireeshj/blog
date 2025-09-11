@@ -120,7 +120,7 @@
    name: Nikhil Bhatt
    avatar: nikhil.jpg
    email: nikhil.bhatt@elitmus.com
-   twitter: https://twitter.com/nick_bhtt
+   twitter: nick_bhtt
    github: nikhilbhatt
    linkedin: nik-bhatt
    bio: 'Nikhil Bhatt is a member of Technology at eLitmus. He enjoys creating small, practical software applications and is enthusiastic about competitive coding and chess'
@@ -136,6 +136,14 @@
    tumblr: 
    flickr: 
    bio: "Madhav Jha is an intern at eLitmus. He has a keen inclination towards competitive programming and actively participates in hackathons. Loves music and badminton."
+-  id: rajat
+   name: Rajat Kumar Nayak
+   avatar: rajat.jpg
+   email: rajatnayak1582002@gmail.com	
+   twitter: its_rajat_dev
+   github: rajat-gith
+   linkedin: rajat-kumar-nayak-a4aa84204
+   bio: 'Rajat Nayak is an Full Stack Intern at eLitmus. He loves building softwares and has a great inclination towards contributing to tech communities and collaborations.'
 -  id: Mahesh
    name: Mahesh Alyana
    avatar: mahesh.png
@@ -169,6 +177,25 @@
    tumblr: 
    flickr: 
    bio: "Smruti Ranjan is a Full Stack Dev Intern at eLitmus. He is very much interested in newer technologies and enthusiastic to solve problems. Has a hobby of exploring new places and domains."
+-  id: manav
+   name: Manavkumar Patel
+   avatar: manav.jpg
+   email: mav.biz7@gmail.com
+   github: masterMav
+   linkedin: manavkumar-patel-69802b202
+   bio: "Manavkumar Patel is an intern at eLitmus. He is passionate about Algorithmic Problem-solving and web-development. In his free time he likes to study more about history and competitive programming."
+-  id: vikastiwari14
+   name: Vikas Tiwari
+   avatar: vikastiwari14.jpg
+   email: tiwarivikas1407@gmail.com
+   twitter: 
+   github: VikasTiwari14
+   stackexchange: 
+   linkedin: vikastiwari14
+   instagram: vikastiwari14_
+   tumblr: 
+   flickr: 
+   bio: "Vikas Tiwari is a member of technology at eLitmus who loves taking on new challenges. Beyond the tech world, he's a fitness enthusiast and love to explore new places."
 -  id: kabir
    name: Kabir Pathak
    avatar: kabir.jpg
@@ -181,3 +208,5 @@
    tumblr: 
    flickr: 
    bio: "Kabir is a member of the eLitmus tech team. He enjoys playing football and badminton. However, if going out and playing isn't an option, you will find him dabbling in competitive programming or watching motorsports."
+
+

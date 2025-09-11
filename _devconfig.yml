@@ -1,6 +1,7 @@
 title:            eLitmus Blog
 description:      We learn new things everyday, and we document our learnings here...
 logo:             blog_logo_taglinedorange.png
+default_og:       default_og.png
 disqus_shortname:
 search:           true
 # Change url to your domain. Leave localhost server or blank when working locally.
@@ -52,7 +53,8 @@ links:
 # http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 timezone:    Asia/Kolkata
 future:      true
-highlighter: pygments
+
+highlighter: none
 markdown:    kramdown
 
 # https://github.com/mojombo/jekyll/wiki/Permalinks
@@ -64,14 +66,7 @@ kramdown:
   entity_output: as_char
   toc_levels: 1..6
   enable_coderay: false
-  
-
-  syntax_highlighter_opts:
-    line_numbers:
-    line_numbers_start: 1
-    tab_width: 4
-    bold_every: 10
-    css: class
+  syntax_highlighter: none
 
 include: [".htaccess"]
 exclude: ["server.sh","lib", "config.rb", "Gemfile", "Capfile", "README.md", "LICENSE", "Gemfile.lock", "config", "log", "Rakefile", "Rakefile.rb", "tmp", "less", "*.sublime-project", "*.sublime-workspace", "test", "spec", "Gruntfile.js", "package.json", "node_modules"]
