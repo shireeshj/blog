@@ -5,30 +5,111 @@
 
 <title type="text">eLitmus Blog</title>
 <generator uri="https://github.com/mojombo/jekyll">Jekyll</generator>
-<link rel="self" type="application/atom+xml" href="/feed.xml" />
-<link rel="alternate" type="text/html" href="/" />
-<updated>2024-11-15T20:26:15+05:30</updated>
-<id>/</id>
+<link rel="self" type="application/atom+xml" href="http://0.0.0.0:4000/feed.xml" />
+<link rel="alternate" type="text/html" href="http://0.0.0.0:4000/" />
+<updated>2025-09-12T09:13:08+05:30</updated>
+<id>http://0.0.0.0:4000/</id>
 <author>
   <name>eLitmus.com</name>
-  <uri>/</uri>
+  <uri>http://0.0.0.0:4000/</uri>
   <email>site-admin@elitmus.com</email>
 </author>
 
 
 <entry>
+  <title type="html"><![CDATA[What's the deal with secret_key_base in Rails?]]></title>
+  <link rel="alternate" type="text/html" href="http://0.0.0.0:4000/technology/whats-the-deal-with-secret-key-base-in-rails/"/>
+  <id>http://0.0.0.0:4000/technology/whats-the-deal-with-secret-key-base-in-rails</id>
+  <updated>2025-09-11 18:52:53 +0530T00:00:00-00:00</updated>
+  <published>2025-09-11T00:00:00+05:30</published>
+  
+  <author>
+    <name>eLitmus.com</name>
+    <uri>http://0.0.0.0:4000</uri>
+    <email>site-admin@elitmus.com</email>
+  </author>
+  <category scheme="http://0.0.0.0:4000/tags/#rails" term="rails" /><category scheme="http://0.0.0.0:4000/tags/#secrets" term="secrets" /><category scheme="http://0.0.0.0:4000/tags/#credentials" term="credentials" />
+  <content type="html">
+  
+    &lt;p&gt;&lt;br /&gt;
+If you’ve spent any time with a Rails app, you’ve probably stumbled across this mysterious setting called &lt;code&gt;secret_key_base&lt;/code&gt;. Maybe you saw it in &lt;code&gt;config/secrets.yml&lt;/code&gt;, or like me, you were upgrading Rails, forgetting that credentials are the new norm and suddenly you saw something like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;
+Missing `secret_key_base` for &apos;production&apos; environment, set this string with `bin/rails credentials:edit`
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div&gt;
+  &lt;img src=&quot;/blog/images/secret_key_base/secret_key_base.png&quot; width=&quot;425&quot; /&gt;
+&lt;/div&gt;
+
+&lt;hr /&gt;
+
+&lt;h3 id=&quot;the-short-version-of-what-it-is&quot;&gt;The short version of what it is:&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;secret_key_base&lt;/code&gt; is Rails’ way of keeping things safe. It’s a big, random string of characters that Rails uses under the hood to:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Sign and verify cookies (so nobody can tamper with them).&lt;/li&gt;
+  &lt;li&gt;Encrypt and decrypt sensitive data.&lt;/li&gt;
+  &lt;li&gt;Make sure session data is legit and not forged.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Think of it as the master lock on your app. If someone gets hold of it, they could impersonate users or mess with your sessions. That’s why Rails treats it like a deal-breaker if the key isn’t set.&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;where-does-it-come-from&quot;&gt;Where does it come from?&lt;/h3&gt;
+&lt;p&gt;In older Rails apps, you’ll see it inside &lt;code&gt;config/secrets.yml&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;
+production:
+  secret_key_base: &amp;lt;%= ENV[&quot;SECRET_KEY_BASE&quot;] %&amp;gt;
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;In newer Rails versions, it’s usually stored in &lt;code&gt;config/credentials.yml.enc&lt;/code&gt;. Either way, it usually gets pulled in from an environment variable. You don’t want this string hard-coded in your code. But guess which genius hard-coded it? ;)&lt;/p&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;how-do-you-get-one&quot;&gt;How do you get one?&lt;/h3&gt;
+
+&lt;p&gt;Rails makes this easy. Just run: rails secret&lt;/p&gt;
+
+&lt;p&gt;You’ll get a nice long random string (128 characters). Copy that into your environment variable, and you’re good to go.&lt;/p&gt;
+
+&lt;p&gt;In developmentand test environments, even if you don’t run this command, a secret will be generated for you when you either start the server or the console.&lt;/p&gt;
+
+&lt;p&gt;You can find this generated file in &lt;code&gt;tmp/local_secret.txt&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;In a way this file is proof that Rails is looking for &lt;code&gt;config/credentials.yml.enc&lt;/code&gt; and not &lt;code&gt;config/secrets.yml&lt;/code&gt;. To override this, and to make Rails fetch this value from &lt;code&gt;secrets.yml&lt;/code&gt;, just add the following in your application.rb:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;
+config.secret_key_base = Rails.application.config_for(:secrets)[:secret_key_base]
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;to-sum-it-up&quot;&gt;To sum it up:&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;secret_key_base&lt;/code&gt; isn’t something you’ll deal with every day, but it’s quietly protecting your Rails app all the time. The good news is: once you set it up properly, you mostly forget about it, unless you’re upgrading to Rails 7 or 8 and you still want to continue using secrets.yml.&lt;/p&gt;
+
+  
+  &lt;p&gt;&lt;a href=&quot;http://0.0.0.0:4000/technology/whats-the-deal-with-secret-key-base-in-rails/&quot;&gt;What's the deal with secret_key_base in Rails?&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;http://0.0.0.0:4000&quot;&gt;eLitmus Blog&lt;/a&gt; on September 11, 2025.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
   <title type="html"><![CDATA[Kamal App Deployment Tool]]></title>
-  <link rel="alternate" type="text/html" href="/technology/kamal-app-deployment-tool-internals/"/>
-  <id>/technology/kamal-app-deployment-tool-internals</id>
+  <link rel="alternate" type="text/html" href="http://0.0.0.0:4000/technology/kamal-app-deployment-tool-internals/"/>
+  <id>http://0.0.0.0:4000/technology/kamal-app-deployment-tool-internals</id>
   <updated>2024-11-14 10:48:20 +0530T00:00:00-00:00</updated>
   <published>2024-11-14T00:00:00+05:30</published>
   
   <author>
     <name>eLitmus.com</name>
-    <uri></uri>
+    <uri>http://0.0.0.0:4000</uri>
     <email>site-admin@elitmus.com</email>
   </author>
-  <category scheme="/tags/#kamal" term="kamal" /><category scheme="/tags/#deployment" term="deployment" /><category scheme="/tags/#docker" term="docker" /><category scheme="/tags/#rails" term="rails" /><category scheme="/tags/#ruby" term="ruby" />
+  <category scheme="http://0.0.0.0:4000/tags/#kamal" term="kamal" /><category scheme="http://0.0.0.0:4000/tags/#deployment" term="deployment" /><category scheme="http://0.0.0.0:4000/tags/#docker" term="docker" /><category scheme="http://0.0.0.0:4000/tags/#rails" term="rails" /><category scheme="http://0.0.0.0:4000/tags/#ruby" term="ruby" />
   <content type="html">
   
     &lt;p&gt;Kamal is a simple, dedicated orchestration tool built specifically for deploying containerized applications (mainly Rails). In this blog post, I will take a deep dive into the internal workings of Kamal, exploring its high-level architecture and key deployment phases.&lt;/p&gt;
@@ -210,23 +291,23 @@ fi&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 &lt;/ul&gt;
 
   
-  &lt;p&gt;&lt;a href=&quot;/technology/kamal-app-deployment-tool-internals/&quot;&gt;Kamal App Deployment Tool&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on November 14, 2024.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://0.0.0.0:4000/technology/kamal-app-deployment-tool-internals/&quot;&gt;Kamal App Deployment Tool&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;http://0.0.0.0:4000&quot;&gt;eLitmus Blog&lt;/a&gt; on November 14, 2024.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Improving Drag in React JS: A Smoother Approach to Draggable Elements]]></title>
-  <link rel="alternate" type="text/html" href="/technology/improving-drag-in-reactjs-a-smoother-approach-to-draggable-elements/"/>
-  <id>/technology/improving-drag-in-reactjs-a-smoother-approach-to-draggable-elements</id>
+  <link rel="alternate" type="text/html" href="http://0.0.0.0:4000/technology/improving-drag-in-reactjs-a-smoother-approach-to-draggable-elements/"/>
+  <id>http://0.0.0.0:4000/technology/improving-drag-in-reactjs-a-smoother-approach-to-draggable-elements</id>
   <updated>2024-10-15 19:39:07 +0530T00:00:00-00:00</updated>
   <published>2024-10-15T00:00:00+05:30</published>
   
   <author>
     <name>eLitmus.com</name>
-    <uri></uri>
+    <uri>http://0.0.0.0:4000</uri>
     <email>site-admin@elitmus.com</email>
   </author>
-  <category scheme="/tags/#technology" term="technology" /><category scheme="/tags/#javascript" term="javascript" /><category scheme="/tags/#ReactJS" term="ReactJS" />
+  <category scheme="http://0.0.0.0:4000/tags/#technology" term="technology" /><category scheme="http://0.0.0.0:4000/tags/#javascript" term="javascript" /><category scheme="http://0.0.0.0:4000/tags/#ReactJS" term="ReactJS" />
   <content type="html">
   
     &lt;p&gt;When building interactive web components, such as a &lt;code&gt;draggable&lt;/code&gt; element, you might run into the problem where the native draggable attribute leaves the original element in place while dragging a semi-transparent copy. This behavior can feel clunky and disrupts the user experience. In this blog, I’ll show you how to build a smooth draggable component where the element itself follows the mouse pointer, rather than a ghost image.&lt;/p&gt;
@@ -400,23 +481,23 @@ fi&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 &lt;p&gt;Feel free to experiment with this solution in your projects, and let me know if you find any other creative ways to enhance the draggable experience!&lt;/p&gt;
 
   
-  &lt;p&gt;&lt;a href=&quot;/technology/improving-drag-in-reactjs-a-smoother-approach-to-draggable-elements/&quot;&gt;Improving Drag in React JS: A Smoother Approach to Draggable Elements&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on October 15, 2024.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://0.0.0.0:4000/technology/improving-drag-in-reactjs-a-smoother-approach-to-draggable-elements/&quot;&gt;Improving Drag in React JS: A Smoother Approach to Draggable Elements&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;http://0.0.0.0:4000&quot;&gt;eLitmus Blog&lt;/a&gt; on October 15, 2024.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Book review: Never let me go - Kazuo Ishiguro]]></title>
-  <link rel="alternate" type="text/html" href="/book-review/book-review-never-let-me-go-kazuo-ishiguro/"/>
-  <id>/book-review/book-review-never-let-me-go-kazuo-ishiguro</id>
+  <link rel="alternate" type="text/html" href="http://0.0.0.0:4000/book-review/book-review-never-let-me-go-kazuo-ishiguro/"/>
+  <id>http://0.0.0.0:4000/book-review/book-review-never-let-me-go-kazuo-ishiguro</id>
   <updated>2024-09-27 16:03:24 +0530T00:00:00-00:00</updated>
   <published>2024-09-27T00:00:00+05:30</published>
   
   <author>
     <name>eLitmus.com</name>
-    <uri></uri>
+    <uri>http://0.0.0.0:4000</uri>
     <email>site-admin@elitmus.com</email>
   </author>
-  <category scheme="/tags/#Kazuo%20Ishiguro" term="Kazuo Ishiguro" /><category scheme="/tags/#Haruki%20Murakami" term="Haruki Murakami" /><category scheme="/tags/#Book%20Review" term="Book Review" />
+  <category scheme="http://0.0.0.0:4000/tags/#Kazuo%20Ishiguro" term="Kazuo Ishiguro" /><category scheme="http://0.0.0.0:4000/tags/#Haruki%20Murakami" term="Haruki Murakami" /><category scheme="http://0.0.0.0:4000/tags/#Book%20Review" term="Book Review" />
   <content type="html">
   
     &lt;p&gt;I was recently given 2 books as a gift by a close friend, who is a great fan of Murakami’s. The books in question are “Norwegian woods” by Murakami and “Never Let Me Go” by Kazuo Ishiguro.&lt;/p&gt;
@@ -477,23 +558,23 @@ Not a “dystopian representation of our current society” but a “representat
 
 
   
-  &lt;p&gt;&lt;a href=&quot;/book-review/book-review-never-let-me-go-kazuo-ishiguro/&quot;&gt;Book review: Never let me go - Kazuo Ishiguro&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on September 27, 2024.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://0.0.0.0:4000/book-review/book-review-never-let-me-go-kazuo-ishiguro/&quot;&gt;Book review: Never let me go - Kazuo Ishiguro&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;http://0.0.0.0:4000&quot;&gt;eLitmus Blog&lt;/a&gt; on September 27, 2024.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Mastering Multi Tenant setup with rails - background jobs]]></title>
-  <link rel="alternate" type="text/html" href="/technology/mastering-multi-tenant-setup-with-rails-background-jobs/"/>
-  <id>/technology/mastering-multi-tenant-setup-with-rails-background-jobs</id>
+  <link rel="alternate" type="text/html" href="http://0.0.0.0:4000/technology/mastering-multi-tenant-setup-with-rails-background-jobs/"/>
+  <id>http://0.0.0.0:4000/technology/mastering-multi-tenant-setup-with-rails-background-jobs</id>
   <updated>2024-05-05 12:39:14 +0530T00:00:00-00:00</updated>
   <published>2024-05-05T00:00:00+05:30</published>
   
   <author>
     <name>eLitmus.com</name>
-    <uri></uri>
+    <uri>http://0.0.0.0:4000</uri>
     <email>site-admin@elitmus.com</email>
   </author>
-  <category scheme="/tags/#rails" term="rails" /><category scheme="/tags/#multi-tenant" term="multi-tenant" /><category scheme="/tags/#sidekiq" term="sidekiq" /><category scheme="/tags/#activejob" term="activejob" />
+  <category scheme="http://0.0.0.0:4000/tags/#rails" term="rails" /><category scheme="http://0.0.0.0:4000/tags/#multi-tenant" term="multi-tenant" /><category scheme="http://0.0.0.0:4000/tags/#sidekiq" term="sidekiq" /><category scheme="http://0.0.0.0:4000/tags/#activejob" term="activejob" />
   <content type="html">
   
     &lt;p&gt;Welcome back to the Rails multi-tenant architecture series! If you’re just joining in, be sure to check out Part 1, where you’ll find an introduction to multi-tenancy and a detailed walkthrough on setting up a multi-tenant Rails application.&lt;/p&gt;
@@ -695,23 +776,23 @@ end&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 &lt;p&gt;In this blog post, we solved database issue with background job processing in a multi-tenant Rails application. We introduced a custom Sidekiq middleware adapter, that fixes the issue of running background jobs across multiple databases. This approach provides a robust &amp;amp; scalable framework for managing background job execution in complex multi-tenant environments.&lt;/p&gt;
 
   
-  &lt;p&gt;&lt;a href=&quot;/technology/mastering-multi-tenant-setup-with-rails-background-jobs/&quot;&gt;Mastering Multi Tenant setup with rails - background jobs&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on May 05, 2024.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://0.0.0.0:4000/technology/mastering-multi-tenant-setup-with-rails-background-jobs/&quot;&gt;Mastering Multi Tenant setup with rails - background jobs&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;http://0.0.0.0:4000&quot;&gt;eLitmus Blog&lt;/a&gt; on May 05, 2024.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Mastering Multi Tenant setup with rails part 1]]></title>
-  <link rel="alternate" type="text/html" href="/technology/mastering-multi-tenant-setup-with-rails-part-1/"/>
-  <id>/technology/mastering-multi-tenant-setup-with-rails-part-1</id>
+  <link rel="alternate" type="text/html" href="http://0.0.0.0:4000/technology/mastering-multi-tenant-setup-with-rails-part-1/"/>
+  <id>http://0.0.0.0:4000/technology/mastering-multi-tenant-setup-with-rails-part-1</id>
   <updated>2023-12-17 14:17:45 +0530T00:00:00-00:00</updated>
   <published>2023-12-17T00:00:00+05:30</published>
   
   <author>
     <name>eLitmus.com</name>
-    <uri></uri>
+    <uri>http://0.0.0.0:4000</uri>
     <email>site-admin@elitmus.com</email>
   </author>
-  <category scheme="/tags/#rails" term="rails" /><category scheme="/tags/#multi-tenant" term="multi-tenant" /><category scheme="/tags/#multi-db" term="multi-db" />
+  <category scheme="http://0.0.0.0:4000/tags/#rails" term="rails" /><category scheme="http://0.0.0.0:4000/tags/#multi-tenant" term="multi-tenant" /><category scheme="http://0.0.0.0:4000/tags/#multi-db" term="multi-db" />
   <content type="html">
   
     &lt;p&gt;Multi-tenancy is a software design where a single instance of a software application serves multiple customers or tenants (individual users or organizations). In a multi-tenant architecture, each tenant’s data and configuration are logically isolated from one another, providing a sense of individuality and privacy while sharing the same underlying infrastructure, codebase, and application instance.&lt;/p&gt;
@@ -1002,23 +1083,23 @@ end&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 &lt;/ol&gt;
 
   
-  &lt;p&gt;&lt;a href=&quot;/technology/mastering-multi-tenant-setup-with-rails-part-1/&quot;&gt;Mastering Multi Tenant setup with rails part 1&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on December 17, 2023.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://0.0.0.0:4000/technology/mastering-multi-tenant-setup-with-rails-part-1/&quot;&gt;Mastering Multi Tenant setup with rails part 1&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;http://0.0.0.0:4000&quot;&gt;eLitmus Blog&lt;/a&gt; on December 17, 2023.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[An in-depth look at Database Indexing]]></title>
-  <link rel="alternate" type="text/html" href="/technology/an-in-depth-look-at-database-indexing/"/>
-  <id>/technology/an-in-depth-look-at-database-indexing</id>
+  <link rel="alternate" type="text/html" href="http://0.0.0.0:4000/technology/an-in-depth-look-at-database-indexing/"/>
+  <id>http://0.0.0.0:4000/technology/an-in-depth-look-at-database-indexing</id>
   <updated>2023-12-10 15:49:39 +0530T00:00:00-00:00</updated>
   <published>2023-12-10T00:00:00+05:30</published>
   
   <author>
     <name>eLitmus.com</name>
-    <uri></uri>
+    <uri>http://0.0.0.0:4000</uri>
     <email>site-admin@elitmus.com</email>
   </author>
-  <category scheme="/tags/#database" term="database" /><category scheme="/tags/#indexing" term="indexing" /><category scheme="/tags/#postgres" term="postgres" /><category scheme="/tags/#mysql" term="mysql" /><category scheme="/tags/#relational%20database" term="relational database" /><category scheme="/tags/#clustered%20index" term="clustered index" /><category scheme="/tags/#primary%20key%20index" term="primary key index" /><category scheme="/tags/#explain" term="explain" /><category scheme="/tags/#analyze" term="analyze" /><category scheme="/tags/#postgres%20indexing" term="postgres indexing" />
+  <category scheme="http://0.0.0.0:4000/tags/#database" term="database" /><category scheme="http://0.0.0.0:4000/tags/#indexing" term="indexing" /><category scheme="http://0.0.0.0:4000/tags/#postgres" term="postgres" /><category scheme="http://0.0.0.0:4000/tags/#mysql" term="mysql" /><category scheme="http://0.0.0.0:4000/tags/#relational%20database" term="relational database" /><category scheme="http://0.0.0.0:4000/tags/#clustered%20index" term="clustered index" /><category scheme="http://0.0.0.0:4000/tags/#primary%20key%20index" term="primary key index" /><category scheme="http://0.0.0.0:4000/tags/#explain" term="explain" /><category scheme="http://0.0.0.0:4000/tags/#analyze" term="analyze" /><category scheme="http://0.0.0.0:4000/tags/#postgres%20indexing" term="postgres indexing" />
   <content type="html">
   
     &lt;p&gt;In this article, we will explore Database Indexing. We will begin by installing the Docker &amp;amp; running a Postgres container on it. Subsequently, to execute queries and comprehend how the database uses various indexing strategies, we will insert millions of rows into a Postgres table.&lt;/p&gt;
@@ -1127,7 +1208,7 @@ Seq Scan on employees (cost=0.00..16139.01 rows=1000001 width=19)&lt;/code&gt;&l
 
 						&lt;ul style=&quot;margin-left: 2rem&quot;&gt;
 							&lt;li&gt;
-								&lt;code&gt;Seq Scan&lt;/code&gt;: Directly goes to the heap and fetches everything, similar to a Full Table Scan in other databases. In Postgres, with multiple threads, it's called &lt;code&gt;Parallel Seq Scan&lt;/code&gt;.
+								&lt;code&gt;Seq Scan&lt;/code&gt;: Directly goes to the heap and fetches everything, similar to a Full Table Scan in other databases. In Postgres, with multiple threads, it&apos;s called &lt;code&gt;Parallel Seq Scan&lt;/code&gt;.
 							&lt;/li&gt;
 
 							&lt;li&gt;
@@ -1233,7 +1314,7 @@ Index Scan using employees_pkey on employees (cost=0.42..8.44 rows=1 width=19)
 		&lt;li&gt;
 		Nonclustered Index
 		&lt;ul style=&quot;margin-left: 2rem&quot;&gt;
-			&lt;li&gt;A nonclustered index contains the key values and each key value entry has a pointer to the data row that contains the key value. Since the Clustered Index is usually built using the Primary Key column values, if you want to speed up queries that use some other column, then you'll have to add a Secondary Non-Clustered Index.
+			&lt;li&gt;A nonclustered index contains the key values and each key value entry has a pointer to the data row that contains the key value. Since the Clustered Index is usually built using the Primary Key column values, if you want to speed up queries that use some other column, then you&apos;ll have to add a Secondary Non-Clustered Index.
 
 			The Secondary Index is going to store the Primary Key value in its Leaf Nodes, as illustrated by the following diagram
 			&lt;/li&gt;
@@ -1280,7 +1361,7 @@ Let’s delve into two scenarios:&lt;/p&gt;
 
 		&lt;img src=&quot;/blog/images/database-indexing/index-only-scan.png&quot; width=&quot;425&quot; /&gt;
 
-		Let's break down the query output:
+		Let&apos;s break down the query output:
 		&lt;ol style=&quot;margin-left: 2rem&quot;&gt;
 			&lt;li&gt;
 				&lt;b&gt;&lt;code&gt;Index Only Scan:&lt;/code&gt;&lt;/b&gt; In the case of an &lt;code&gt;Index Only Scan&lt;/code&gt;, Postgres scans the index table, resulting in faster performance as the Index table is significantly smaller than the actual table. With &lt;code&gt;Index Only Scan&lt;/code&gt;, results are directly fetched from the Index table when querying columns for which indexes have been created.
@@ -1324,7 +1405,7 @@ Let’s delve into two scenarios:&lt;/p&gt;
 (4 rows)&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 
-		In this case, we are filtering the record using the filter on the id with '&amp;lt;' operator and filtering out record which have id less than 1000. So the process begins with an Index scanning on the Index table then fetching the rows from the heap. Same as in case of fetching single id.
+		In this case, we are filtering the record using the filter on the id with &apos;&amp;lt;&apos; operator and filtering out record which have id less than 1000. So the process begins with an Index scanning on the Index table then fetching the rows from the heap. Same as in case of fetching single id.
 		&lt;img src=&quot;/blog/images/database-indexing/index-scan.png&quot; width=&quot;425&quot; /&gt;	
 
 
@@ -1339,7 +1420,7 @@ Let’s delve into two scenarios:&lt;/p&gt;
 (5 rows)&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 
-		In this case, we are filtering the record using the filter on the id with '&amp;gt;' operator and filtering out records which have id greater than 1000. So, in this case, as Postgres knows it has to fetch 99% of the data anyway, it prefers to use the Seq Scan on the heap table. Rather than going to the Index table to filter out the records and then again going to the heap to filter those Index-scanned rows.
+		In this case, we are filtering the record using the filter on the id with &apos;&amp;gt;&apos; operator and filtering out records which have id greater than 1000. So, in this case, as Postgres knows it has to fetch 99% of the data anyway, it prefers to use the Seq Scan on the heap table. Rather than going to the Index table to filter out the records and then again going to the heap to filter those Index-scanned rows.
 
 		&lt;img src=&quot;/blog/images/database-indexing/seq-scan.png&quot; width=&quot;425&quot; /&gt;	
 	&lt;/li&gt;
@@ -1361,35 +1442,35 @@ Let’s delve into two scenarios:&lt;/p&gt;
 (8 rows)&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 
-		If we examine the given query, we are retrieving the &lt;code&gt;id&lt;/code&gt; using a filter on the name column, which doesn't have an index on it.
+		If we examine the given query, we are retrieving the &lt;code&gt;id&lt;/code&gt; using a filter on the name column, which doesn&apos;t have an index on it.
 
-		As we don't have an index on the name column, that means we have to actually search for the name &lt;code&gt;WABOY&lt;/code&gt; one by one and perform a sequential scan on the employees table. Postgres efficiently addresses this by executing multiple worker threads and conducting a parallel sequential scan.
+		As we don&apos;t have an index on the name column, that means we have to actually search for the name &lt;code&gt;WABOY&lt;/code&gt; one by one and perform a sequential scan on the employees table. Postgres efficiently addresses this by executing multiple worker threads and conducting a parallel sequential scan.
 		&lt;img src=&quot;/blog/images/database-indexing/parallel-seq-scan.png&quot; width=&quot;425&quot; /&gt;
 	&lt;/li&gt;
 	&lt;li&gt;
 		&lt;b&gt;Bitmap Scan&lt;/b&gt;
 		&lt;br /&gt;
-		Let's create a Bitmap Index on the name column to get started.
+		Let&apos;s create a Bitmap Index on the name column to get started.
 
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;postgres=# CREATE INDEX employees_name_idx ON employees(name);
 CREATE INDEX&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-		Let's explore how Bitmap Scan works in PostgreSQL.
+		Let&apos;s explore how Bitmap Scan works in PostgreSQL.
 		&lt;br /&gt;&lt;br /&gt;
-		Heap pages are stored on disk, and loading a page into memory can be expensive. When using an Index Scan, if the query yields a large number of rows, the query's performance may suffer because each row's retrieval involves loading a page into memory.
+		Heap pages are stored on disk, and loading a page into memory can be expensive. When using an Index Scan, if the query yields a large number of rows, the query&apos;s performance may suffer because each row&apos;s retrieval involves loading a page into memory.
 		&lt;br /&gt;
 		In contrast, with a Bitmap Scan, instead of loading rows into memory, we set a bit to 1 in an array of bits corresponding to heap page numbers. The operation then works on top of this bitmap.
 		&lt;br /&gt;
 		&lt;img src=&quot;/blog/images/database-indexing/bitmap-or-example.png&quot; width=&quot;425&quot; style=&quot;margin-top: 2rem; margin-bottom: 2rem&quot; /&gt;
 
-		Here's a simplified breakdown of above image:
+		Here&apos;s a simplified breakdown of above image:
 		&lt;ul style=&quot;margin-left: 2rem&quot;&gt;
 			&lt;li&gt;
-				In a bitmap index scan, rows are not loaded into memory. PostgreSQL sets the bit to 1 for page number 1 when the name is 'CD' and 0 for other pages.
+				In a bitmap index scan, rows are not loaded into memory. PostgreSQL sets the bit to 1 for page number 1 when the name is &apos;CD&apos; and 0 for other pages.
 			&lt;/li&gt;
 			&lt;li&gt;
-				When the name is 'BC', page number 2 is set to 1, and others are set to 0.
+				When the name is &apos;BC&apos;, page number 2 is set to 1, and others are set to 0.
 			&lt;/li&gt;
 			&lt;li&gt;
 				Subsequently, a new bitmap is created by performing an OR operation on both bitmaps.
@@ -1402,7 +1483,7 @@ CREATE INDEX&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 		This approach minimizes the need to load entire pages into memory for individual rows, improving the efficiency of the query. If the query results in a lot of rows located in only a limited number of heap pages then this strategy will be very efficient.
 		&lt;br /&gt;
 		&lt;br /&gt;
-		Now let's filter out the id, name by the name
+		Now let&apos;s filter out the id, name by the name
 
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;postgres=# EXPLAIN ANALYZE select id, name from employees where name = &amp;#39;WABOY&amp;#39;;
@@ -1418,7 +1499,7 @@ CREATE INDEX&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 		Upon analyzing the provided query, we extract the &lt;code&gt;id&lt;/code&gt; and &lt;code&gt;name&lt;/code&gt; by applying a filter on the &lt;code&gt;name&lt;/code&gt; column, which has an index.
 		&lt;img src=&quot;/blog/images/database-indexing/bitmap-scan.png&quot; width=&quot;425&quot; /&gt;
-		Let's clarify the process:
+		Let&apos;s clarify the process:
 		&lt;ol style=&quot;margin-left: 2rem&quot;&gt;
 			&lt;li&gt;
 				&lt;code&gt;Bitmap Index Scan&lt;/code&gt;: This step involves scanning the index table for the &lt;code&gt;name&lt;/code&gt; column since an index exists on it. It retrieves the page number and row number to obtain references to the corresponding records in the heap.
@@ -1434,7 +1515,7 @@ CREATE INDEX&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;ul style=&quot;margin-left: 2rem&quot;&gt;
 	&lt;li&gt;
-		Prerequisite: Let's create a table to learn how to combine indexes.
+		Prerequisite: Let&apos;s create a table to learn how to combine indexes.
 
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;CREATE TABLE NUMBERS(id serial primary key, a integer, b integer, c integer);
@@ -1442,7 +1523,7 @@ INSERT INTO NUMBERS(a, b, c) select (random() * 100)::integer, (random() * 1000)
 
 	&lt;/li&gt;
 	&lt;li&gt;
-		Now let's create index on the columns &lt;code&gt;A&lt;/code&gt; and &lt;code&gt;B&lt;/code&gt;.
+		Now let&apos;s create index on the columns &lt;code&gt;A&lt;/code&gt; and &lt;code&gt;B&lt;/code&gt;.
 
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-sql&quot; data-lang=&quot;sql&quot;&gt;CREATE INDEX numbers_a_idx on numbers(a);
@@ -1494,9 +1575,9 @@ oops=1)
 
 		Here, we can analyze the following:
 		&lt;ol style=&quot;margin-left: 2rem&quot;&gt;
-			&lt;li&gt;PostgreSQL executed a bitmap index scan on column 'A'.&lt;/li&gt;
-			&lt;li&gt;Concurrently, a bitmap index scan was performed on column 'B'.&lt;/li&gt;
-			&lt;li&gt;Subsequently, PostgreSQL executed a bitmap AND operation to combine the results of the scans on 'A' and 'B'.&lt;/li&gt;
+			&lt;li&gt;PostgreSQL executed a bitmap index scan on column &apos;A&apos;.&lt;/li&gt;
+			&lt;li&gt;Concurrently, a bitmap index scan was performed on column &apos;B&apos;.&lt;/li&gt;
+			&lt;li&gt;Subsequently, PostgreSQL executed a bitmap AND operation to combine the results of the scans on &apos;A&apos; and &apos;B&apos;.&lt;/li&gt;
 			&lt;li&gt;After obtaining the references for the rows to be retrieved, PostgreSQL proceeds to perform a bitmap heap scan.&lt;/li&gt;
 		&lt;/ol&gt;
 	&lt;/li&gt;
@@ -1642,7 +1723,7 @@ Execution Time: 397.675 ms&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 			Here, we can analyze the situation as follows:
 			&lt;ul style=&quot;margin-left: 2rem&quot;&gt;
 				&lt;li&gt;
-				As observed earlier, it's not feasible to use a composite index on column &lt;code&gt;B&lt;/code&gt; individually. The option is either to use it on column &lt;code&gt;A&lt;/code&gt; alone or on both columns &lt;code&gt;A&lt;/code&gt; and &lt;code&gt;B&lt;/code&gt;. Consequently, Postgres opts for a Parallel Sequential Scan in this scenario.
+				As observed earlier, it&apos;s not feasible to use a composite index on column &lt;code&gt;B&lt;/code&gt; individually. The option is either to use it on column &lt;code&gt;A&lt;/code&gt; alone or on both columns &lt;code&gt;A&lt;/code&gt; and &lt;code&gt;B&lt;/code&gt;. Consequently, Postgres opts for a Parallel Sequential Scan in this scenario.
 				&lt;/li&gt;
 			&lt;/ul&gt;
 		&lt;/li&gt;
@@ -1651,23 +1732,23 @@ Execution Time: 397.675 ms&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 
   
-  &lt;p&gt;&lt;a href=&quot;/technology/an-in-depth-look-at-database-indexing/&quot;&gt;An in-depth look at Database Indexing&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on December 10, 2023.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://0.0.0.0:4000/technology/an-in-depth-look-at-database-indexing/&quot;&gt;An in-depth look at Database Indexing&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;http://0.0.0.0:4000&quot;&gt;eLitmus Blog&lt;/a&gt; on December 10, 2023.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[How to setup AWS Cloudwatch alarm for your SES reputation metrics]]></title>
-  <link rel="alternate" type="text/html" href="/technology/how-to-setup-aws-cloudwatch-alarm-for-your-ses-reputation-metrics/"/>
-  <id>/technology/how-to-setup-aws-cloudwatch-alarm-for-your-ses-reputation-metrics</id>
+  <link rel="alternate" type="text/html" href="http://0.0.0.0:4000/technology/how-to-setup-aws-cloudwatch-alarm-for-your-ses-reputation-metrics/"/>
+  <id>http://0.0.0.0:4000/technology/how-to-setup-aws-cloudwatch-alarm-for-your-ses-reputation-metrics</id>
   <updated>2023-11-20 18:58:55 +0530T00:00:00-00:00</updated>
   <published>2023-11-20T00:00:00+05:30</published>
   
   <author>
     <name>eLitmus.com</name>
-    <uri></uri>
+    <uri>http://0.0.0.0:4000</uri>
     <email>site-admin@elitmus.com</email>
   </author>
-  <category scheme="/tags/#AWS" term="AWS" /><category scheme="/tags/#AWS%20SES" term="AWS SES" /><category scheme="/tags/#AWS%20SNS" term="AWS SNS" /><category scheme="/tags/#AWS%20Cloudwatch" term="AWS Cloudwatch" />
+  <category scheme="http://0.0.0.0:4000/tags/#AWS" term="AWS" /><category scheme="http://0.0.0.0:4000/tags/#AWS%20SES" term="AWS SES" /><category scheme="http://0.0.0.0:4000/tags/#AWS%20SNS" term="AWS SNS" /><category scheme="http://0.0.0.0:4000/tags/#AWS%20Cloudwatch" term="AWS Cloudwatch" />
   <content type="html">
   
     &lt;p&gt;Amazon Simple Email Service (SES) is an email platform that offers a straightforward and cost-effective way for you to send and receive emails using your own email addresses and domains.&lt;/p&gt;
@@ -1869,23 +1950,23 @@ Execution Time: 397.675 ms&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 
   
-  &lt;p&gt;&lt;a href=&quot;/technology/how-to-setup-aws-cloudwatch-alarm-for-your-ses-reputation-metrics/&quot;&gt;How to setup AWS Cloudwatch alarm for your SES reputation metrics&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on November 20, 2023.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://0.0.0.0:4000/technology/how-to-setup-aws-cloudwatch-alarm-for-your-ses-reputation-metrics/&quot;&gt;How to setup AWS Cloudwatch alarm for your SES reputation metrics&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;http://0.0.0.0:4000&quot;&gt;eLitmus Blog&lt;/a&gt; on November 20, 2023.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Building a Collaborative code-editor &amp; Whiteboard: For tech interviews.]]></title>
-  <link rel="alternate" type="text/html" href="/technology/building-a-collaborative-code-editor-and-whiteboard-for-tech-interviews/"/>
-  <id>/technology/building-a-collaborative-code-editor-and-whiteboard-for-tech-interviews</id>
+  <link rel="alternate" type="text/html" href="http://0.0.0.0:4000/technology/building-a-collaborative-code-editor-and-whiteboard-for-tech-interviews/"/>
+  <id>http://0.0.0.0:4000/technology/building-a-collaborative-code-editor-and-whiteboard-for-tech-interviews</id>
   <updated>2023-11-18 14:53:31 +0530T00:00:00-00:00</updated>
   <published>2023-11-18T00:00:00+05:30</published>
   
   <author>
     <name>eLitmus.com</name>
-    <uri></uri>
+    <uri>http://0.0.0.0:4000</uri>
     <email>site-admin@elitmus.com</email>
   </author>
-  <category scheme="/tags/#Concurrency%20Management" term="Concurrency Management" /><category scheme="/tags/#Websockets" term="Websockets" /><category scheme="/tags/#Multifile%20Navigation" term="Multifile Navigation" /><category scheme="/tags/#YJS" term="YJS" /><category scheme="/tags/#tldraw" term="tldraw" /><category scheme="/tags/#OT%20Vs%20CRDT" term="OT Vs CRDT" /><category scheme="/tags/#CodeMirror%206" term="CodeMirror 6" /><category scheme="/tags/#Docker" term="Docker" /><category scheme="/tags/#AWS" term="AWS" />
+  <category scheme="http://0.0.0.0:4000/tags/#Concurrency%20Management" term="Concurrency Management" /><category scheme="http://0.0.0.0:4000/tags/#Websockets" term="Websockets" /><category scheme="http://0.0.0.0:4000/tags/#Multifile%20Navigation" term="Multifile Navigation" /><category scheme="http://0.0.0.0:4000/tags/#YJS" term="YJS" /><category scheme="http://0.0.0.0:4000/tags/#tldraw" term="tldraw" /><category scheme="http://0.0.0.0:4000/tags/#OT%20Vs%20CRDT" term="OT Vs CRDT" /><category scheme="http://0.0.0.0:4000/tags/#CodeMirror%206" term="CodeMirror 6" /><category scheme="http://0.0.0.0:4000/tags/#Docker" term="Docker" /><category scheme="http://0.0.0.0:4000/tags/#AWS" term="AWS" />
   <content type="html">
   
     &lt;p&gt;A Collaborative code-editor and Whiteboard aims to diversify the current interviewing scenario to Live - Coding, Sketching, Crafting, and Conceptualisation of ideas between the Interviewer and Interviewee for better communication which was until now only limited to Video and audio chats.&lt;/p&gt;
@@ -2176,23 +2257,23 @@ Optimising user bandwidth is achieved through a granular approach of selectively
 &lt;p&gt;Feel free to reach out if you’d like to learn more about this project—I’m here to help and answer any questions you might have.&lt;/p&gt;
 
   
-  &lt;p&gt;&lt;a href=&quot;/technology/building-a-collaborative-code-editor-and-whiteboard-for-tech-interviews/&quot;&gt;Building a Collaborative code-editor &amp; Whiteboard: For tech interviews.&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on November 18, 2023.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://0.0.0.0:4000/technology/building-a-collaborative-code-editor-and-whiteboard-for-tech-interviews/&quot;&gt;Building a Collaborative code-editor &amp; Whiteboard: For tech interviews.&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;http://0.0.0.0:4000&quot;&gt;eLitmus Blog&lt;/a&gt; on November 18, 2023.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Puma: From Daemonization to Process Control with Systemctl and Monit]]></title>
-  <link rel="alternate" type="text/html" href="/technology/puma-from-daemonization-to-process-control-with-systemctl-and-monit/"/>
-  <id>/technology/puma-from-daemonization-to-process-control-with-systemctl-and-monit</id>
+  <link rel="alternate" type="text/html" href="http://0.0.0.0:4000/technology/puma-from-daemonization-to-process-control-with-systemctl-and-monit/"/>
+  <id>http://0.0.0.0:4000/technology/puma-from-daemonization-to-process-control-with-systemctl-and-monit</id>
   <updated>2023-10-21 21:06:27 +0530T00:00:00-00:00</updated>
   <published>2023-10-21T00:00:00+05:30</published>
   
   <author>
     <name>eLitmus.com</name>
-    <uri></uri>
+    <uri>http://0.0.0.0:4000</uri>
     <email>site-admin@elitmus.com</email>
   </author>
-  <category scheme="/tags/#puma" term="puma" /><category scheme="/tags/#daemon" term="daemon" /><category scheme="/tags/#systemctl" term="systemctl" /><category scheme="/tags/#monit" term="monit" /><category scheme="/tags/#rails" term="rails" />
+  <category scheme="http://0.0.0.0:4000/tags/#puma" term="puma" /><category scheme="http://0.0.0.0:4000/tags/#daemon" term="daemon" /><category scheme="http://0.0.0.0:4000/tags/#systemctl" term="systemctl" /><category scheme="http://0.0.0.0:4000/tags/#monit" term="monit" /><category scheme="http://0.0.0.0:4000/tags/#rails" term="rails" />
   <content type="html">
   
     &lt;p&gt;Puma is a popular Ruby web server that is known for its speed and scalability. It has undergone significant changes in recent versions(starting 5.0.0). One of the most notable alterations is the removal of the daemonization feature. But what does it mean?&lt;/p&gt;
@@ -2248,7 +2329,7 @@ daemonize&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
   &lt;/li&gt;
   &lt;li&gt;
     Two prominent Puma restart strategies are Phased and Hot restarts. &lt;strong&gt;Phased restarts are slower but ensure that all workers finish their existing requests before restarting the server, while Hot restarts are faster but come with increased latency during the restart.&lt;/strong&gt; &lt;br /&gt;
-    To initiate Puma with a phased restart, you can pass the &lt;code&gt;phased-restart&lt;/code&gt; option. This choice offers flexibility to adapt Puma's behavior according to specific needs. More about puma restarts &lt;a href=&quot;https://github.com/puma/puma/blob/master/docs/restart.md&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Here&lt;/a&gt;.
+    To initiate Puma with a phased restart, you can pass the &lt;code&gt;phased-restart&lt;/code&gt; option. This choice offers flexibility to adapt Puma&apos;s behavior according to specific needs. More about puma restarts &lt;a href=&quot;https://github.com/puma/puma/blob/master/docs/restart.md&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Here&lt;/a&gt;.
   &lt;/li&gt;
   &lt;li&gt;
     &lt;strong&gt;Monit configurations&lt;/strong&gt;&lt;br /&gt;
@@ -2286,23 +2367,23 @@ daemonize&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 &lt;p&gt;While the removal of daemonization from Puma may require some adjustments, it aligns with the best practices of modern web server management Managing processes at the system level, using tools like systemd and Monit, is considered a more efficient and maintainable approach. Daemonizing processes within application code is discouraged, as it’s a task that falls under the system level. Ultimately, the shift towards system-level process management ensures the stability and efficiency of web applications.&lt;/p&gt;
 
   
-  &lt;p&gt;&lt;a href=&quot;/technology/puma-from-daemonization-to-process-control-with-systemctl-and-monit/&quot;&gt;Puma: From Daemonization to Process Control with Systemctl and Monit&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on October 21, 2023.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://0.0.0.0:4000/technology/puma-from-daemonization-to-process-control-with-systemctl-and-monit/&quot;&gt;Puma: From Daemonization to Process Control with Systemctl and Monit&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;http://0.0.0.0:4000&quot;&gt;eLitmus Blog&lt;/a&gt; on October 21, 2023.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Demystifying Rails 7 System Tests: Configuring CI Pipeline]]></title>
-  <link rel="alternate" type="text/html" href="/technology/demystifying-rails-7-system-tests-configuring-ci-pipeline/"/>
-  <id>/technology/demystifying-rails-7-system-tests-configuring-ci-pipeline</id>
+  <link rel="alternate" type="text/html" href="http://0.0.0.0:4000/technology/demystifying-rails-7-system-tests-configuring-ci-pipeline/"/>
+  <id>http://0.0.0.0:4000/technology/demystifying-rails-7-system-tests-configuring-ci-pipeline</id>
   <updated>2023-08-28 17:28:05 +0530T00:00:00-00:00</updated>
   <published>2023-08-28T00:00:00+05:30</published>
   
   <author>
     <name>eLitmus.com</name>
-    <uri></uri>
+    <uri>http://0.0.0.0:4000</uri>
     <email>site-admin@elitmus.com</email>
   </author>
-  <category scheme="/tags/#Rails%207" term="Rails 7" /><category scheme="/tags/#System%20Tests" term="System Tests" /><category scheme="/tags/#Integration%20Tests" term="Integration Tests" /><category scheme="/tags/#CI-CD" term="CI-CD" /><category scheme="/tags/#Minitest" term="Minitest" /><category scheme="/tags/#Capybara" term="Capybara" /><category scheme="/tags/#Selenium" term="Selenium" /><category scheme="/tags/#Selenium-webdriver" term="Selenium-webdriver" /><category scheme="/tags/#webdriver" term="webdriver" /><category scheme="/tags/#webdrivers%20gem" term="webdrivers gem" /><category scheme="/tags/#chromedriver" term="chromedriver" /><category scheme="/tags/#arm64" term="arm64" /><category scheme="/tags/#amd64" term="amd64" /><category scheme="/tags/#linux" term="linux" /><category scheme="/tags/#docker" term="docker" /><category scheme="/tags/#gitlab-runner" term="gitlab-runner" />
+  <category scheme="http://0.0.0.0:4000/tags/#Rails%207" term="Rails 7" /><category scheme="http://0.0.0.0:4000/tags/#System%20Tests" term="System Tests" /><category scheme="http://0.0.0.0:4000/tags/#Integration%20Tests" term="Integration Tests" /><category scheme="http://0.0.0.0:4000/tags/#CI-CD" term="CI-CD" /><category scheme="http://0.0.0.0:4000/tags/#Minitest" term="Minitest" /><category scheme="http://0.0.0.0:4000/tags/#Capybara" term="Capybara" /><category scheme="http://0.0.0.0:4000/tags/#Selenium" term="Selenium" /><category scheme="http://0.0.0.0:4000/tags/#Selenium-webdriver" term="Selenium-webdriver" /><category scheme="http://0.0.0.0:4000/tags/#webdriver" term="webdriver" /><category scheme="http://0.0.0.0:4000/tags/#webdrivers%20gem" term="webdrivers gem" /><category scheme="http://0.0.0.0:4000/tags/#chromedriver" term="chromedriver" /><category scheme="http://0.0.0.0:4000/tags/#arm64" term="arm64" /><category scheme="http://0.0.0.0:4000/tags/#amd64" term="amd64" /><category scheme="http://0.0.0.0:4000/tags/#linux" term="linux" /><category scheme="http://0.0.0.0:4000/tags/#docker" term="docker" /><category scheme="http://0.0.0.0:4000/tags/#gitlab-runner" term="gitlab-runner" />
   <content type="html">
   
     &lt;p&gt;In Rails 5.1 and later versions, system tests were introduced as a new type of test to simulate a user interacting with a web application. These tests use a headless browser, typically powered by Capybara and a WebDriver, to mimic a user’s actions like clicking buttons, filling forms, and navigating through the application.&lt;/p&gt;
@@ -2314,7 +2395,7 @@ daemonize&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
   &lt;li&gt;Typically used for:
     &lt;ul style=&quot;margin-left: 2rem&quot;&gt;
 &lt;li&gt;&lt;strong&gt;Acceptance testing:&lt;/strong&gt; verify that the app has implemented a specific feature&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Smoke testing:&lt;/strong&gt; verify that the app is functional on a fundamental level and doesn't have code issues.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Smoke testing:&lt;/strong&gt; verify that the app is functional on a fundamental level and doesn&apos;t have code issues.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Characterization testing:&lt;/strong&gt; is a type of software testing that involves examining and documenting the behavior of an existing system or application without making any modifications to its code&lt;/li&gt;
 &lt;/ul&gt;
   &lt;/li&gt;
@@ -2364,7 +2445,7 @@ daemonize&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
   &lt;li&gt;&lt;a href=&quot;https://github.com/teamcapybara/capybara&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Capybara&lt;/a&gt; starts your app in a separate process before running the tests. This ensures that the tests are run against the correct version of your app.&lt;/li&gt;
   &lt;li&gt;Capybara provides a high-level API that makes it easy to write tests in a natural way. For example, you can write a test that says &lt;code&gt;&quot;click the button&quot;&lt;/code&gt; instead of having to write code to find the button and click it.&lt;/li&gt;
-  &lt;li&gt;Here is an example of a test written with Capybara's DSL (Domain Specific Language):&lt;/li&gt;
+  &lt;li&gt;Here is an example of a test written with Capybara&apos;s DSL (Domain Specific Language):&lt;/li&gt;
 &lt;/ul&gt;
   &lt;/li&gt;
 &lt;/ul&gt;
@@ -2655,23 +2736,23 @@ SystemTests:
 &lt;p&gt;Now we have a setup that enables us to run system tests in both arm64 and amd64 linux machines with minimal customizations we may want to add. A few tips and tricks should help to get your first system tests up and running in CI pipeline.&lt;/p&gt;
 
   
-  &lt;p&gt;&lt;a href=&quot;/technology/demystifying-rails-7-system-tests-configuring-ci-pipeline/&quot;&gt;Demystifying Rails 7 System Tests: Configuring CI Pipeline&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on August 28, 2023.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://0.0.0.0:4000/technology/demystifying-rails-7-system-tests-configuring-ci-pipeline/&quot;&gt;Demystifying Rails 7 System Tests: Configuring CI Pipeline&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;http://0.0.0.0:4000&quot;&gt;eLitmus Blog&lt;/a&gt; on August 28, 2023.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Interview-Platform:Insights and Learnings]]></title>
-  <link rel="alternate" type="text/html" href="/technology/interview-platform-insights-and-learnings/"/>
-  <id>/technology/interview-platform-insights-and-learnings</id>
+  <link rel="alternate" type="text/html" href="http://0.0.0.0:4000/technology/interview-platform-insights-and-learnings/"/>
+  <id>http://0.0.0.0:4000/technology/interview-platform-insights-and-learnings</id>
   <updated>2023-07-27 13:58:13 +0530T00:00:00-00:00</updated>
   <published>2023-07-27T00:00:00+05:30</published>
   
   <author>
     <name>eLitmus.com</name>
-    <uri></uri>
+    <uri>http://0.0.0.0:4000</uri>
     <email>site-admin@elitmus.com</email>
   </author>
-  <category scheme="/tags/#video-conferencing" term="video-conferencing" /><category scheme="/tags/#socket-io" term="socket-io" /><category scheme="/tags/#webrtc" term="webrtc" /><category scheme="/tags/#mediasoup" term="mediasoup" />
+  <category scheme="http://0.0.0.0:4000/tags/#video-conferencing" term="video-conferencing" /><category scheme="http://0.0.0.0:4000/tags/#socket-io" term="socket-io" /><category scheme="http://0.0.0.0:4000/tags/#webrtc" term="webrtc" /><category scheme="http://0.0.0.0:4000/tags/#mediasoup" term="mediasoup" />
   <content type="html">
   
     &lt;p&gt;An interview platform is a platform that offers a digital answer to the interview procedure. The conventional hiring procedure is frequently ineffective, time-consuming, and difficult. The platform was developed to address the issue by streamlining the hiring process and offering an effective means to carry it out.&lt;/p&gt;
@@ -3001,23 +3082,23 @@ CMD [ &amp;quot;npm&amp;quot;, &amp;quot;start&amp;quot; ]&lt;/code&gt;&lt;/pre&
 
 
   
-  &lt;p&gt;&lt;a href=&quot;/technology/interview-platform-insights-and-learnings/&quot;&gt;Interview-Platform:Insights and Learnings&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on July 27, 2023.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://0.0.0.0:4000/technology/interview-platform-insights-and-learnings/&quot;&gt;Interview-Platform:Insights and Learnings&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;http://0.0.0.0:4000&quot;&gt;eLitmus Blog&lt;/a&gt; on July 27, 2023.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Building a Frontend Scoring Engine: Automating Frontend Evaluation]]></title>
-  <link rel="alternate" type="text/html" href="/technology/building-a-frontend-scoring-engine-automating-frontend-evaluation/"/>
-  <id>/technology/building-a-frontend-scoring-engine-automating-frontend-evaluation</id>
+  <link rel="alternate" type="text/html" href="http://0.0.0.0:4000/technology/building-a-frontend-scoring-engine-automating-frontend-evaluation/"/>
+  <id>http://0.0.0.0:4000/technology/building-a-frontend-scoring-engine-automating-frontend-evaluation</id>
   <updated>2023-10-05 20:17:46 +0530T00:00:00-00:00</updated>
   <published>2023-07-21T00:00:00+05:30</published>
   
   <author>
     <name>eLitmus.com</name>
-    <uri></uri>
+    <uri>http://0.0.0.0:4000</uri>
     <email>site-admin@elitmus.com</email>
   </author>
-  <category scheme="/tags/#frontend%20development" term="frontend development" /><category scheme="/tags/#evaluation" term="evaluation" /><category scheme="/tags/#automation" term="automation" /><category scheme="/tags/#testing" term="testing" /><category scheme="/tags/#coding" term="coding" />
+  <category scheme="http://0.0.0.0:4000/tags/#frontend%20development" term="frontend development" /><category scheme="http://0.0.0.0:4000/tags/#evaluation" term="evaluation" /><category scheme="http://0.0.0.0:4000/tags/#automation" term="automation" /><category scheme="http://0.0.0.0:4000/tags/#testing" term="testing" /><category scheme="http://0.0.0.0:4000/tags/#coding" term="coding" />
   <content type="html">
   
     &lt;p&gt;The frontend scoring engine is a powerful tool designed to assess the frontend skills of candidates based on code quality, responsiveness, and functionality. It aims to streamline the evaluation process for frontend development by automating the assessment of code quality, best practices, and functionality.&lt;/p&gt;
@@ -3259,23 +3340,23 @@ CMD [&amp;quot;npm&amp;quot;, &amp;quot;test&amp;quot;]&lt;/code&gt;&lt;/pre&gt;
 If you have any questions, doubts or suggestions feel free to reach out to me on &lt;a href=&quot;https://www.linkedin.com/in/bhushan-wanjari-952042213/&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;LinkedIn&lt;/a&gt;&lt;/p&gt;
 
   
-  &lt;p&gt;&lt;a href=&quot;/technology/building-a-frontend-scoring-engine-automating-frontend-evaluation/&quot;&gt;Building a Frontend Scoring Engine: Automating Frontend Evaluation&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on July 21, 2023.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://0.0.0.0:4000/technology/building-a-frontend-scoring-engine-automating-frontend-evaluation/&quot;&gt;Building a Frontend Scoring Engine: Automating Frontend Evaluation&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;http://0.0.0.0:4000&quot;&gt;eLitmus Blog&lt;/a&gt; on July 21, 2023.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Revamping eLitmus.com | Stand-Alone Front-end Module]]></title>
-  <link rel="alternate" type="text/html" href="/technology/revamping-elitmus-dot-com-stand-alone-front-end-module/"/>
-  <id>/technology/revamping-elitmus-dot-com-stand-alone-front-end-module</id>
+  <link rel="alternate" type="text/html" href="http://0.0.0.0:4000/technology/revamping-elitmus-dot-com-stand-alone-front-end-module/"/>
+  <id>http://0.0.0.0:4000/technology/revamping-elitmus-dot-com-stand-alone-front-end-module</id>
   <updated>2023-07-20 04:10:15 +0530T00:00:00-00:00</updated>
   <published>2023-07-20T00:00:00+05:30</published>
   
   <author>
     <name>eLitmus.com</name>
-    <uri></uri>
+    <uri>http://0.0.0.0:4000</uri>
     <email>site-admin@elitmus.com</email>
   </author>
-  <category scheme="/tags/#elitmus" term="elitmus" /><category scheme="/tags/#revamp" term="revamp" /><category scheme="/tags/#upgrade" term="upgrade" /><category scheme="/tags/#distributed%20system" term="distributed system" />
+  <category scheme="http://0.0.0.0:4000/tags/#elitmus" term="elitmus" /><category scheme="http://0.0.0.0:4000/tags/#revamp" term="revamp" /><category scheme="http://0.0.0.0:4000/tags/#upgrade" term="upgrade" /><category scheme="http://0.0.0.0:4000/tags/#distributed%20system" term="distributed system" />
   <content type="html">
   
     &lt;p&gt;The current elitmus.com is a web application built with Ruby on Rails Framework, and the views are sent directly from the backend server whenever requested. This was quite good before, but in present scenario of internet and web technologies, these seem to lack some very basic requirements. And Hence, an upgradation is required.&lt;/p&gt;
@@ -3556,23 +3637,23 @@ If you have any questions, doubts or suggestions feel free to reach out to me on
 &lt;/ol&gt;
 
   
-  &lt;p&gt;&lt;a href=&quot;/technology/revamping-elitmus-dot-com-stand-alone-front-end-module/&quot;&gt;Revamping eLitmus.com | Stand-Alone Front-end Module&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on July 20, 2023.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://0.0.0.0:4000/technology/revamping-elitmus-dot-com-stand-alone-front-end-module/&quot;&gt;Revamping eLitmus.com | Stand-Alone Front-end Module&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;http://0.0.0.0:4000&quot;&gt;eLitmus Blog&lt;/a&gt; on July 20, 2023.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[My Experience as a Summer Intern at eLitmus: Building a Telegram Bot]]></title>
-  <link rel="alternate" type="text/html" href="/technology/my-experience-as-a-summer-intern-at-elitmus-building-a-telegram-bot/"/>
-  <id>/technology/my-experience-as-a-summer-intern-at-elitmus-building-a-telegram-bot</id>
+  <link rel="alternate" type="text/html" href="http://0.0.0.0:4000/technology/my-experience-as-a-summer-intern-at-elitmus-building-a-telegram-bot/"/>
+  <id>http://0.0.0.0:4000/technology/my-experience-as-a-summer-intern-at-elitmus-building-a-telegram-bot</id>
   <updated>2023-07-14 15:18:53 +0530T00:00:00-00:00</updated>
   <published>2023-07-19T00:00:00+05:30</published>
   
   <author>
     <name>eLitmus.com</name>
-    <uri></uri>
+    <uri>http://0.0.0.0:4000</uri>
     <email>site-admin@elitmus.com</email>
   </author>
-  <category scheme="/tags/#Rails" term="Rails" /><category scheme="/tags/#Telegram%20bot" term="Telegram bot" />
+  <category scheme="http://0.0.0.0:4000/tags/#Rails" term="Rails" /><category scheme="http://0.0.0.0:4000/tags/#Telegram%20bot" term="Telegram bot" />
   <content type="html">
   
     &lt;p&gt;As a summer intern at eLitmus, I had the opportunity to work on an exciting project that involved building a Telegram Bot. In today’s digital era, effective communication channels play a crucial role in connecting businesses with their stakeholders. eLitmus, a talent-tech platform, identified the need for a two-way communication channel between the platform and candidates. To achieve this, Telegram bots were chosen as the ideal starting point. This blog post will delve into the Telegram Bot Integration project.&lt;/p&gt;
@@ -3704,23 +3785,23 @@ Designing such an application involves three key aspects: architecture design, d
 &lt;p&gt;In summary, working on this project presented its fair share of challenges. However, with perseverance and problem-solving skills, I was able to overcome these obstacles and achieve success. I was able to develop the Telegram bots and the Admin panel effectively. I am thrilled to share that my hard work did not go unnoticed, and my project was selected for use by the company. This recognition is truly gratifying, as it demonstrates the value my work brings to the organization and the impact it can have on the company operations. Overall, this project was a rewarding journey that expanded my knowledge and skills in web development.&lt;/p&gt;
 
   
-  &lt;p&gt;&lt;a href=&quot;/technology/my-experience-as-a-summer-intern-at-elitmus-building-a-telegram-bot/&quot;&gt;My Experience as a Summer Intern at eLitmus: Building a Telegram Bot&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on July 19, 2023.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://0.0.0.0:4000/technology/my-experience-as-a-summer-intern-at-elitmus-building-a-telegram-bot/&quot;&gt;My Experience as a Summer Intern at eLitmus: Building a Telegram Bot&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;http://0.0.0.0:4000&quot;&gt;eLitmus Blog&lt;/a&gt; on July 19, 2023.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Resume Parsing: Insights and Steps to Create Your Own Parser]]></title>
-  <link rel="alternate" type="text/html" href="/technology/resume-parsing-insights-and-steps-to-create-your-own-parser/"/>
-  <id>/technology/resume-parsing-insights-and-steps-to-create-your-own-parser</id>
+  <link rel="alternate" type="text/html" href="http://0.0.0.0:4000/technology/resume-parsing-insights-and-steps-to-create-your-own-parser/"/>
+  <id>http://0.0.0.0:4000/technology/resume-parsing-insights-and-steps-to-create-your-own-parser</id>
   <updated>2023-06-20 13:40:00 +0530T00:00:00-00:00</updated>
   <published>2023-06-20T00:00:00+05:30</published>
   
   <author>
     <name>eLitmus.com</name>
-    <uri></uri>
+    <uri>http://0.0.0.0:4000</uri>
     <email>site-admin@elitmus.com</email>
   </author>
-  <category scheme="/tags/#Resume-parser" term="Resume-parser" /><category scheme="/tags/#Python" term="Python" /><category scheme="/tags/#Flask" term="Flask" /><category scheme="/tags/#NLP" term="NLP" /><category scheme="/tags/#LLM" term="LLM" />
+  <category scheme="http://0.0.0.0:4000/tags/#Resume-parser" term="Resume-parser" /><category scheme="http://0.0.0.0:4000/tags/#Python" term="Python" /><category scheme="http://0.0.0.0:4000/tags/#Flask" term="Flask" /><category scheme="http://0.0.0.0:4000/tags/#NLP" term="NLP" /><category scheme="http://0.0.0.0:4000/tags/#LLM" term="LLM" />
   <content type="html">
   
     &lt;p&gt;Resume parsing is the automated process of extracting relevant information from resumes or CVs. 
@@ -3809,12 +3890,12 @@ import datefinder
 
 
 def get_date(input_string):
-    '''Get date from text'''
+    &apos;&apos;&apos;Get date from text&apos;&apos;&apos;
     matches = list(datefinder.find_dates(input_string))
 
     res = []
     for i in matches:
-        date_str = str(i).split(' ')
+        date_str = str(i).split(&apos; &apos;)
         extracted_date = date_str[0]
 
         res.append(extracted_date)
@@ -3822,8 +3903,8 @@ def get_date(input_string):
 
 
 def get_years(txt):
-    '''Get years from text'''
-    pattern = r'[0-9]{4}'
+    &apos;&apos;&apos;Get years from text&apos;&apos;&apos;
+    pattern = r&apos;[0-9]{4}&apos;
     lst = re.findall(pattern, txt)
 
     current_date = date.today()
@@ -3837,7 +3918,7 @@ def get_years(txt):
 
 
 def get_duration(input_text):
-    '''Get duration from text'''
+    &apos;&apos;&apos;Get duration from text&apos;&apos;&apos;
 
     dates = get_date(input_text)
     years = get_years(input_text)
@@ -3864,7 +3945,7 @@ def get_duration(input_text):
 &lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;import pdfx
 
 def get_urls_from_pdf(file_path):
-    '''extract urls from pdf file'''
+    &apos;&apos;&apos;extract urls from pdf file&apos;&apos;&apos;
     url_list = []
 
     # for invalid file path
@@ -3888,7 +3969,7 @@ def get_urls_from_pdf(file_path):
 
 &lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;import pdfx
 def get_text_from_pdf(file_path):
-    '''extract complete text from pdf'''
+    &apos;&apos;&apos;extract complete text from pdf&apos;&apos;&apos;
 
     # for invalid file path
     if os.path.exists(file_path) is False:
@@ -3915,12 +3996,12 @@ def get_text_from_pdf(file_path):
 &lt;h4 id=&quot;nlp-function&quot;&gt;NLP function:&lt;/h4&gt;
 
 &lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;def get_name_via_nltk(input_text):
-    '''extract name from text via nltk functions'''
+    &apos;&apos;&apos;extract name from text via nltk functions&apos;&apos;&apos;
     names = []
     for sent in nltk.sent_tokenize(input_text):
         for chunk in nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(sent))):
-            if hasattr(chunk, 'label'):
-                name = ' '.join(c[0] for c in chunk.leaves())
+            if hasattr(chunk, &apos;label&apos;):
+                name = &apos; &apos;.join(c[0] for c in chunk.leaves())
                 names.append(name)
     return names
 &lt;/code&gt;&lt;/pre&gt;
@@ -3940,7 +4021,7 @@ def get_text_from_pdf(file_path):
 from phonenumbers import PhoneNumberMatcher
 
 def get_phone(input_text):
-    '''extract phone number from text'''
+    &apos;&apos;&apos;extract phone number from text&apos;&apos;&apos;
 
     phone_numbers = []
 
@@ -3955,10 +4036,10 @@ def get_phone(input_text):
 
     phone_number_list = []
     for i in search_result:
-        i = str(i).split(' ')
+        i = str(i).split(&apos; &apos;)
         match = i[2:]
 
-        phone_number = ''.join(match)
+        phone_number = &apos;&apos;.join(match)
         phone_number_list.append(phone_number)
 
     for i in phone_number_list:
@@ -3972,8 +4053,8 @@ def get_phone(input_text):
 
 &lt;p&gt;To extract the Email, we use the following regexp: &lt;code&gt;[^\s]+@[^\s]+[.][^\s]+&lt;/code&gt;&lt;/p&gt;
 &lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;def get_email(input_text):
-    '''extract email from text'''
-    email_pattern = '[^\s]+@[^\s]+[.][^\s]+'
+    &apos;&apos;&apos;extract email from text&apos;&apos;&apos;
+    email_pattern = &apos;[^\s]+@[^\s]+[.][^\s]+&apos;
 
     emails = []
     emails = re.findall(email_pattern, input_text)
@@ -3991,7 +4072,7 @@ def get_phone(input_text):
 &lt;p&gt;To Extract address, we use the &lt;code&gt;geotext&lt;/code&gt; module; we get City, Country, and Zipcode.&lt;/p&gt;
 &lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;import geotext
 def get_address(input_arr):
-    '''get address information from input array'''
+    &apos;&apos;&apos;get address information from input array&apos;&apos;&apos;
 
     input_text = &quot; \n &quot;.join(input_arr)
 
@@ -4031,14 +4112,14 @@ RESUME_SECTIONS = dynamo_db.get_item_db(&quot;RESUME_SECTIONS&quot;)
 
 
 def extract_resume_sections(text):
-    '''Extract section based on resume heading keywords'''
-    text_split = [i.strip() for i in text.split('\n')]
+    &apos;&apos;&apos;Extract section based on resume heading keywords&apos;&apos;&apos;
+    text_split = [i.strip() for i in text.split(&apos;\n&apos;)]
 
     entities = {}
     entities[&quot;extra&quot;] = []
     key = False
     for phrase in text_split:
-        if len(phrase.split(' ')) &amp;gt; 10:
+        if len(phrase.split(&apos; &apos;)) &amp;gt; 10:
             if key is not False:
                 entities[key].append(phrase)
             else:
@@ -4082,13 +4163,13 @@ SCHOOL_KEYWORDS = dynamo_db.get_item_db(&quot;SCHOOL_KEYWORDS&quot;)
 
 
 def get_school_name(input_text):
-    '''Extract list of school names from text'''
-    text_split = [i.strip() for i in input_text.split('\n')]
+    &apos;&apos;&apos;Extract list of school names from text&apos;&apos;&apos;
+    text_split = [i.strip() for i in input_text.split(&apos;\n&apos;)]
 
     school_names = []
 
     for phrase in text_split:
-        p_key = set(phrase.lower().split(' ')) &amp;amp; set(SCHOOL_KEYWORDS)
+        p_key = set(phrase.lower().split(&apos; &apos;)) &amp;amp; set(SCHOOL_KEYWORDS)
 
         if (len(p_key) == 0):
             continue
@@ -4100,23 +4181,23 @@ def get_school_name(input_text):
 
 &lt;p&gt;Code to extract CGPA/GPA or Percentage grade&lt;/p&gt;
 &lt;pre&gt;&lt;code class=&quot;language-python&quot;&gt;def get_percentage(txt):
-    '''Extract percentage from text'''
-    pattern = r'((\d+\.)?\d+%)'
+    &apos;&apos;&apos;Extract percentage from text&apos;&apos;&apos;
+    pattern = r&apos;((\d+\.)?\d+%)&apos;
     lst = re.findall(pattern, txt)
     lst = [i[0] for i in lst]
     return lst
 
 
 def get_gpa(txt):
-    '''Extract cgpa or gpa from text in format x.x/x'''
-    pattern = r'((\d+\.)?\d+\/\d+)'
+    &apos;&apos;&apos;Extract cgpa or gpa from text in format x.x/x&apos;&apos;&apos;
+    pattern = r&apos;((\d+\.)?\d+\/\d+)&apos;
     lst = re.findall(pattern, txt)
     lst = [i[0] for i in lst]
     return lst
 
 
 def get_grades(input_text):
-    '''Extract grades from text'''
+    &apos;&apos;&apos;Extract grades from text&apos;&apos;&apos;
     input_text = input_text.lower()
     # gpa
     gpa = get_gpa(input_text)
@@ -4144,7 +4225,7 @@ skills = dynamo_db.get_item_db(&quot;ALL_SKILLS&quot;)
 
 
 def get_skill_tags(input_text):
-    '''Extract skill tags from text'''
+    &apos;&apos;&apos;Extract skill tags from text&apos;&apos;&apos;
     user_skills = []
     for skill in skills:
         if skill in input_text.lower():
@@ -4167,7 +4248,7 @@ from utils import helper, skill_tags
 
 
 def get_certifications(input_array):
-    '''Function to extract certificate information'''
+    &apos;&apos;&apos;Function to extract certificate information&apos;&apos;&apos;
 
     res = {
         &quot;description&quot;: input_array,
@@ -4206,11 +4287,11 @@ def scrape(keyword, filePath):
         blocks = dict[&quot;blocks&quot;]
         for block in blocks:
             if &quot;lines&quot; in block.keys():
-                spans = block['lines']
+                spans = block[&apos;lines&apos;]
                 for span in spans:
-                    data = span['spans']
+                    data = span[&apos;spans&apos;]
                     for lines in data:
-                            results.append((lines['text'], lines['size'], lines['font']))
+                            results.append((lines[&apos;text&apos;], lines[&apos;size&apos;], lines[&apos;font&apos;]))
 
     pdf.close()
     return results
@@ -4221,7 +4302,7 @@ def scrape(keyword, filePath):
 from difflib import SequenceMatcher
 
 def similar(string_a, string_b):
-    '''Find similarity between two string'''
+    &apos;&apos;&apos;Find similarity between two string&apos;&apos;&apos;
     return SequenceMatcher(None, string_a, string_b).ratio()
 
 def extract_project_titles(input_array, text_font_size):
@@ -4241,12 +4322,12 @@ def extract_project_titles(input_array, text_font_size):
     return project_title
 
 def get_projects(input_array, text_font_size):
-    '''extract project details from text'''
+    &apos;&apos;&apos;extract project details from text&apos;&apos;&apos;
     res = {
         &quot;description&quot;: input_array,
         &quot;details&quot;: []
     }
-    txt = ' \n '.join(input_array)
+    txt = &apos; \n &apos;.join(input_array)
 
     project_titles = helper.extract_titles_via_font_size(
         input_array, text_font_size)
@@ -4256,7 +4337,7 @@ def get_projects(input_array, text_font_size):
     try:
         for i in project_sections.items():
             key = i[0]
-            txt = '\n'.join(project_sections[key])
+            txt = &apos;\n&apos;.join(project_sections[key])
 
             elem_dict = {
                 &quot;project_name&quot;: key,
@@ -4297,7 +4378,7 @@ import pytesseract
 import functools
 
 def textbox_recognition(file_path):
-    '''Extract text_boxes from image'''
+    &apos;&apos;&apos;Extract text_boxes from image&apos;&apos;&apos;
 
     img = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
 
@@ -4329,7 +4410,7 @@ def textbox_recognition(file_path):
 
 
 def detect_column_lines(segments):
-    '''Detect column lines from segments'''
+    &apos;&apos;&apos;Detect column lines from segments&apos;&apos;&apos;
 
     mx = max(i[1] for i in segments)
 
@@ -4364,7 +4445,7 @@ def detect_column_lines(segments):
 
 
 def get_text(img, box_data):
-    '''Extract text from given box data'''
+    &apos;&apos;&apos;Extract text from given box data&apos;&apos;&apos;
     (x, y, w, h) = box_data
     cropped_image = img[y:y+h, x:x+w]
 
@@ -4374,7 +4455,7 @@ def get_text(img, box_data):
 
 
 def box_coverage_percentage(x, w, line):
-    '''Extract coverage area in percentage for box'''
+    &apos;&apos;&apos;Extract coverage area in percentage for box&apos;&apos;&apos;
 
     covered_width = line - x
     cover_percentage = covered_width / w
@@ -4382,9 +4463,9 @@ def box_coverage_percentage(x, w, line):
 
 
 def clean_text(txt):
-    '''Clean text'''
+    &apos;&apos;&apos;Clean text&apos;&apos;&apos;
     txt = txt.strip()
-    txt = txt.replace(&quot;•&quot;, '')
+    txt = txt.replace(&quot;•&quot;, &apos;&apos;)
     return txt
 
 
@@ -4392,14 +4473,14 @@ Y_LIMIT = 10
 
 
 def custom_sort(a, b):
-    '''custom sort logic'''
+    &apos;&apos;&apos;custom sort logic&apos;&apos;&apos;
     if a[1] - Y_LIMIT &amp;lt;= b[1] &amp;gt;= a[1] + Y_LIMIT:
         return -1 if (a[0] &amp;lt;= b[0]) else 1
     return -1 if (a[1] &amp;lt;= b[1]) else 1
 
 
 def get_boxes_for_line(text_boxes, line, ordered_text_box, prev_line):
-    '''get boxes with line constraints'''
+    &apos;&apos;&apos;get boxes with line constraints&apos;&apos;&apos;
     temp_boxes = [i for i in text_boxes]
     temp_boxes.sort(key=functools.cmp_to_key(custom_sort))
 
@@ -4419,12 +4500,12 @@ def get_boxes_for_line(text_boxes, line, ordered_text_box, prev_line):
 
 
 def map_size(x, org, new):
-    '''map box co-ordinates from image to pdf'''
+    &apos;&apos;&apos;map box co-ordinates from image to pdf&apos;&apos;&apos;
     return (x*new)/org
 
 
 def get_text_from_pdf(box, img_shape, pdf_shape, page):
-    '''extract text from pdf box'''
+    &apos;&apos;&apos;extract text from pdf box&apos;&apos;&apos;
     (x, y, w, h) = box
     (height, width) = img_shape
     (W, H) = pdf_shape
@@ -4438,7 +4519,7 @@ def get_text_from_pdf(box, img_shape, pdf_shape, page):
 
 
 def image_to_text(file_path, pdf_file_path=&quot;&quot;):
-    '''extract text from image'''
+    &apos;&apos;&apos;extract text from image&apos;&apos;&apos;
     segments, text_boxes = textbox_recognition(file_path)
     column_lines = detect_column_lines(segments)
 
@@ -4498,7 +4579,7 @@ def image_to_text(file_path, pdf_file_path=&quot;&quot;):
             continue
         res.append(line)
 
-    resume_text = ' \n '.join(res)
+    resume_text = &apos; \n &apos;.join(res)
     return resume_text
 
 &lt;/code&gt;&lt;/pre&gt;
@@ -4601,23 +4682,23 @@ CMD [ &quot;python3&quot;, &quot;-u&quot; , &quot;main.py&quot;]
 &lt;p&gt;If you have any questions, doubts, or just want to say hi, feel free to reach out to me at &lt;code&gt;contact@jhamadhav.com&lt;/code&gt; ! I’m always ready to chat about this cool project and help you out. Don’t be shy, drop me a line and let’s geek out together!&lt;/p&gt;
 
   
-  &lt;p&gt;&lt;a href=&quot;/technology/resume-parsing-insights-and-steps-to-create-your-own-parser/&quot;&gt;Resume Parsing: Insights and Steps to Create Your Own Parser&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on June 20, 2023.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://0.0.0.0:4000/technology/resume-parsing-insights-and-steps-to-create-your-own-parser/&quot;&gt;Resume Parsing: Insights and Steps to Create Your Own Parser&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;http://0.0.0.0:4000&quot;&gt;eLitmus Blog&lt;/a&gt; on June 20, 2023.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Debugging &amp; Fixing mysql deadlock issue]]></title>
-  <link rel="alternate" type="text/html" href="/technology/debugging-and-fixing-mysql-deadlock-issue/"/>
-  <id>/technology/debugging-and-fixing-mysql-deadlock-issue</id>
+  <link rel="alternate" type="text/html" href="http://0.0.0.0:4000/technology/debugging-and-fixing-mysql-deadlock-issue/"/>
+  <id>http://0.0.0.0:4000/technology/debugging-and-fixing-mysql-deadlock-issue</id>
   <updated>2023-06-12 18:31:00 +0530T00:00:00-00:00</updated>
   <published>2023-06-12T00:00:00+05:30</published>
   
   <author>
     <name>eLitmus.com</name>
-    <uri></uri>
+    <uri>http://0.0.0.0:4000</uri>
     <email>site-admin@elitmus.com</email>
   </author>
-  <category scheme="/tags/#Mysql" term="Mysql" /><category scheme="/tags/#deadlock" term="deadlock" /><category scheme="/tags/#Index%20locks" term="Index locks" /><category scheme="/tags/#Next%20Key%20Lock" term="Next Key Lock" /><category scheme="/tags/#ruby" term="ruby" /><category scheme="/tags/#Ruby%20on%20Rails" term="Ruby on Rails" /><category scheme="/tags/#aasm" term="aasm" />
+  <category scheme="http://0.0.0.0:4000/tags/#Mysql" term="Mysql" /><category scheme="http://0.0.0.0:4000/tags/#deadlock" term="deadlock" /><category scheme="http://0.0.0.0:4000/tags/#Index%20locks" term="Index locks" /><category scheme="http://0.0.0.0:4000/tags/#Next%20Key%20Lock" term="Next Key Lock" /><category scheme="http://0.0.0.0:4000/tags/#ruby" term="ruby" /><category scheme="http://0.0.0.0:4000/tags/#Ruby%20on%20Rails" term="Ruby on Rails" /><category scheme="http://0.0.0.0:4000/tags/#aasm" term="aasm" />
   <content type="html">
   
     &lt;p&gt;Recently, during one of our tests, we encountered a deadlock issue that was reported by Sentry. The deadlock occurred while attempting to insert scores into a table after completing a candidate’s test. We were initially unsure about the cause of this deadlock. Upon investigation, we discovered that it was due to the interplay of various locks in our MySQL database. In this blog post, we will deep dive into the nature of these locks, understand their impact on transactions, and present the solutions we implemented to mitigate deadlock occurrences.&lt;/p&gt;
@@ -4768,23 +4849,23 @@ end&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 &lt;/ol&gt;
 
   
-  &lt;p&gt;&lt;a href=&quot;/technology/debugging-and-fixing-mysql-deadlock-issue/&quot;&gt;Debugging &amp; Fixing mysql deadlock issue&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on June 12, 2023.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://0.0.0.0:4000/technology/debugging-and-fixing-mysql-deadlock-issue/&quot;&gt;Debugging &amp; Fixing mysql deadlock issue&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;http://0.0.0.0:4000&quot;&gt;eLitmus Blog&lt;/a&gt; on June 12, 2023.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Website Monitor Using Google App Script]]></title>
-  <link rel="alternate" type="text/html" href="/technology/website-monitor-using-google-app-script/"/>
-  <id>/technology/website-monitor-using-google-app-script</id>
+  <link rel="alternate" type="text/html" href="http://0.0.0.0:4000/technology/website-monitor-using-google-app-script/"/>
+  <id>http://0.0.0.0:4000/technology/website-monitor-using-google-app-script</id>
   <updated>2022-12-30 02:04:27 +0530T00:00:00-00:00</updated>
   <published>2022-12-30T00:00:00+05:30</published>
   
   <author>
     <name>eLitmus.com</name>
-    <uri></uri>
+    <uri>http://0.0.0.0:4000</uri>
     <email>site-admin@elitmus.com</email>
   </author>
-  <category scheme="/tags/#google-app-script" term="google-app-script" /><category scheme="/tags/#uptime-monitor" term="uptime-monitor" /><category scheme="/tags/#website-status" term="website-status" /><category scheme="/tags/#upptime" term="upptime" />
+  <category scheme="http://0.0.0.0:4000/tags/#google-app-script" term="google-app-script" /><category scheme="http://0.0.0.0:4000/tags/#uptime-monitor" term="uptime-monitor" /><category scheme="http://0.0.0.0:4000/tags/#website-status" term="website-status" /><category scheme="http://0.0.0.0:4000/tags/#upptime" term="upptime" />
   <content type="html">
   
     &lt;p&gt;Recently, I was looking for a solution to notify me when a website is down and when it is back up. I found a few solutions, but they all had a learning curve. So I thought of an alternative solution using Google App Script, which I had recently learned about.&lt;/p&gt;
@@ -4866,23 +4947,23 @@ end&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 &lt;p&gt;&lt;a href=&quot;https://github.com/upptime/upptime&quot; target=&quot;_blank&quot; style=&quot;color: blue;&quot;&gt;Upptime&lt;/a&gt; is one of the good open-source alternative which can be used to monitor a website. it uses github actions to make sure the website is up and creates a issue if website is down for some reason. it also logs the information about the website speed.&lt;/p&gt;
 
   
-  &lt;p&gt;&lt;a href=&quot;/technology/website-monitor-using-google-app-script/&quot;&gt;Website Monitor Using Google App Script&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on December 30, 2022.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://0.0.0.0:4000/technology/website-monitor-using-google-app-script/&quot;&gt;Website Monitor Using Google App Script&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;http://0.0.0.0:4000&quot;&gt;eLitmus Blog&lt;/a&gt; on December 30, 2022.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[The revamp of a Video Proctoring Solution: A Behind-the-Scenes Look]]></title>
-  <link rel="alternate" type="text/html" href="/technology/the-revamp-of-a-video-proctoring-solution-a-behind-the-scenes-look/"/>
-  <id>/technology/the-revamp-of-a-video-proctoring-solution-a-behind-the-scenes-look</id>
+  <link rel="alternate" type="text/html" href="http://0.0.0.0:4000/technology/the-revamp-of-a-video-proctoring-solution-a-behind-the-scenes-look/"/>
+  <id>http://0.0.0.0:4000/technology/the-revamp-of-a-video-proctoring-solution-a-behind-the-scenes-look</id>
   <updated>2022-12-27 12:33:45 +0530T00:00:00-00:00</updated>
   <published>2022-12-27T00:00:00+05:30</published>
   
   <author>
     <name>eLitmus.com</name>
-    <uri></uri>
+    <uri>http://0.0.0.0:4000</uri>
     <email>site-admin@elitmus.com</email>
   </author>
-  <category scheme="/tags/#proctoring" term="proctoring" /><category scheme="/tags/#live%20proctoring" term="live proctoring" /><category scheme="/tags/#remote%20proctoring" term="remote proctoring" /><category scheme="/tags/#eLitmus%20proctoring" term="eLitmus proctoring" /><category scheme="/tags/#100ms" term="100ms" /><category scheme="/tags/#webRTC" term="webRTC" />
+  <category scheme="http://0.0.0.0:4000/tags/#proctoring" term="proctoring" /><category scheme="http://0.0.0.0:4000/tags/#live%20proctoring" term="live proctoring" /><category scheme="http://0.0.0.0:4000/tags/#remote%20proctoring" term="remote proctoring" /><category scheme="http://0.0.0.0:4000/tags/#eLitmus%20proctoring" term="eLitmus proctoring" /><category scheme="http://0.0.0.0:4000/tags/#100ms" term="100ms" /><category scheme="http://0.0.0.0:4000/tags/#webRTC" term="webRTC" />
   <content type="html">
   
     &lt;p&gt;&lt;strong&gt;&lt;em&gt;The story of how we took a good platform and made it even better&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
@@ -4942,23 +5023,23 @@ end&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 &lt;p&gt;In conclusion, the development of the video proctoring solution at eLitmus was a challenging but rewarding process. By identifying a need to solve the problem of vertical scalability, we were able to explore various solutions and ultimately choose 100ms as a partner to help us build a scalable and effective video proctoring platform. Through the development process, we encountered various challenges and were able to work closely with the 100ms team to find solutions and improve the stability of the platform. We are proud to have made the video proctoring solution an open-source project and to have contributed to the community by documenting the project and welcoming new contributors. We hope that others will find this project useful and will be able to build upon it to create even better solutions in the future.&lt;/p&gt;
 
   
-  &lt;p&gt;&lt;a href=&quot;/technology/the-revamp-of-a-video-proctoring-solution-a-behind-the-scenes-look/&quot;&gt;The revamp of a Video Proctoring Solution: A Behind-the-Scenes Look&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on December 27, 2022.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://0.0.0.0:4000/technology/the-revamp-of-a-video-proctoring-solution-a-behind-the-scenes-look/&quot;&gt;The revamp of a Video Proctoring Solution: A Behind-the-Scenes Look&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;http://0.0.0.0:4000&quot;&gt;eLitmus Blog&lt;/a&gt; on December 27, 2022.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Fixing Capybara Flaky Tests]]></title>
-  <link rel="alternate" type="text/html" href="/technology/fixing-capybara-flaky-tests/"/>
-  <id>/technology/fixing-capybara-flaky-tests</id>
+  <link rel="alternate" type="text/html" href="http://0.0.0.0:4000/technology/fixing-capybara-flaky-tests/"/>
+  <id>http://0.0.0.0:4000/technology/fixing-capybara-flaky-tests</id>
   <updated>2022-12-20 00:21:23 +0530T00:00:00-00:00</updated>
   <published>2022-12-20T00:00:00+05:30</published>
   
   <author>
     <name>eLitmus.com</name>
-    <uri></uri>
+    <uri>http://0.0.0.0:4000</uri>
     <email>site-admin@elitmus.com</email>
   </author>
-  <category scheme="/tags/#capybara" term="capybara" /><category scheme="/tags/#rails" term="rails" /><category scheme="/tags/#system-tests" term="system-tests" /><category scheme="/tags/#flaky" term="flaky" />
+  <category scheme="http://0.0.0.0:4000/tags/#capybara" term="capybara" /><category scheme="http://0.0.0.0:4000/tags/#rails" term="rails" /><category scheme="http://0.0.0.0:4000/tags/#system-tests" term="system-tests" /><category scheme="http://0.0.0.0:4000/tags/#flaky" term="flaky" />
   <content type="html">
   
     &lt;p&gt;When writing system tests for a user interface, it is common to encounter test cases that fail randomly. One of the common failure can occur when the JavaScript on a page takes time to render, causing issues with the test case.&lt;/p&gt;
@@ -5000,193 +5081,7 @@ assert page.has_content &amp;#39;Some content after clicking on submit&amp;#39;&
 
 
   
-  &lt;p&gt;&lt;a href=&quot;/technology/fixing-capybara-flaky-tests/&quot;&gt;Fixing Capybara Flaky Tests&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on December 20, 2022.&lt;/p&gt;</content>
-</entry>
-
-
-<entry>
-  <title type="html"><![CDATA[Sidekiq process in production with Systemd and Monit]]></title>
-  <link rel="alternate" type="text/html" href="/technology/sidekiq-process-in-production-with-systemd-and-monit/"/>
-  <id>/technology/sidekiq-process-in-production-with-systemd-and-monit</id>
-  <updated>2022-06-29 08:10:37 +0530T00:00:00-00:00</updated>
-  <published>2022-06-29T00:00:00+05:30</published>
-  
-  <author>
-    <name>eLitmus.com</name>
-    <uri></uri>
-    <email>site-admin@elitmus.com</email>
-  </author>
-  <category scheme="/tags/#Sidekiq" term="Sidekiq" /><category scheme="/tags/#Monit" term="Monit" /><category scheme="/tags/#Systemd" term="Systemd" />
-  <content type="html">
-  
-    &lt;p&gt;Recently, we have upgraded our Sidekiq version from 5.2 to 6.5. Before Sidekiq 6.0 we were managing the Sidekiq process directly using Monit. With the release of Sidekiq 6, the team has removed the &lt;strong&gt;daemonization, logfile, and pidfile command line arguments and sidekiqctl binary&lt;/strong&gt;.  Managing services manually is more error-prone, let our operating system do it for us.
-We have three options to go with systemd, upstart, and foreman. We decided to go ahead with the systemd.&lt;/p&gt;
-
-&lt;h4 id=&quot;systemd&quot;&gt;&lt;strong&gt;Systemd&lt;/strong&gt;&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&quot;https://wiki.debian.org/systemd#systemd_-_system_and_service_manager&quot;&gt;Systemd&lt;/a&gt; is a system and service manager for linux. Systemd tasks are organized as units. Most common units are services(.service), mount points(.mount), devices(.device), sockets(.socket), or timers(.timer)&lt;/p&gt;
-
-&lt;h4 id=&quot;systemctl&quot;&gt;&lt;strong&gt;Systemctl&lt;/strong&gt;&lt;/h4&gt;
-&lt;p&gt;The systemctl command is a utility which is responsible for examining and controlling the systemd system and service manager.&lt;/p&gt;
-
-&lt;h4 id=&quot;sidekiq&quot;&gt;&lt;strong&gt;Sidekiq&lt;/strong&gt;&lt;/h4&gt;
-&lt;p&gt;Simple, efficient background processing for Ruby.&lt;/p&gt;
-
-&lt;h3 id=&quot;sidekiq-running-as-systemd-service&quot;&gt;&lt;strong&gt;Sidekiq running as Systemd Service&lt;/strong&gt;&lt;/h3&gt;
-
-&lt;ol&gt;
-&lt;li&gt;
-To manage Sidekiq we need to create a service file for Sidekiq which can be used to start, stop or restart the Sidekiq process.
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;Sudo nano /lib/systemd/system/sidekiq.service&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-
-&lt;/li&gt;
-&lt;li&gt;
-Content in the Sidekiq.service. Sidekiq has provided us with the template for the service file here &lt;a href=&quot;https://github.com/mperham/sidekiq/blob/main/examples/systemd/sidekiq.service&quot;&gt;Sidekiq.service&lt;/a&gt;. We modified it according to our use case
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;[Unit]
-Description=sidekiq
-After=syslog.target network.target
-
-[Service]
-
-Type=simple
-# If your Sidekiq process locks up, systemd&amp;#39;s watchdog will restart it within seconds.
-#WatchdogSec=10
-
-WorkingDirectory=/opt/myapp/current
-
-ExecStart=/usr/local/bin/bundle exec sidekiq -C /opt/myapp/shared/config/sidekiq.yml -e production
-ExecStop=/bin/kill -TSTP $MAINPID
-ExecStartPost=/bin/sh -c &amp;#39;/bin/echo $MAINPID &amp;gt; /opt/myapp/shared/pids/sidekiq.pid&amp;#39;
-ExecStopPost=/bin/sh -c &amp;#39;rm /opt/myapp/shared/pids/sidekiq.pid&amp;#39;
-
-User=deploy
-Group=deploy
-UMask=0002
-
-# Greatly reduce Ruby memory fragmentation and heap usage
-# https://www.mikeperham.com/2018/04/25/taming-rails-memory-bloat/
-Environment=MALLOC_ARENA_MAX=2
-
-# if we crash, restart
-RestartSec=10
-Restart=on-failure
-
-# output goes to /var/log/syslog (Ubuntu) or /var/log/messages (CentOS)
-StandardOutput=syslog
-StandardError=syslog
-
-# This will default to &amp;quot;bundler&amp;quot; if we don&amp;#39;t specify it
-SyslogIdentifier=sidekiq
-
-[Install]
-WantedBy=multi-user.target&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-
-&lt;/li&gt;
-&lt;li&gt;
-  Our Modified Configurations:
-  &lt;ul&gt;
-    &lt;li&gt;
-      As we were using system ruby and using Sidekiq with some custom configurations. To start Sidekiq we used.
-
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;ExecStart=/usr/local/bin/bundle exec sidekiq -C /opt/myapp/shared/config/sidekiq.yml -e production&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-    &lt;/li&gt;
-
-    &lt;li&gt;
-    To stop Sidekiq we need to send a TSTP signal to process all the busy jobs before terminating Sidekiq.
-
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;ExecStop=/bin/kill -TSTP $MAINPID&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-    &lt;/li&gt;
-    &lt;li&gt;
-    For Managing with Monit we need the process id, After starting or stopping the service we were maintaining the process id file.
-
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;ExecStartPost=/bin/sh -c &amp;#39;/bin/echo $MAINPID &amp;gt; /opt/myapp/shared/pids/sidekiq.pid&amp;#39;
-ExecStopPost=/bin/sh -c &amp;#39;rm /opt/myapp/shared/pids/sidekiq.pid&amp;#39;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-    &lt;/li&gt;
-    &lt;li&gt;
-    As we want to use our app user to run this service.
-
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;User=deploy
-Group=deploy
-UMask=0002&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-    &lt;/li&gt;
-
-    &lt;li&gt;
-    And we want to restart only when there is a failure.
-
-
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;# if we crash, restart
-RestartSec=10
-Restart=on-failure&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-    &lt;/li&gt;
-  &lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-Reload the systemctl daemon for the new created service
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;Sudo systemctl daemon-reload&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
- 
-&lt;/li&gt;
-&lt;li&gt;
- Now we can start the Sidekiq service:
-
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;sudo systemctl start|stop|restart sidekiq&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h3 id=&quot;monitor-sidekiq-process-with-monit&quot;&gt;&lt;strong&gt;Monitor Sidekiq process with Monit&lt;/strong&gt;&lt;/h3&gt;
-
-&lt;p&gt;Now we have systemd to start, stop and restart the Sidekiq process. Now we will look at how to monitor the Sidekiq process with the help of monit.&lt;/p&gt;
-
-&lt;h4 id=&quot;monit&quot;&gt;&lt;strong&gt;Monit&lt;/strong&gt;&lt;/h4&gt;
-
-&lt;p&gt;Monit is a utility for managing and monitoring processes, programs, files, directories and filesystems on a Unix system.&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;
-Modified monitrc
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;check process sidekiq with pidfile &amp;quot;/opt/myapp/shared/pids/sidekiq.pid&amp;quot;
-  start program = &amp;quot;/bin/bash -l -c  &amp;#39;sudo systemctl start sidekiq&amp;#39; as uid deploy and gid deploy&amp;quot;
-    with timeout 20 seconds
-  stop program  = &amp;quot;/bin/bash -l -c  &amp;#39;sudo systemctl stop sidekiq&amp;#39; as uid deploy and gid deploy&amp;quot;
-    with timeout 20 seconds
-  if totalmem is greater than 800 MB for 3 cycles then restart
-  if changed pid then exec &amp;quot;/etc/monit/slack_notifier.sh&amp;quot;
-  if cpu is greater than 65% for 2 cycles then exec &amp;quot;/etc/monit/slack_notifier.sh&amp;quot; else if succeeded then exec &amp;quot;/etc/monit/slack_notifier.sh&amp;quot;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;/li&gt;
-&lt;li&gt;
-We can check if sidekiq is up and running:
-
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;sudo monit summary sidekiq&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;Monit will check the Sidekiq process and it will automatically start in case of the unexpected kill of the Sidekiq process.&lt;/p&gt;
-
-&lt;p&gt;We have successfully completed the Sidekiq process monitoring with the help of Monit and Systemd.&lt;/p&gt;
-
-
-  
-  &lt;p&gt;&lt;a href=&quot;/technology/sidekiq-process-in-production-with-systemd-and-monit/&quot;&gt;Sidekiq process in production with Systemd and Monit&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;&quot;&gt;eLitmus Blog&lt;/a&gt; on June 29, 2022.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://0.0.0.0:4000/technology/fixing-capybara-flaky-tests/&quot;&gt;Fixing Capybara Flaky Tests&lt;/a&gt; was originally published by eLitmus.com at &lt;a href=&quot;http://0.0.0.0:4000&quot;&gt;eLitmus Blog&lt;/a&gt; on December 20, 2022.&lt;/p&gt;</content>
 </entry>
 
 </feed>
