@@ -1,2 +1,13 @@
-- name: jekyll-deploy-gh-pages
-  uses: BryanSchuetz/jekyll-deploy-gh-pages@v2.0
+name: jekyll-deploy-gh-pages
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Jekyll Deploy
+        uses: BryanSchuetz/jekyll-deploy-gh-pages@v2.0
+
