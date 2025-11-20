@@ -7,13 +7,23 @@ source 'https://rubygems.org'
 # require 'json'
 require 'open-uri'
 # versions = JSON.parse(open('https://pages.github.com/versions.json').read)
-versions = {}
-versions['github-pages'] = '227'
+# versions = {}
+# versions['github-pages'] = '227'
 
-gem 'github-pages', versions['github-pages']
+# gem 'github-pages', versions['github-pages']
 # These are auto included by github-pages gem. No need to mention them
 # gem 'jekyll'
 # gem 'kramdown'
+
+gem 'jekyll', '~> 4.3.3'
+
+# Common plugins you may need (add/remove as per your site):
+gem 'jekyll-seo-tag'
+gem 'jekyll-sitemap'
+gem 'jekyll-feed'
+gem 'jekyll-paginate'
+gem 'jekyll-archives'
+gem 'jekyll-redirect-from'
 
 # ---- Other gems
 gem 'sanitize' # SanitizationFilter
