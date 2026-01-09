@@ -117,19 +117,6 @@
 	padding: 0px 10px 0px 10px;
 }
 
-.no-padding,
-.entry-title-summary {
-	margin-top: 4px;
-	margin-bottom: 4px;
-}
-
-.date-show,
-.entry-date {
-	font-size: 90%;
-	max-width: 100%;
-	white-space: normal;
-}
-
 .highlightText {
 	color: red;
 }
@@ -256,6 +243,13 @@ footer {
 	text-decoration: solid;
 	font-size: small;
 	font-weight: bold;
+}
+
+.post-excerpt {
+	display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3; /* Limits the text to 3 lines */
+  overflow: hidden; 
 }
 
 
